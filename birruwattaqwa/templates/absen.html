@@ -1,0 +1,25 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Absensi</title>
+</head>
+<body>
+    <h2>Form Absensi</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label>Status Absensi:</label>
+        <select name="status">
+            <option value="Hadir">Hadir</option>
+            <option value="Izin">Izin</option>
+            <option value="Sakit">Sakit</option>
+            <option value="Alfa">Alfa</option>
+        </select><br>
+        <label>Keterangan:</label>
+        <input type="text" name="keterangan"><br>
+        <label>Lokasi:</label>
+        <input type="text" name="lokasi"><br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
