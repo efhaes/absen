@@ -1,25 +1,54 @@
-<!-- login.html -->
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - Absensi Guru</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
-    <h2>Login</h2>
-    {% if messages %}
-        {% for message in messages %}
-            <p style="color: red;">{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-    <form method="POST">
-        {% csrf_token %}
-        <label>Username:</label>
-        <input type="text" name="username" required><br>
-        <label>Password:</label>
-        <input type="password" name="password" required><br>
-        <button type="submit">Login</button>
-    </form>
+
+<div class="login-container">
+    <div class="login-box">
+        <h2>Login</h2>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <p class="footer-text">Belum punya akun? <a href="#">Hubungi Admin</a></p>
+    </div>
+</div>
+
+<script>
+    // Animasi input saat focus
+    document.querySelectorAll(".input-group input").forEach(input => {
+        input.addEventListener("focus", function() {
+            this.parentElement.classList.add("focused");
+        });
+        input.addEventListener("blur", function() {
+            if (this.value === "") {
+                this.parentElement.classList.remove("focused");
+            }
+        });
+    });
+</script>
+
 </body>
 </html>

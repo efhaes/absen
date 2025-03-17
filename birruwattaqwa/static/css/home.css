@@ -1,0 +1,187 @@
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: #f8f9fa;
+    color: #333;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2c3e50;
+    padding: 15px 50px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+}
+
+.nav-links li {
+    margin-left: 20px;
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: white;
+    font-weight: 400;
+    transition: 0.3s;
+}
+
+.nav-links li a:hover {
+    color: #f39c12;
+}
+
+/* Hero Section */
+.hero {
+    background: url('{% static "images/school-hero.jpg" %}') center/cover no-repeat;
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    background-blend-mode: darken;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+}
+
+.hero-content h1 {
+    font-size: 42px;
+    font-weight: 600;
+}
+
+.hero-content p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    display: inline-block;
+    background: #f39c12;
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #e67e22;
+}
+
+/* Section Styling */
+.container {
+    width: 80%;
+    margin: 50px auto;
+    text-align: center;
+}
+
+h2 {
+    font-size: 32px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Profile Section */
+.profile {
+    background: #ffffff;
+    padding: 50px 20px;
+}
+
+.profile p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Vision & Mission with Cards */
+.vision-mission {
+    background: #ecf0f1;
+    padding: 60px 20px;
+}
+
+.vision-mission .content {
+    display: flex;
+    justify-content: space-between;
+    text-align: left;
+    margin-top: 30px;
+}
+
+.vision, .mission {
+    width: 48%;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: 0.3s ease-in-out;
+}
+
+.vision:hover, .mission:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.vision h3, .mission h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    text-align: center;
+}
+
+.vision p, .mission ul {
+    font-size: 16px;
+    color: #666;
+}
+
+.mission ul {
+    list-style: none;
+    padding-left: 0;
+    text-align: center;
+}
+
+.mission ul li {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.mission ul li:last-child {
+    border-bottom: none;
+}
+
+/* Location */
+.location {
+    background: #ffffff;
+    padding: 50px 20px;
+}
+
+.location iframe {
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer */
+footer {
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 50px;
+}

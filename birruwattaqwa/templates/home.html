@@ -1,13 +1,78 @@
-<!-- home.html -->
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Absensi Guru</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
-    <h1>Selamat Datang di Sistem Absensi Guru</h1>
-    <a href="{% url 'login' %}">Login untuk Absen</a>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="logo">Absensi Guru</div>
+    <ul class="nav-links">
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'login' %}">Login</a></li>
+
+    </ul>
+</nav>
+
+<!-- Hero Section -->
+<header class="hero">
+    <div class="hero-content">
+        <h1>Selamat Datang di Sistem Absensi Guru</h1>
+        <p>Mencatat Kehadiran dengan Mudah & Cepat</p>
+        <a href="{% url 'login' %}" class="btn">Login untuk Absen</a>
+    </div>
+</header>
+
+<!-- Profile Sekolah -->
+<section class="profile">
+    <div class="container">
+        <h2>Profil Sekolah</h2>
+        <p>Sekolah Bijak adalah lembaga pendidikan yang telah berdiri sejak tahun 1990, dengan komitmen tinggi dalam menciptakan generasi berkarakter, cerdas, dan mandiri.</p>
+    </div>
+</section>
+
+<!-- Visi & Misi -->
+<section class="vision-mission">
+    <div class="container">
+        <h2>Visi & Misi</h2>
+        <div class="content">
+            <div class="vision">
+                <h3>Visi</h3>
+                <p>Menjadi sekolah unggulan dalam membentuk insan yang berakhlak mulia, cerdas, dan berdaya saing global.</p>
+            </div>
+            <div class="mission">
+                <h3>Misi</h3>
+                <ul>
+                    <li>Memberikan pendidikan berbasis karakter dan teknologi.</li>
+                    <li>Mengembangkan potensi akademik dan non-akademik siswa.</li>
+                    <li>Mewujudkan lingkungan belajar yang nyaman dan inspiratif.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Lokasi Sekolah -->
+<section class="location">
+    <div class="container">
+        <h2>Lokasi Sekolah</h2>
+        <p>Jl. Pendidikan No. 123, Kota Bijak, Indonesia</p>
+        <iframe 
+            src="https://maps.google.com/maps?q=Jakarta&t=&z=13&ie=UTF8&iwloc=&output=embed" 
+            width="100%" height="300" frameborder="0" style="border:0;" allowfullscreen>
+        </iframe>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2025 Absensi Guru. Semua Hak Dilindungi.</p>
+</footer>
+
 </body>
 </html>
