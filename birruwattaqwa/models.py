@@ -14,12 +14,13 @@ class Absensi(models.Model):
     tanggal = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
     keterangan = models.TextField(blank=True, null=True)  # Keterangan umum
-
     bulan = models.CharField(max_length=20)  # Simpan bulan sebagai nama, bukan angka 
     tahun = models.IntegerField()
     jam_absensi = models.TimeField(auto_now_add=True)
     lokasi = models.CharField(max_length=255, blank=True, null=True)  
     qr_code = models.CharField(max_length=255, unique=True, blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)  # Tambahkan ini
+    longitude = models.FloatField(blank=True, null=True)  # Tambahkan ini
 
     def generate_qr_code(self):
         """Generate QR Code unik berdasarkan guru dan tanggal"""

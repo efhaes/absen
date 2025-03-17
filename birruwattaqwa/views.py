@@ -3,10 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
 from .models import Absensi
 from django.conf import settings
-
+from .forms import AbsensiForm
 import math
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -17,7 +18,6 @@ def haversine(lat1, lon1, lat2, lon2):
     a = math.sin(dlat/2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2) ** 2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
     return R * c * 1000  # Konversi ke meter
-
 @login_required
 def absen_guru(request):
     user = request.user  
@@ -25,40 +25,29 @@ def absen_guru(request):
     bulan, tahun = now().strftime('%B'), now().year
     qr_code_value = f"ABSEN-{today}"  # QR unik per hari
 
-    error_message = None  # Untuk pesan error jika di luar radius
+    error_message = None  
+    form = AbsensiForm()
 
     if request.method == 'POST':
-        status = request.POST.get('status')
-        keterangan = ""
+        form = AbsensiForm(request.POST)
 
-        # Ambil alasan jika sakit atau izin
-        if status == "Sakit":
-            keterangan = request.POST.get('keterangan_sakit', '').strip()
-        elif status == "Izin":
-            keterangan = request.POST.get('keterangan_izin', '').strip()
-        elif status == "Alfa":
-            keterangan = "Tidak Hadir (Alpha)"
+        if form.is_valid():
+            status = form.cleaned_data['status']
+            keterangan = ""
 
-        # Ambil lokasi dari POST
-        latitude = request.POST.get('latitude', None)
-        longitude = request.POST.get('longitude', None)
+            # Ambil keterangan berdasarkan status
+            if status == "Sakit":
+                keterangan = request.POST.get('keterangan', '').strip()
+            elif status == "Izin":
+                keterangan = request.POST.get('keterangan', '').strip()
+            elif status == "Alfa":
+                keterangan = "Tidak Hadir (Alpha)"
+        
+            print(f"Status: {status}, Keterangan: {keterangan}")
+            print(f"Data POST: {request.POST}")  
 
-        if latitude and longitude:
-            latitude = float(latitude)
-            longitude = float(longitude)
-
-            # Ambil koordinat sekolah dari settings.py
-            school_lat = settings.SCHOOL_LOCATION["latitude"]
-            school_lon = settings.SCHOOL_LOCATION["longitude"]
-
-            # Hitung jarak pengguna dengan sekolah
-            distance = haversine(latitude, longitude, school_lat, school_lon)
-
-            # Jika lebih dari 50 meter, beri peringatan
-            if distance > 50:
-                error_message = "Anda berada di luar area absensi! Jarak: {:.2f} meter".format(distance)
-            else:
-                # Simpan absensi jika dalam radius 50m
+            # Jika sakit atau izin, langsung simpan ke database
+            if status in ["Sakit", "Izin"]:
                 Absensi.objects.create(
                     guru=user,
                     tanggal=today,
@@ -67,15 +56,51 @@ def absen_guru(request):
                     bulan=bulan,
                     tahun=tahun,
                     jam_absensi=now().time(),
-                    lokasi=f"{latitude}, {longitude}"
                 )
-                return redirect('home')  
+                return redirect('home')
+
+            # Jika hadir atau alfa, cek lokasi
+            latitude = request.POST.get('latitude', '').strip()
+            longitude = request.POST.get('longitude', '').strip()
+
+            if latitude and longitude:  # Cek apakah lokasi dikirim
+                try:
+                    latitude = float(latitude)
+                    longitude = float(longitude)
+
+                    school_lat = settings.SCHOOL_LOCATION["latitude"]
+                    school_lon = settings.SCHOOL_LOCATION["longitude"]
+
+                    # Hitung jarak dengan sekolah dalam meter
+                    distance = haversine((latitude, longitude), (school_lat, school_lon), unit=Unit.METERS)
+
+                    if distance > 50:
+                        error_message = f"Anda berada di luar area absensi! Jarak: {distance:.2f} meter"
+                    else:
+                        # Simpan ke database jika dalam radius 50m
+                        Absensi.objects.create(
+                            guru=user,
+                            tanggal=today,
+                            status=status,
+                            keterangan=keterangan,
+                            bulan=bulan,
+                            tahun=tahun,
+                            jam_absensi=now().time(),
+                            latitude=latitude,
+                            longitude=longitude
+                        )
+                        return redirect('home')  
+
+                except ValueError:
+                    error_message = "Lokasi tidak valid. Pastikan GPS aktif dan coba lagi."
+            else:
+                error_message = "Lokasi tidak terdeteksi. Pastikan GPS aktif."
 
     return render(request, 'birruwattaqwa/absen.html', {
         'qr_code_value': qr_code_value,
-        'error_message': error_message
+        'error_message': error_message,
+        'form': form,
     })
-
 @login_required
 def scan_qr(request, qr_code):
     """Verifikasi QR Code untuk mencatat kehadiran"""
@@ -95,6 +120,26 @@ def scan_qr(request, qr_code):
         return JsonResponse({"message": "Absensi berhasil!"})
     
     return JsonResponse({"error": "QR Code tidak valid!"})
+
+@login_required
+@permission_required('birruwattaqwa.view_absensi', raise_exception=True)  # Hanya user dengan izin
+def view_absensi(request):
+    absensi_list = Absensi.objects.all()
+    return render(request,'birruwattaqwa/list_absen.html', {'absensi_list': absensi_list})
+
+@login_required
+@permission_required('birruwattaqwa.add_absensi', raise_exception=True)
+def add_absensi(request):
+    if request.method == 'POST':
+        form = AbsensiForm(request.POST)
+        if form.is_valid():
+            absensi = form.save(commit=False)
+            absensi.user = request.user  # Catat siapa yang melakukan absensi
+            absensi.save()
+            return redirect('view_absensi')
+    else:
+        form = AbsensiForm()
+    return render(request, 'birruwattaqwa/add_absensi.html', {'form': form})
 
 def login_guru(request):
     """Halaman Login: Setelah login, diarahkan ke halaman absen"""

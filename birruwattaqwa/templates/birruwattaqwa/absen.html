@@ -4,153 +4,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absensi Guru</title>
-    <link rel="stylesheet" href="{% static 'css/absen.css' %}">
-
-    <script>
-        const SEKOLAH_LAT = -6.200000;  // Ganti dengan koordinat sekolah
-        const SEKOLAH_LNG = 106.816666; // Ganti dengan koordinat sekolah
-
-        function toggleKeterangan() {
-            let status = document.getElementById("status").value;
-            let keteranganField = document.getElementById("keterangan-field");
-            let qrSection = document.getElementById("qr-section");
-
-            if (status === "Sakit" || status === "Izin") {
-                keteranganField.style.display = "block";
-                qrSection.style.display = "none";
-            } else if (status === "Hadir") {
-                keteranganField.style.display = "none";
-                qrSection.style.display = "none"; // QR baru muncul setelah validasi
-            } else {
-                keteranganField.style.display = "none";
-                qrSection.style.display = "none";
-            }
-        }
-
-        function getLocationAndSubmit(event) {
-            event.preventDefault(); // Cegah form terkirim langsung
-            let status = document.getElementById("status").value;
-
-            if (status === "Hadir") {
-                // Cek lokasi jika status "Hadir"
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            let userLat = position.coords.latitude;
-                            let userLng = position.coords.longitude;
-                            document.getElementById("latitude").value = userLat;
-                            document.getElementById("longitude").value = userLng;
-
-                            // Cek apakah user berada dalam radius 50 meter dari sekolah
-                            if (isWithinRadius(userLat, userLng, SEKOLAH_LAT, SEKOLAH_LNG, 50)) {
-                                submitForm();  // Lanjutkan proses absen
-                            } else {
-                                alert("Anda berada di luar area absensi! Harap berada dalam radius 50 meter dari sekolah.");
-                            }
-                        },
-                        function(error) {
-                            alert("Gagal mendapatkan lokasi! Pastikan GPS diaktifkan.");
-                        }
-                    );
-                } else {
-                    alert("Geolocation tidak didukung di browser Anda.");
-                }
-            } else {
-                // Jika status bukan "Hadir" langsung submit tanpa validasi lokasi
-                document.getElementById("absen-form").submit();
-            }
-        }
-
-        function isWithinRadius(lat1, lon1, lat2, lon2, radius) {
-            function toRad(degrees) {
-                return degrees * (Math.PI / 180);
-            }
-
-            let R = 6371000; // Radius bumi dalam meter
-            let dLat = toRad(lat2 - lat1);
-            let dLon = toRad(lon2 - lon1);
-            let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            let distance = R * c;
-
-            return distance <= radius;
-        }
-
-        function submitForm() {
-            let status = document.getElementById("status").value;
-            let qrUrl = document.getElementById("absen-form").getAttribute("data-qr-url");
-            let csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
-
-            if (status === "Hadir") {
-                fetch(qrUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrfToken  // ⬅ Kirim CSRF Token
-                    },
-                    body: JSON.stringify({})
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.qr_code_value) {
-                        document.getElementById("qr-image").src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${data.qr_code_value}`;
-                        document.getElementById("qr-section").style.display = "block";
-                    }
-                })
-                .catch(error => console.error("Error fetching QR Code:", error));
-            } else {
-                document.getElementById("absen-form").submit();
-            }
-        }
-    </script>
+    <title>Home - Absensi Guru</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">Absensi Guru</div>
-        <ul class="nav-links">
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
-        </ul>
-    </nav>
 
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="logo">Absensi Guru</div>
+    <ul class="nav-links">
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'login' %}">Login</a></li>
+        <li><a href="{% url 'absen' %}">Absen Guru</a></li>
+
+    </ul>
+</nav>
+
+<!-- Hero Section -->
+<header class="hero">
+    <div class="hero-content">
+        <h1>Selamat Datang di Sistem Absensi Guru</h1>
+        <p>Mencatat Kehadiran dengan Mudah & Cepat</p>
+        <a href="{% url 'login' %}" class="btn">Login untuk Absen</a>
+    </div>
+</header>
+
+<!-- Profile Sekolah -->
+<section class="profile">
     <div class="container">
-        <h2>Form Absensi</h2>
-        <form method="post" id="absen-form" data-qr-url="{% url 'generate_qr' %}" onsubmit="return getLocationAndSubmit(event)">
-            {% csrf_token %}
-
-            <!-- Lokasi tersembunyi -->
-            <input type="hidden" name="latitude" id="latitude">
-            <input type="hidden" name="longitude" id="longitude">
-
-            <label for="status">Pilih Status Kehadiran:</label>
-            <select id="status" name="status" onchange="toggleKeterangan()" required>
-                <option value="" disabled selected>Pilih Status</option>
-                <option value="Hadir">Hadir</option>
-                <option value="Izin">Izin</option>
-                <option value="Sakit">Sakit</option>
-                <option value="Alfa">Alpha</option>
-            </select>
-        
-            <div id="keterangan-field" style="display: none;">
-                <label for="keterangan">Masukkan Alasan:</label>
-                <textarea name="keterangan" id="keterangan" rows="3"></textarea>
-            </div>
-        
-            <button type="submit" class="btn">Absen</button>
-        </form>
-        
-        <!-- Tampilkan QR Code setelah memilih Hadir -->
-        <div id="qr-section" style="display: none;">
-            <p>Silakan scan QR Code untuk absen:</p>
-            <img id="qr-image" src="" alt="QR Code">
-        </div>
+        <h2>Profil Sekolah</h2>
+        <p>SDIT BIRRU WATTAQWA merupakan salah satu sekolah jenjang SD berstatus Swasta yang berada di wilayah Kec. Kota Bogor Selatan, Kota Bogor, Jawa Barat. SDIT BIRRU WATTAQWA didirikan pada tanggal 12 Desember 2016 dengan Nomor SK Pendirian 12/YBU-B/PS-SDIT/XII/2016 yang berada dalam naungan Kementerian Pendidikan dan Kebudayaan
+        <br> Dalam kegiatan pembelajaran, sekolah yang memiliki 172 siswa  saat ini dibimbing oleh 20 guru yang profesional di bidangnya. Kepala Sekolah SDIT BIRRU WATTAQWA saat ini adalah Jaaludin. Operator yang bertanggung jawab adalah Asep Dedi Irawan.
+            Dengan adanya keberadaan SDIT BIRRU WATTAQWA, diharapkan dapat memberikan kontribusi dalam mencerdaskan anak bangsa di wilayah Kec. Kota Bogor Selatan, Kota Bogor, Jawa Barat.</p>  
     </div>
 
-    <footer>
-        <p>&copy; 2025 Absensi Guru. All Rights Reserved.</p>
-    </footer>
+</section>
+
+<!-- Visi & Misi -->
+<section class="vision-mission">
+    <div class="container">
+        <h2>Visi & Misi SDIT BIRRU WATTAQWA</h2>
+        <div class="content">
+            <div class="vision">
+                <h3>Visi</h3>
+                <p>Membentuk peserta didik yang berilmu dan berakhlak mulia dengan didasari iman dan takwa.</p>
+            </div>
+            <div class="mission">
+                <h3>Misi</h3>
+                <ul>
+                    <li>Mendidik peserta didik agar memiliki spiritual ma'rifat .</li>
+                    <li>Membentuk manusia yang berjiwa mandiri, kompetitif, dan jujur.</li>
+                    <li>Membina peserta didik agar memiliki jiwa yang ikhlas, peka, peduli, dan bertanggung jawab</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Lokasi Sekolah -->
+<section class="location">
+    <div class="container">
+        <h2>Lokasi Sekolah</h2>
+        <p>Jl. SUMANTADIREDJA</p>
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.042998485958!2d106.80551847356084!3d-6.641582864923083!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69cf4f10334787%3A0x6593ff139555dd8!2sSEKOLAH%20DASAR%20ISLAM%20TERPADU%20BIRRUWATTAQWA!5e0!3m2!1sid!2sid!4v1742228266435!5m2!1sid!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+
+        </iframe>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2025 Absensi Guru. Semua Hak Dilindungi.</p>
+</footer>
+
 </body>
 </html>

@@ -15,11 +15,34 @@
             <option value="Sakit">Sakit</option>
             <option value="Alfa">Alfa</option>
         </select><br>
-        <label>Keterangan:</label>
-        <input type="text" name="keterangan"><br>
-        <label>Lokasi:</label>
-        <input type="text" name="lokasi"><br>
+        <div id="keterangan_sakit" style="display: none;">
+            <label for="keterangan_sakit">Alasan Sakit:</label>
+            <textarea name="keterangan_sakit"></textarea>
+        </div>
+    
+        <div id="keterangan_izin" style="display: none;">
+            <label for="keterangan_izin">Alasan Izin:</label>
+            <textarea name="keterangan_izin"></textarea>
+        </div>
         <button type="submit">Submit</button>
     </form>
 </body>
+<script>
+    navigator.geolocation.getCurrentPosition(function(position) {
+        document.getElementById("latitude").value = position.coords.latitude;
+        document.getElementById("longitude").value = position.coords.longitude;
+    }, function(error) {
+        alert("GPS tidak aktif atau tidak dapat mengambil lokasi.");
+    });
+        document.getElementById('status').addEventListener('change', function () {
+            document.getElementById('keterangan_sakit').style.display = 'none';
+            document.getElementById('keterangan_izin').style.display = 'none';
+        
+            if (this.value === "Sakit") {
+                document.getElementById('keterangan_sakit').style.display = 'block';
+            } else if (this.value === "Izin") {
+                document.getElementById('keterangan_izin').style.display = 'block';
+            }
+        });
+        </script>
 </html>
