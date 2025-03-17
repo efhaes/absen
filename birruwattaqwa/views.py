@@ -18,6 +18,7 @@ def haversine(lat1, lon1, lat2, lon2):
     a = math.sin(dlat/2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2) ** 2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
     return R * c * 1000  # Konversi ke meter
+
 @login_required
 def absen_guru(request):
     user = request.user  
@@ -122,24 +123,16 @@ def scan_qr(request, qr_code):
     return JsonResponse({"error": "QR Code tidak valid!"})
 
 @login_required
-@permission_required('birruwattaqwa.view_absensi', raise_exception=True)  # Hanya user dengan izin
 def view_absensi(request):
-    absensi_list = Absensi.objects.all()
-    return render(request,'birruwattaqwa/list_absen.html', {'absensi_list': absensi_list})
-
-@login_required
-@permission_required('birruwattaqwa.add_absensi', raise_exception=True)
-def add_absensi(request):
-    if request.method == 'POST':
-        form = AbsensiForm(request.POST)
-        if form.is_valid():
-            absensi = form.save(commit=False)
-            absensi.user = request.user  # Catat siapa yang melakukan absensi
-            absensi.save()
-            return redirect('view_absensi')
+    user = request.user
+    # Cek apakah user adalah Admin atau Guru
+    if user.groups.filter(name='Admin').exists():
+        absensi_list = Absensi.objects.all()  # Admin melihat semua absensi
     else:
-        form = AbsensiForm()
-    return render(request, 'birruwattaqwa/add_absensi.html', {'form': form})
+        absensi_list = Absensi.objects.filter(guru=user)  # Guru hanya melihat absensinya sendiri
+
+    return render(request, 'birruwattaqwa/list_absen.html', {'absensi_list': absensi_list})
+
 
 def login_guru(request):
     """Halaman Login: Setelah login, diarahkan ke halaman absen"""
