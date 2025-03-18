@@ -97,7 +97,7 @@ def absen_guru(request):
             else:
                 error_message = "Lokasi tidak terdeteksi. Pastikan GPS aktif."
 
-    return render(request, 'birruwattaqwa/absen.html', {
+    return render(request, 'birruwattaqwa/absent.html', {
         'qr_code_value': qr_code_value,
         'error_message': error_message,
         'form': form,

@@ -1,8 +1,10 @@
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Absensi</title>
+    <link rel="stylesheet" href="{% static 'css/absen.css' %}">
 </head>
 <body>
     <h2>Form Absensi</h2>
@@ -15,14 +17,14 @@
             <option value="Sakit">Sakit</option>
             <option value="Alfa">Alfa</option>
         </select><br>
-        <div id="keterangan_sakit" style="display: none;">
-            <label for="keterangan_sakit">Alasan Sakit:</label>
-            <textarea name="keterangan_sakit"></textarea>
+        <div id="keterangan" style="display: none;">
+            <label for="keterangan">Alasan Sakit:</label>
+            <textarea name="keterangan"></textarea>
         </div>
     
-        <div id="keterangan_izin" style="display: none;">
-            <label for="keterangan_izin">Alasan Izin:</label>
-            <textarea name="keterangan_izin"></textarea>
+        <div id="keterangan" style="display: none;">
+            <label for="keterangan">Alasan Izin:</label>
+            <textarea name="keterangan"></textarea>
         </div>
         <button type="submit">Submit</button>
     </form>
