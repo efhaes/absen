@@ -1,0 +1,35 @@
+
+
+{% block content %}
+<h2>Daftar Pengguna</h2>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Nama Lengkap</th>
+            <th>Email</th>
+            <th>Alamat</th>
+            <th>Jabatan</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.profilguru.alamat }}</td>
+            <td>{{ user.profilguru.jabatan }}</td>
+            <td>
+                {% if user.groups.all %}
+                    {{ user.groups.first.name }}
+                {% else %}
+                    Tidak ada grup
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

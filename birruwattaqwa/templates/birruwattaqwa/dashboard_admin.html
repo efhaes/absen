@@ -1,5 +1,44 @@
 {% load static %}
-{% block content %}
-<h1>Dashboard Admin</h1>
-<p>Selamat datang, {{ request.user.username }}! Ini adalah halaman admin.</p>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="{% static 'css/D_guru.css' %}">
+    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Profil Admin -->
+            <div class="profile">
+                <a href="url 'edit_profil'">
+                    <img src="/media/admin_profile.png" alt="Foto Admin" class="clickable-profile">
+                </a>
+                <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+                <center><p>Admin</p></center>
+            </div>
+
+            <!-- Navigasi -->
+            <ul>
+                <li><a href="{% url 'generate_qr' %}" class="btn btn-primary">📷Buka QR Code</a></li>
+                <li><a href="{% url 'list_absen' %}" class="btn btn-success">Lihat Rekap Absensi</a></li>
+                <li><a href="{% url 'jadwal_admin' %}" class="btn btn-info">Lihat dan buat Jadwal Guru</a></li>
+                <li><a href="{% url 'registrasi' %}" class="btn btn-success">buat akun admin dan guru</a></li>
+                <li><a href="{% url 'list_users' %}" class="btn btn-success">Lihat Semua Akun</a></li>
+             
+            </ul>
+        </div>
+        <div class="content">
+            <h1>Selamat Datang, {{ request.user.first_name }}</h1>
+            <div class="paragraf">
+                Gunakan menu di sebelah kiri untuk mengelola absensi, jadwal guru, dan pengajuan izin.
+            </div>
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>

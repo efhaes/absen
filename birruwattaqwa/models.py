@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+
 import uuid
 
 class Absensi(models.Model):
@@ -29,3 +30,28 @@ class Absensi(models.Model):
 
     def __str__(self):
         return f"{self.guru.username} - {self.tanggal} - {self.status}"
+    
+class JadwalGuru(models.Model):
+    guru = models.ForeignKey(User, on_delete=models.CASCADE)
+    hari = models.CharField(max_length=20, choices=[
+        ('Senin', 'Senin'),
+        ('Selasa', 'Selasa'),
+        ('Rabu', 'Rabu'),
+        ('Kamis', 'Kamis'),
+        ('Jumat', 'Jumat'),
+        ('Sabtu', 'Sabtu'),
+    ])
+    jam_mulai = models.TimeField()
+    jam_selesai = models.TimeField()
+    mata_pelajaran = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.guru.username} - {self.hari} - {self.mata_pelajaran}"
+    
+class ProfilGuru(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    alamat = models.TextField()
+    jabatan = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.user.get_full_name() if self.user.get_full_name() else self.user.username

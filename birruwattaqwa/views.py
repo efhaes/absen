@@ -3,12 +3,20 @@ from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from .forms import AdminCreateUserForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
+from .models import JadwalGuru
+from .forms import JadwalGuruForm
 from .models import Absensi
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import user_passes_test
 from django.conf import settings
 from .forms import AbsensiForm
+from .models import ProfilGuru
+from django.shortcuts import get_object_or_404
 import math
+
 
 def haversine(lat1, lon1, lat2, lon2):
     """Menghitung jarak antara dua titik koordinat dalam meter."""
@@ -122,16 +130,28 @@ def scan_qr(request, qr_code):
     
     return JsonResponse({"error": "QR Code tidak valid!"})
 
+from django.contrib.auth.models import User  # Import model User
+
 @login_required
 def view_absensi(request):
     user = request.user
-    # Cek apakah user adalah Admin atau Guru
+    guru_filter = request.GET.get('guru', '')  # Ambil nilai filter dari URL
+
     if user.groups.filter(name='Admin').exists():
         absensi_list = Absensi.objects.all()  # Admin melihat semua absensi
+        guru_list = User.objects.filter(groups__name='Guru')  # Ambil daftar guru
+        if guru_filter:  # Jika admin memilih guru tertentu
+            absensi_list = absensi_list.filter(guru__id=guru_filter)
     else:
         absensi_list = Absensi.objects.filter(guru=user)  # Guru hanya melihat absensinya sendiri
+        guru_list = None  # Guru tidak perlu melihat filter daftar guru
 
-    return render(request, 'birruwattaqwa/list_absen.html', {'absensi_list': absensi_list})
+    return render(request, 'birruwattaqwa/list_absen.html', {
+        'absensi_list': absensi_list,
+        'guru_list': guru_list,
+        'selected_guru': guru_filter,
+    })
+
 
 @login_required
 def dashboard_admin(request):
@@ -182,3 +202,94 @@ def home(request):
     """Halaman Home: Bisa diakses semua orang"""
     
     return render(request, 'home.html')
+
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  # Hanya Admin yang bisa akses
+def jadwal_admin(request):
+    """Admin bisa melihat & menambah jadwal guru dalam satu halaman"""
+    if request.method == "POST":
+        form = JadwalGuruForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('jadwal_admin')  # Refresh halaman agar daftar jadwal update
+    else:
+        form = JadwalGuruForm()
+
+    jadwal_list = JadwalGuru.objects.all()  # Ambil semua jadwal
+
+    return render(request, 'birruwattaqwa/jadwal_admin.html', {'form': form, 'jadwal_list': jadwal_list})
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  
+def edit_jadwal(request, jadwal_id):
+    """Admin mengedit jadwal guru"""
+    jadwal = get_object_or_404(JadwalGuru, id=jadwal_id)
+
+    if request.method == "POST":
+        form = JadwalGuruForm(request.POST, instance=jadwal)
+        if form.is_valid():
+            form.save()
+            return redirect('jadwal_admin')  # Redirect setelah edit
+    else:
+        form = JadwalGuruForm(instance=jadwal)
+
+    return render(request, 'birruwattaqwa/edit_jadwal.html', {'form': form})
+
+
+
+
+@login_required
+def jadwal_guru(request):
+    """Guru melihat jadwal yang sudah diposting oleh Admin."""
+    jadwal_guru = JadwalGuru.objects.filter(guru=request.user)  # Ambil jadwal untuk user login
+    return render(request, 'birruwattaqwa/jadwal_guru.html', {'jadwal_guru': jadwal_guru})
+
+
+
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  # Hanya Admin bisa akses
+def create_user(request):
+    if request.method == 'POST':
+        form = AdminCreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            print("User akan disimpan:", user.username, user.email)
+            user.save()
+
+            # Tambahkan ke grup (buat jika belum ada)
+            group, created = Group.objects.get_or_create(name=form.cleaned_data['role'])
+            print("Grup ditemukan atau dibuat:", group)
+            user.groups.add(group)
+
+            # Simpan data alamat dan jabatan ke model ProfilGuru
+            ProfilGuru.objects.create(
+                user=user,
+                alamat=form.cleaned_data['alamat'],
+                jabatan=form.cleaned_data['jabatan']
+            )
+            print("ProfilGuru berhasil dibuat")
+
+            return redirect('list_users')  # Redirect ke daftar pengguna
+        else:
+            print("Form tidak valid:", form.errors)
+    else:
+        form = AdminCreateUserForm()
+    
+    return render(request, 'registrasi/registrasi.html', {'form': form})
+
+
+
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  # Hanya Admin bisa akses
+def list_users(request):
+    users = User.objects.filter(groups__name__in=['Guru', 'Admin'])  # Ambil user dengan role Guru/Admin
+    return render(request, 'registrasi/list_users.html', {'users': users})
+
+
+
+
+
+

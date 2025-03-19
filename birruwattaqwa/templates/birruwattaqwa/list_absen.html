@@ -1,36 +1,50 @@
 {% extends 'birruwattaqwa/dashboard_guru.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>          
-    {%block content %}
+{% block content %}
 <h2>Daftar Absensi</h2>
+
+{% if guru_list %}
+<form method="GET" action="{% url 'list_absen' %}">
+    <label for="guru">Pilih Guru:</label>
+    <select name="guru" id="guru">
+        <option value="">-- Semua Guru --</option>
+        {% for guru in guru_list %}
+        <option value="{{ guru.id }}" {% if guru.id|stringformat:"s" == selected_guru %}selected{% endif %}>
+            {{ guru }}
+        </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Filter</button>
+</form>
+{% endif %}
+
 <table border="1">
-    <tr>
-        <th>Nama</th>
-        <th>Waktu</th>
-        <th>Latitude</th>
-        <th>Longitude</th>
-        <th>Status</th>
-    </tr>
-    {% for absensi in absensi_list %}
-    <tr>
-        <td>{{ absensi.guru }}</td>
-        <td>{{ absensi.tanggal }}</td>
-        <td>{{ absensi.latitude }}</td>
-        <td>{{ absensi.status }}</td>
-        <td>{{ absensi.keterangan }}</td>
-    </tr>
-    {% endfor %}
+    <thead>
+        <tr>
+            <th>Nama</th>
+            <th>Waktu</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Status</th>
+            <th>Keterangan</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for absensi in absensi_list %}
+        <tr>
+            <td>{{ absensi.guru}}</td>
+            <td>{{ absensi.tanggal }}</td>
+            <td>{{ absensi.latitude }}</td>
+            <td>{{ absensi.longitude }}</td>
+            <td>{{ absensi.status }}</td>
+            <td>{{ absensi.keterangan }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" style="text-align:center;">Tidak ada data absensi.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
-
 {% endblock %}
-</body>
-</html>
-
