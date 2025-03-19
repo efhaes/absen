@@ -1,0 +1,73 @@
+/* Reset dan Font */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Styling Halaman */
+body {
+    background: #f4f4f4;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Judul */
+h2 {
+    margin-bottom: 20px;
+    color: #680487; /* Ungu tua */
+    margin-top: 20px;
+}
+
+/* Styling Tabel */
+table {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    border-collapse: collapse;
+    background: #f5e1fc; /* Ungu sangat muda */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Header Tabel */
+th {
+    background: #680487; /* Ungu tua */
+    color: white; /* Teks putih untuk kontras */
+    padding: 12px;
+    text-transform: uppercase;
+}
+
+/* Isi Tabel */
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Warna Latar Belakang Baris */
+tr {
+    background-color: #d4a5f0; /* Ungu muda */
+}
+
+/* Warna Latar Belakang Alternatif */
+tr:nth-child(even) {
+    background: #c085e9; /* Variasi ungu */
+}
+
+/* Hover Effect */
+tr:hover {
+    background: #b370d1; /* Warna ungu lebih gelap saat hover */
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+    table {
+        width: 100%;
+    }
+    th, td {
+        padding: 8px;
+        font-size: 14px;
+    }
+}

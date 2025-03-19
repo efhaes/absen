@@ -133,6 +133,23 @@ def view_absensi(request):
 
     return render(request, 'birruwattaqwa/list_absen.html', {'absensi_list': absensi_list})
 
+@login_required
+def dashboard_admin(request):
+    return render(request, 'birruwattaqwa/dashboard_admin.html')
+
+@login_required
+def dashboard_guru(request):
+    return render(request, 'birruwattaqwa/dashboard_guru.html')
+
+@login_required
+def redirect_dashboard(request):
+    if request.user.groups.filter(name='Admin').exists():
+        return redirect('dashboard_admin')
+    elif request.user.groups.filter(name='Guru').exists():
+        return redirect('dashboard_guru')
+    else:
+        return redirect('home')  # Jika role tidak terdaftar
+
 
 def login_guru(request):
     """Halaman Login: Setelah login, diarahkan ke halaman absen"""
@@ -143,7 +160,7 @@ def login_guru(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('absen')
+            return redirect('dashboard')
         else:
             messages.error(request, 'Username atau password salah.')
 
