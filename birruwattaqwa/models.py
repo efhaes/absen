@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
-import uuid
+import uuid   
+from django.db import models
+from django.utils import timezone
 
 class Absensi(models.Model):
     STATUS_CHOICES = [
@@ -56,16 +58,8 @@ class ProfilGuru(models.Model):
     def __str__(self):
         return self.user.get_full_name() if self.user.get_full_name() else self.user.username
 
-class QRCode(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    date = models.DateField(unique=True, default=date.today)
-    code = models.CharField(max_length=255, unique=True)
 
-    def __str__(self):
-        return f"QR Code for {self.date}"
-    
-from django.db import models
-from django.utils import timezone
+
 
 class DailyQRCode(models.Model):
     tanggal = models.DateField(default=timezone.localdate, unique=True)

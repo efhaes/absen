@@ -4,9 +4,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ABSEN</title>
 </head>
 <body>
-    <img src="{{ daily_qr.qrcode.url }}" alt="QR Code {{ daily_qr.tanggal }}">
+    {% block content %}
+    <h2>Scan QR Code untuk Absen</h2>
+    
+    <div id="reader" style="width: 300px;"></div>
+    <div id="result"></div>
+    
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+        let scanned = false;
+    
+        function onScanSuccess(decodedText, decodedResult) {
+            if (!scanned) {
+                scanned = true;
+    
+                // Ambil lokasi
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+    
+                        console.log("📍 Lokasi:", lat, lon);
+                        console.log("✅ QR terbaca:", decodedText);
+    
+                        const urlWithLocation = `${decodedText}?lat=${lat}&lon=${lon}`;
+    
+                        html5QrcodeScanner.clear().then(_ => {
+                            setTimeout(() => {
+                                window.location.href = urlWithLocation;
+                            }, 1000);
+                        }).catch(error => {
+                            console.error('❌ Clear failed:', error);
+                            scanned = false; // reset kalau gagal clear
+                        });
+    
+                    }, function (error) {
+                        alert("⚠️ Gagal ambil lokasi: " + error.message);
+                        scanned = false;
+                    });
+                } else {
+                    alert("❌ Browser tidak mendukung Geolocation.");
+                    scanned = false;
+                }
+            }
+        }
+    
+        const html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+    
+    
+
+    {% endblock %}
 </body>
 </html>

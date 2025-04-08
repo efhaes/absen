@@ -4,7 +4,7 @@ from birruwattaqwa.views import login_guru, logout_guru, absen_guru, home, scan_
 from django.conf.urls.static import static
 from .views import view_absensi
 from .views import dashboard_guru, dashboard_admin,redirect_dashboard,jadwal_guru,jadwal_admin,edit_jadwal,create_user,list_users
-from .views import view_qr_code, generate_daily_qrcode
+from .views import  generate_daily_qrcode, generate_admin_qrcode, scan_qr_view
 urlpatterns = [
     path('', home, name='home'),  # Redirect ke halaman login
     path('login/', login_guru, name='login'),
@@ -21,12 +21,9 @@ urlpatterns = [
     path('jadwal/edit/<int:jadwal_id>/', edit_jadwal, name='edit_jadwal'),
     path('registrasi/', create_user, name='registrasi'),
     path('users/', list_users, name='list_users'),
-    path('qrcode/', view_qr_code, name='view_qr_code'),
-    path('qrcodes/', generate_daily_qrcode, name='generate_daily_qrcode'),
-
-
-
-
+    path('admin_qrcode/', generate_admin_qrcode, name='generate_admin_qrcode'),
+    path('absensi/<str:tanggal>/', generate_daily_qrcode, name='generate_daily_qrcode'),
+    path('scan-qr/', scan_qr_view, name='scan_qr_view')
 ]
 
 if settings.DEBUG:

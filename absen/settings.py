@@ -128,8 +128,8 @@ STATIC_URL = '/static/'
 
 # Lokasi sekolah (latitude, longitude)
 SCHOOL_LOCATION = {
-    "latitude": -6.200000,  # Ganti dengan latitude sekolah
-    "longitude": 106.816666  # Ganti dengan longitude sekolah
+    "latitude": -6.428734,  # Ganti dengan latitude sekolah
+    "longitude": 106.688407  # Ganti dengan longitude sekolah
 }
 
 
