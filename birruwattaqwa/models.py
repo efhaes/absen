@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from datetime import date
 import uuid
 
 class Absensi(models.Model):
@@ -10,7 +10,6 @@ class Absensi(models.Model):
         ('Sakit', 'Sakit'),
         ('Alfa', 'Alfa'),
     ]
-
     guru = models.ForeignKey(User, on_delete=models.CASCADE)  
     tanggal = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
@@ -19,9 +18,10 @@ class Absensi(models.Model):
     tahun = models.IntegerField()
     jam_absensi = models.TimeField(auto_now_add=True)
     lokasi = models.CharField(max_length=255, blank=True, null=True)  
-    qr_code = models.CharField(max_length=255, unique=True, blank=True, null=True)
     latitude = models.FloatField(blank=True, null=True)  # Tambahkan ini
     longitude = models.FloatField(blank=True, null=True)  # Tambahkan ini
+    qrcodes = models.ImageField(upload_to='qr_codes/', blank=True)
+  
 
     def generate_qr_code(self):
         """Generate QR Code unik berdasarkan guru dan tanggal"""
@@ -55,3 +55,21 @@ class ProfilGuru(models.Model):
 
     def __str__(self):
         return self.user.get_full_name() if self.user.get_full_name() else self.user.username
+
+class QRCode(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    date = models.DateField(unique=True, default=date.today)
+    code = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return f"QR Code for {self.date}"
+    
+from django.db import models
+from django.utils import timezone
+
+class DailyQRCode(models.Model):
+    tanggal = models.DateField(default=timezone.localdate, unique=True)
+    qrcode = models.ImageField(upload_to='qr_codes/')
+    
+    def __str__(self):
+        return f"QR Code {self.tanggal}"

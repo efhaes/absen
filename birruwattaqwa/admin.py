@@ -1,5 +1,5 @@
 from django.contrib import admin
-from birruwattaqwa.models import Absensi, JadwalGuru  # Tambahkan JadwalGuru
+from birruwattaqwa.models import Absensi,JadwalGuru,DailyQRCode # Tambahkan JadwalGuru
 
 class AbsensiAdmin(admin.ModelAdmin):
     list_display = ('guru', 'tanggal', 'status', 'keterangan', 'bulan', 'tahun', 'jam_absensi', 'lokasi')
@@ -16,4 +16,5 @@ class JadwalGuruAdmin(admin.ModelAdmin):
 # Daftarkan model ke Django Admin
 admin.site.register(Absensi, AbsensiAdmin)
 admin.site.register(JadwalGuru, JadwalGuruAdmin)  # Ini penting!
+admin.site.register(DailyQRCode)
 

@@ -15,7 +15,11 @@ from django.conf import settings
 from .forms import AbsensiForm
 from .models import ProfilGuru
 from django.shortcuts import get_object_or_404
+from .models import QRCode
+from datetime import date
 import math
+import qrcode
+from django.http import HttpResponse
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -237,8 +241,6 @@ def edit_jadwal(request, jadwal_id):
     return render(request, 'birruwattaqwa/edit_jadwal.html', {'form': form})
 
 
-
-
 @login_required
 def jadwal_guru(request):
     """Guru melihat jadwal yang sudah diposting oleh Admin."""
@@ -280,16 +282,92 @@ def create_user(request):
     return render(request, 'registrasi/registrasi.html', {'form': form})
 
 
-
-
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  # Hanya Admin bisa akses
 def list_users(request):
     users = User.objects.filter(groups__name__in=['Guru', 'Admin'])  # Ambil user dengan role Guru/Admin
     return render(request, 'registrasi/list_users.html', {'users': users})
 
+def scan_qr_code(request):
+    if request.method == 'POST':
+        scanned_code = request.POST.get('scanned_code')
+        today = date.today()
+        
+        # Cek apakah QR code valid untuk hari ini
+        qr_code = get_object_or_404(QRCode, date=today, code=scanned_code)
+        
+        # Simpan data absensi
+        absensi = Absensi(
+            guru=request.user,
+            tanggal=today,
+            status='Hadir',  # Atau status lainnya
+            bulan=today.strftime('%B'),  # Simpan nama bulan
+            tahun=today.year,
+            qr_code=qr_code,
+            latitude=request.POST.get('latitude'),
+            longitude=request.POST.get('longitude'),
+        )
+        absensi.save()
+        
+        return JsonResponse({'status': 'success', 'message': 'Absensi berhasil'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+def generate_qr_code_image(code):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(code)
+    qr.make(fit=True)
+    img = qr.make_image(fill='black', back_color='white')
+    return img
+
+def view_qr_code(request):
+    print("View qr_code dipanggil!")  # Debugging
+    today = date.today()
+    print(f"Mencari QR code untuk tanggal: {today}")  # Debugging
+    
+    try:
+        qr_code = QRCode.objects.get(date=today)
+        print(f"QR code ditemukan: {qr_code.code}")  # Debugging
+    except QRCode.DoesNotExist:
+        print("QR code tidak ditemukan!")  # Debugging
+        return HttpResponse("QR Code untuk hari ini tidak ditemukan.", status=404)
+    
+    # Generate gambar QR code
+    img = qrcode.make(qr_code.code)
+    print("Gambar QR code di-generate!")  # Debugging
+    
+    # Simpan gambar ke file sementara
+    img.save("temp_qr_code.png")
+    print("Gambar QR code disimpan ke file!")  # Debugging
+    
+    # Kembalikan gambar sebagai respons HTTP
+    response = HttpResponse(content_type="image/png")
+    img.save(response, "PNG")
+    print("Respons HTTP dikirim!")  # Debugging
+    return response
 
 
+# views.py
+import qrcode
+from io import BytesIO
+from django.core.files.base import ContentFile
+from django.shortcuts import render
+from django.utils import timezone
+from .models import DailyQRCode
 
-
-
+def generate_daily_qrcode(request):
+    today = timezone.localdate()
+    daily_qr, created = DailyQRCode.objects.get_or_create(tanggal=today)
+    if created or not daily_qr.qrcode:
+        # Gunakan URL lokal atau URL absensi yang valid
+        url = request.build_absolute_uri(f"/absensi/{today}/")
+        qr_img = qrcode.make(url)
+        buffer = BytesIO()
+        qr_img.save(buffer, format='PNG')
+        daily_qr.qrcode.save(f'qr_{today}.png', ContentFile(buffer.getvalue()))
+        daily_qr.save()
+    return render(request, 'qrcodes.html', {'daily_qr': daily_qr})

@@ -1,0 +1,96 @@
+/* Reset dan Font */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Styling Halaman */
+body {
+    background: #f4f7fc;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Container */
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Judul */
+h2 {
+    color: #4a148c; /* Ungu tua */
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+/* Tabel */
+table {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+/* Header Tabel */
+th {
+    background: #6a1b9a;
+    color: white;
+    padding: 12px;
+    text-transform: uppercase;
+    font-size: 16px;
+}
+
+/* Isi Tabel */
+td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Warna Latar Belakang Baris */
+tr:nth-child(even) {
+    background: #f3e5f5; /* Ungu muda */
+}
+
+tr:nth-child(odd) {
+    background: #e1bee7; /* Ungu lebih terang */
+}
+
+/* Hover Effect */
+tr:hover {
+    background: #d1c4e9; /* Lebih gelap saat hover */
+    transition: 0.3s;
+}
+
+/* Pesan Jika Tidak Ada Jadwal */
+td[colspan="4"] {
+    text-align: center;
+    font-style: italic;
+    color: #757575;
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+    table {
+        width: 100%;
+    }
+    th, td {
+        padding: 10px;
+        font-size: 14px;
+    }
+}

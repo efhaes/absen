@@ -1,0 +1,74 @@
+/* Reset dan Font */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Styling Halaman */
+body {
+    background: #f4f4f4;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Container */
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Judul */
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Styling Tabel */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Header Tabel */
+th {
+    background: #673AB7; /* Ungu elegan */
+    color: white;
+    padding: 12px;
+    text-transform: uppercase;
+}
+
+/* Isi Tabel */
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Warna Latar Belakang Alternatif */
+tr:nth-child(even) {
+    background: #f3e5f5; /* Ungu muda */
+}
+
+/* Hover Effect */
+tr:hover {
+    background: #D1C4E9; /* Warna ungu pastel */
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+    table {
+        width: 100%;
+    }
+    th, td {
+        padding: 8px;
+        font-size: 14px;
+    }
+}

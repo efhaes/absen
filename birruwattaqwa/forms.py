@@ -14,7 +14,6 @@ class AbsensiForm(forms.ModelForm):
         
 class JadwalGuruForm(forms.ModelForm):
     guru = forms.ModelChoiceField(queryset=User.objects.filter(groups__name='Guru'))  # Hanya pilih guru
-
     class Meta:
         model = JadwalGuru
         fields = ['guru', 'hari', 'jam_mulai', 'jam_selesai', 'mata_pelajaran']
@@ -26,17 +25,14 @@ class AdminCreateUserForm(UserCreationForm):
         ('Guru', 'Guru'),
         ('Admin', 'Admin'),
     )
-    
     username = forms.CharField(label="Nama Lengkap", max_length=150, required=True)
     email = forms.EmailField(required=True)
     alamat = forms.CharField(label="Alamat", widget=forms.Textarea(attrs={'rows': 2}), required=True)
     jabatan = forms.CharField(label="Jabatan", max_length=100, required=True)
     role = forms.ChoiceField(choices=ROLE_CHOICES, required=True)
-
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2', 'role']
-
 
     def save(self, commit=True):
         user = super().save(commit=False)

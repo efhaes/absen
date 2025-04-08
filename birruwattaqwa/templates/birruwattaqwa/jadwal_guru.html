@@ -1,28 +1,45 @@
-<!-- Template: jadwal_guru.html -->
-{% block content %}
-<h2>Jadwal Mengajar Anda</h2>
-<table border="1">
-    <thead>
-        <tr>
-            <th>Hari</th>
-            <th>Jam Mulai</th>
-            <th>Jam Selesai</th>
-            <th>Mata Pelajaran</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for jadwal in jadwal_guru %}
-        <tr>
-            <td>{{ jadwal.hari }}</td>
-            <td>{{ jadwal.jam_mulai }}</td>
-            <td>{{ jadwal.jam_selesai }}</td>
-            <td>{{ jadwal.mata_pelajaran }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="4">Belum ada jadwal.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Mengajar Guru</title>
+    <link rel="stylesheet" href="{% static 'css/jadwal_guru.css' %}"><!-- Pastikan file CSS ada -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        <h2>Jadwal Mengajar Anda</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Hari</th>
+                    <th>Jam Mulai</th>
+                    <th>Jam Selesai</th>
+                    <th>Mata Pelajaran</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Looping Data Jadwal -->
+                {% for jadwal in jadwal_guru %}
+                <tr>
+                    <td>{{ jadwal.guru }}</td>
+                    <td>{{ jadwal.hari }}</td>
+                    <td>{{ jadwal.jam_mulai }}</td>
+                    <td>{{ jadwal.jam_selesai }}</td>
+                    <td>{{ jadwal.mata_pelajaran }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Belum ada jadwal.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

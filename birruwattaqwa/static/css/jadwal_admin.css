@@ -1,0 +1,127 @@
+/* Reset dan Font */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Styling Halaman */
+body {
+    background: #f4f7fc;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Judul */
+h2, h3 {
+    color: #4a148c; /* Ungu tua */
+    margin-bottom: 15px;
+}
+
+/* Form Tambah Jadwal */
+form {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: auto;
+    text-align: left;
+}
+
+form label {
+    font-weight: bold;
+    color: #333;
+}
+
+form input, form select, form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background: #4a148c; /* Ungu */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #6a1b9a;
+}
+
+/* Tabel */
+table {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+/* Header Tabel */
+th {
+    background: #6a1b9a;
+    color: white;
+    padding: 12px;
+    text-transform: uppercase;
+}
+
+/* Isi Tabel */
+td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Warna Latar Belakang Baris */
+tr:nth-child(even) {
+    background: #f3e5f5; /* Ungu muda */
+}
+
+tr:nth-child(odd) {
+    background: #e1bee7; /* Ungu lebih terang */
+}
+
+/* Hover Effect */
+tr:hover {
+    background: #d1c4e9; /* Lebih gelap saat hover */
+}
+
+/* Tombol Edit */
+.btn-warning {
+    background: #ff9800;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-warning:hover {
+    background: #e68900;
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+    table {
+        width: 100%;
+    }
+    th, td {
+        padding: 10px;
+        font-size: 14px;
+    }
+    form {
+        max-width: 100%;
+    }
+}
