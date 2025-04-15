@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Daftar Absensi</title>
     <link rel="stylesheet" href="{% static 'css/list_absen.css' %}">
-
+    <link rel="stylesheet" href="{% static 'css/S_sidebar.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -28,11 +28,6 @@
 
     <!-- Konten Utama -->
     <div class="content">
-        <h1>Selamat Datang, {{ request.user.first_name }}</h1>
-        <div class="paragraf">
-            Gunakan menu di sebelah kiri untuk mengelola absensi, jadwal guru, dan pengajuan izin.
-        </div>
-
         <div class="rekap-container">
             <h2>📋 Daftar Absensi</h2>
 

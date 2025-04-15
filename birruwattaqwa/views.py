@@ -22,6 +22,12 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 import qrcode
 import math
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Count
+from django.shortcuts import render
+from django.utils.timezone import now
+from django.contrib.auth.models import User
 
 
 from django.http import HttpResponse
@@ -219,9 +225,62 @@ def view_absensi(request):
     })
 
 
+from django.shortcuts import render
+from django.utils import timezone
+from datetime import timedelta
+from .models import Absensi, User  # Pastikan model sudah sesuai
+
 @login_required
 def dashboard_admin(request):
-    return render(request, 'birruwattaqwa/admin/dashboard_admin.html')
+    # Dapatkan hari ini
+    today = timezone.now().date()
+    seven_days_ago = today - timedelta(days=6)
+
+    # Filter absensi 7 hari terakhir
+    absensi_minggu_ini = Absensi.objects.filter(tanggal__range=[seven_days_ago, today])
+
+    # Buat dictionary: tanggal -> jumlah status
+    kehadiran_per_hari = {}
+    for i in range(7):
+        hari = seven_days_ago + timedelta(days=i)
+        kehadiran_per_hari[hari.strftime('%d-%m')] = {'Hadir': 0, 'Izin': 0, 'Sakit': 0, 'Alfa': 0}
+
+    for a in absensi_minggu_ini:
+        key = a.tanggal.strftime('%d-%m')
+        if a.status in kehadiran_per_hari[key]:
+            kehadiran_per_hari[key][a.status] += 1
+
+    # Ambil data untuk grafik
+    labels = list(kehadiran_per_hari.keys())
+    hadir_data = [kehadiran_per_hari[tgl]['Hadir'] for tgl in labels]
+    izin_data = [kehadiran_per_hari[tgl]['Izin'] for tgl in labels]
+    sakit_data = [kehadiran_per_hari[tgl]['Sakit'] for tgl in labels]
+    alfa_data = [kehadiran_per_hari[tgl]['Alfa'] for tgl in labels]
+
+    # Ambil total jumlah guru dan absensi hari ini
+    total_guru = User.objects.filter(groups__name='Guru').count()
+    total_hadir = Absensi.objects.filter(tanggal=today, status='Hadir').count()
+    total_izin = Absensi.objects.filter(tanggal=today, status='Izin').count()
+    total_sakit = Absensi.objects.filter(tanggal=today, status='Sakit').count()
+    total_alfa = Absensi.objects.filter(tanggal=today, status='Alfa').count()
+
+    # Konteks yang akan diteruskan ke template
+    context = {
+        # Data untuk grafik
+        'labels': labels,
+        'hadir_data': hadir_data,
+        'izin_data': izin_data,
+        'sakit_data': sakit_data,
+        'alfa_data': alfa_data,
+        # Data untuk statistik kecil
+        'total_guru': total_guru,
+        'total_izin': total_izin,
+        'total_sakit': total_sakit,
+        'total_alfa': total_alfa,
+        'total_hadir' : total_hadir
+    }
+
+    return render(request, 'birruwattaqwa/admin/dashboard_admin.html', context)
 
 @login_required
 def dashboard_guru(request):
@@ -401,11 +460,6 @@ def generate_daily_qrcode(request, tanggal):
     return HttpResponse("❌ Hanya guru yang bisa absen lewat QR code.")
 
 
-
-
-
-
-
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  # Cuma admin bisa akses
 def generate_admin_qrcode(request):
@@ -428,3 +482,12 @@ def scan_qr_view(request):
 
 def simple_view(request):
     return HttpResponse("Hello Ngrok!")
+
+
+
+
+
+
+
+
+

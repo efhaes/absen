@@ -1,4 +1,3 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="id">
@@ -6,43 +5,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="{% static 'css/qradmin.css' %}">
     <link rel="stylesheet" href="{% static 'css/D_guru.css' %}">
-    <link rel="stylesheet" href="{% static 'css/list.css' %}">
-    <link rel="stylesheet" href="{% static 'css/list_users.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="dashboard">
         <!-- Sidebar -->
         <div class="sidebar">
-            <!-- Profil Admin -->
             <div class="profile">
-                <a href="url 'edit_profil'">
-                    <img src="/media/admin_profile.png" alt="Foto Admin" class="clickable-profile">
-                </a>
+                <img src="/media/logo.jpeg" alt="Foto Admin">
                 <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-                <center><p>Admin</p></center>
+                <p><a href="{% url 'generate_admin_qrcode' %}"></a>Admin</p>
             </div>
-
-            <!-- Navigasi -->
             <ul>
-                <li><a href="{% url 'generate_admin_qrcode' %}" class="btn btn-primary">📷Buka QR Code</a></li>
-                <li><a href="{% url 'list_absen' %}" class="btn btn-success">Lihat Rekap Absensi</a></li>
-                <li><a href="{% url 'jadwal_admin' %}" class="btn btn-info">Lihat dan buat Jadwal Guru</a></li>
-                <li><a href="{% url 'registrasi' %}" class="btn btn-success">buat akun admin dan guru</a></li>
-                <li><a href="{% url 'list_users' %}" class="btn btn-success">Lihat Semua Akun</a></li>
-                
-             
+                <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
+                <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
+                <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
+                <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
+                <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
             </ul>
         </div>
+
+        <!-- Main Content -->
         <div class="content">
-            <h1>Selamat Datang, {{ request.user.first_name }}</h1>
-            <div class="paragraf">
-                Gunakan menu di sebelah kiri untuk mengelola absensi, jadwal guru, dan pengajuan izin.
+            <!-- Statistik Kecil -->
+            <div class="stats">
+                <div class="stat-box">
+                    <h3>{{ total_guru }}</h3>
+                    <p>Guru Terdaftar</p>
+                </div>
+                <div class="stat-box">
+                    <h3>{{ total_hadir}}</h3>
+                    <p>Absen Hari Ini</p>
+                </div>
+                <div class="stat-box">
+                    <h3>{{ total_izin }}</h3>
+                    <p>Pengajuan Izin</p>
+                </div>
+                <div class="stat-box">
+                    <h3>{{ total_sakit }}</h3>
+                    <p>Pengajuan sakit</p>
+                </div>
+                <div class="stat-box">
+                    <h3>{{ total_alfa}}</h3>
+                    <p>Pengajuan alfa</p>
+                </div>
             </div>
-            {% block content %}
-            {% endblock %}
+
+            <!-- Grafik Absensi -->
+            <div class="chart-container" style="margin-top: 40px;">
+                <h3 style="text-align: center;">📊 Statistik Kehadiran Mingguan</h3>
+                <canvas id="absensiChart" height="100"></canvas>
+            </div>
         </div>
     </div>
+    <!-- Script Chart.js -->
+    <script>
+        const ctx = document.getElementById('absensiChart').getContext('2d');
+        const absensiChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [
+                    {
+                        label: 'Hadir',
+                        data: {{ hadir_data|safe }},
+                        backgroundColor: '#4caf50'
+                    },
+                    {
+                        label: 'Izin',
+                        data: {{ izin_data|safe }},
+                        backgroundColor: '#ff9800'
+                    },
+                    {
+                        label: 'Sakit',
+                        data: {{ sakit_data|safe }},
+                        backgroundColor: '#03a9f4'
+                    },
+                    {
+                        label: 'Alfa',
+                        data: {{ alfa_data|safe }},
+                        backgroundColor: '#f44336'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

@@ -5,9 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Jadwal Guru</title>
+    <link rel="stylesheet" href="{% static 'css/sidebar_qr.css' %}">
     <link rel="stylesheet" href="{% static 'css/jadwal_admin.css' %}">
+
 </head>
 <body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="profile">
+                <img src="/media/logo.jpeg" alt="Foto Admin">
+                <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+                <p>Admin</p>
+            </div>
+            <ul>
+                <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
+                <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
+                <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
+                <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
+                <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
+            </ul>
+        </div>
     <div class="container">
         <h2>Kelola Jadwal Guru</h2>
 

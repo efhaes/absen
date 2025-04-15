@@ -1,24 +1,50 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scan QR untuk Absen</title>
     <link rel="stylesheet" href="{% static 'css/qradmin.css' %}">
-    <link rel="stylesheet" href="{% static 'css/D_Guru.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    
 
-    <div class="container">
-        <h1 class="fade-in">📷 QR Code Absensi</h1>
-        <p class="fade-in-delay">Silakan scan QR code di bawah ini untuk melakukan absensi.</p>
-        <div class="qr-wrapper float-in">
-            <img src="{{ daily_qr.qrcode.url }}" alt="QR Code {{ daily_qr.tanggal }}">
+<body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="profile">
+                <a href="{% url 'dashboard_admin' %}">
+                    <img src="/media/logo.jpeg" alt="Foto Admin">
+                </a>
+                <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+                <p >Admin</p>
+            </div>
+            <ul>
+                <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
+                <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
+                <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
+                <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
+                <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
+            </ul>
         </div>
-        <p class="tanggal">📅 {{ daily_qr.tanggal|date:"l, d M Y" }}</p>
+        <div class="main-content">
+            <div class="container">
+                
+                    <h1 class="fade-in">📷 QR Code Absensi</h1>
+                    <h4 class="fade-in-delay" style="color: black ; text-align: center;" > Selamat Pagi!! 🌞 <br>Silakan scan QR code di
+                        bawah
+                        ini
+                        untuk melakukan absensi.</h4>
+                    <div class="qr-wrapper float-in" style="display: flex; justify-content: center;" >
+                        <img src="{{ daily_qr.qrcode.url }}" alt="QR Code {{ daily_qr.tanggal }}">
+                    </div>
+                    <p class="tanggal" style="text-align: center;">📅 {{ daily_qr.tanggal|date:"l, d M Y" }}</p>
+                
+            </div>
+        </div>
     </div>
+    
 </body>
+
 </html>
