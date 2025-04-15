@@ -1,21 +1,24 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Jadwal Guru</title>
-    <link rel="stylesheet" href="{% static 'css/sidebar_qr.css' %}">
+    <link rel="stylesheet" href="{% static 'css/D_sidebar.css' %}">
     <link rel="stylesheet" href="{% static 'css/jadwal_admin.css' %}">
 
 </head>
+
 <body>
     <div class="dashboard">
+        <!-- Sidebar -->
         <div class="sidebar">
             <div class="profile">
                 <img src="/media/logo.jpeg" alt="Foto Admin">
                 <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-                <p>Admin</p>
+                <h4><a href="{% url 'generate_admin_qrcode' %}"></a>Admin</h4>
             </div>
             <ul>
                 <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
@@ -25,49 +28,53 @@
                 <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
             </ul>
         </div>
-    <div class="container">
-        <h2>Kelola Jadwal Guru</h2>
 
-        <!-- Form Tambah Jadwal -->
-        <h3>Tambah Jadwal Guru</h3>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}  <!-- Form otomatis Django -->
-            <button type="submit" class="btn btn-success">Simpan</button>
-        
-        </form>
-        <br>
-        <br>
-        <hr>
-        <br>
-        <!-- Daftar Jadwal -->
-        <h3>Daftar Jadwal Guru</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Guru</th>
-                    <th>Hari</th>
-                    <th>Jam Mulai</th>
-                    <th>Jam Selesai</th>
-                    <th>Mata Pelajaran</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for jadwal in jadwal_list %}
-                <tr>
-                    <td>{{ jadwal.guru }}</td>
-                    <td>{{ jadwal.hari }}</td>
-                    <td>{{ jadwal.jam_mulai }}</td>
-                    <td>{{ jadwal.jam_selesai }}</td>
-                    <td>{{ jadwal.mata_pelajaran }}</td>
-                    <td>
-                        <a href="{% url 'edit_jadwal' jadwal.id %}" class="btn btn-warning">Edit</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+
+
+        <div class="container">
+            <h2>Kelola Jadwal Guru</h2>
+
+            <!-- Form Tambah Jadwal -->
+            <h3>Tambah Jadwal Guru</h3>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }} <!-- Form otomatis Django -->
+                <button type="submit" class="btn btn-success">Simpan</button>
+
+            </form>
+            <br>
+            <br>
+            <hr>
+            <br>
+            <!-- Daftar Jadwal -->
+            <h3>Daftar Jadwal Guru</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Guru</th>
+                        <th>Hari</th>
+                        <th>Jam Mulai</th>
+                        <th>Jam Selesai</th>
+                        <th>Mata Pelajaran</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for jadwal in jadwal_list %}
+                    <tr>
+                        <td>{{ jadwal.guru }}</td>
+                        <td>{{ jadwal.hari }}</td>
+                        <td>{{ jadwal.jam_mulai }}</td>
+                        <td>{{ jadwal.jam_selesai }}</td>
+                        <td>{{ jadwal.mata_pelajaran }}</td>
+                        <td>
+                            <a href="{% url 'edit_jadwal' jadwal.id %}" class="btn btn-warning">Edit</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 </body>
+
 </html>

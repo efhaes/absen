@@ -5,32 +5,32 @@
     <meta charset="UTF-8">
     <title>Daftar Absensi</title>
     <link rel="stylesheet" href="{% static 'css/list_absen.css' %}">
-    <link rel="stylesheet" href="{% static 'css/S_sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/D_sidebar.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="profile">
-            <img src="/media/admin_profile.png" alt="Foto Admin">
-            <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-            <p>Admin</p>
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="profile">
+                <a href="{% url 'dashboard_admin' %}">
+                    <img src="/media/logo.jpeg" alt="Foto Admin">
+                </a>
+                <h4><a href="{% url 'generate_admin_qrcode' %}"></a>Admin</h4>
+            </div>
+            <ul>
+                <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
+                <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
+                <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
+                <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
+                <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
+            </ul>
         </div>
-        <ul>
-            <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
-            <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
-            <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
-            <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
-            <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
-        </ul>
-    </div>
-
     <!-- Konten Utama -->
     <div class="content">
         <div class="rekap-container">
             <h2>📋 Daftar Absensi</h2>
-
             {% if guru_list %}
             <div class="filter-bar">
                 <form method="GET" action="{% url 'list_absen' %}">

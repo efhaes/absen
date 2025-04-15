@@ -1,75 +1,95 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/U_sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/list_users.css' %}">
     <title>Daftar Pengguna</title>
 </head>
+
 <body>
-    <div class="container">
-        <h2>📋 Daftar Pengguna</h2>
-
-        <div class="filter-section">
-            <input type="text" id="searchInput" placeholder="🔍 Cari nama, email...">
-            <select id="roleFilter">
-                <option value="">Semua Role</option>
-                <option value="Guru">Guru</option>
-                <option value="Admin">Admin</option>
-            </select>
-            <select id="jabatanFilter">
-                <option value="">Semua Jabatan</option>
-                {% for user in users %}
-                    {% if user.profilguru.jabatan %}
-                        <option value="{{ user.profilguru.jabatan }}">{{ user.profilguru.jabatan }}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="profile">
+                <a href="{% url 'dashboard_admin' %}">
+                    <img src="/media/logo.jpeg" alt="Foto Admin">
+                </a>
+                <h4><a href="{% url 'generate_admin_qrcode' %}">Admin</a></h4>
+            </div>
+            <ul>
+                <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
+                <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
+                <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
+                <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
+                <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
+            </ul>
         </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Nama Lengkap</th>
-                    <th>Email</th>
-                    <th>Alamat</th>
-                    <th>Jabatan</th>
-                    <th>Role</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.profilguru.alamat }}</td>
-                    <td>{{ user.profilguru.jabatan }}</td>
-                    <td>
-                        {% if user.groups.all %}
-                            {{ user.groups.first.name }}
-                        {% else %}
-                            Tidak ada grup
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5">Tidak ada pengguna yang terdaftar.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 
+        <div class="container">
+            <h2>📋 Daftar Pengguna</h2>
+
+            <div class="filter-section">
+                <input type="text" id="searchInput" placeholder="🔍 Cari nama, email..." oninput="filterTable()">
+                <select id="roleFilter" onchange="filterTable()">
+                    <option value="">Semua Role</option>
+                    <option value="Guru">Guru</option>
+                    <option value="Admin">Admin</option>
+                </select>
+                <select id="jabatanFilter" onchange="filterTable()">
+                    <option value="">Semua Jabatan</option>
+                    {% for user in users %}
+                    {% if user.profilguru.jabatan and user.profilguru.jabatan not in seen_jabatan %}
+                    <option value="{{ user.profilguru.jabatan }}">{{ user.profilguru.jabatan }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nama Lengkap</th>
+                        <th>Email</th>
+                        <th>Alamat</th>
+                        <th>Jabatan</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.profilguru.alamat }}</td>
+                        <td>{{ user.profilguru.jabatan }}</td>
+                        <td>
+                            {% if user.groups.all %}
+                            {{ user.groups.first.name }}
+                            {% else %}
+                            Tidak ada grup
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">Tidak ada pengguna yang terdaftar.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     <script>
-        const searchInput = document.getElementById("searchInput");
-        const roleFilter = document.getElementById("roleFilter");
-        const jabatanFilter = document.getElementById("jabatanFilter");
+        // Store unique jabatan values to avoid duplicates in filter
+        const seen_jabatan = {};
 
         function filterTable() {
-            const search = searchInput.value.toLowerCase();
-            const role = roleFilter.value;
-            const jabatan = jabatanFilter.value;
+            const search = document.getElementById("searchInput").value.toLowerCase();
+            const role = document.getElementById("roleFilter").value;
+            const jabatan = document.getElementById("jabatanFilter").value;
 
             const rows = document.querySelectorAll("tbody tr");
             rows.forEach(row => {
@@ -82,17 +102,11 @@
                 const matchRole = role === "" || rowRole.includes(role);
                 const matchJabatan = jabatan === "" || rowJabatan.includes(jabatan);
 
-                if (matchSearch && matchRole && matchJabatan) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
+                row.style.display = (matchSearch && matchRole && matchJabatan) ? "" : "none";
             });
         }
-
-        searchInput.addEventListener("input", filterTable);
-        roleFilter.addEventListener("change", filterTable);
-        jabatanFilter.addEventListener("change", filterTable);
     </script>
+
 </body>
+
 </html>

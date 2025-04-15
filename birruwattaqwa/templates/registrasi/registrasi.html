@@ -1,19 +1,45 @@
-
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block extra_head %}
-<!-- Tambahkan ini kalau dashboard_admin.html punya block untuk extra head -->
-<link rel="stylesheet" href="{% static 'css/registrasi.css' %}">
-{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrasi Akun Guru/Admin</title>
+    <link rel="stylesheet" href="{% static 'css/registrasi.css' %}">
+    <link rel="stylesheet" href="{% static 'css/D_sidebar.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+</head>
 
-{% block content %}
-<div class="form-container">
-    <h2>Buat Akun Guru/Admin</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Buat Akun</button>
-    </form>
-</div>
-{% endblock %}
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="profile">
+                <img src="/media/logo.jpeg" alt="Foto Admin">
+                <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+                <h4><a href="{% url 'generate_admin_qrcode' %}"></a>Admin</h4>
+            </div>
+            <ul>
+                <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
+                <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
+                <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
+                <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
+                <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
+            </ul>
+        </div>
 
+        <div class="form-container">
+            <div class="form-card">
+                <h2 class="form-title">Buat Akun Guru/Admin</h2>
+                <form method="POST" class="form-content">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="submit-btn">Buat Akun</button>
+                </form>
+            </div>
+        </div>
+
+</body>
+
+</html>

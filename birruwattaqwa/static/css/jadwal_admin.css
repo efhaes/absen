@@ -124,4 +124,19 @@ tr:hover {
     form {
         max-width: 100%;
     }
+    .container {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        border-radius: 0;
+    }
+}
+.container {
+    margin-left: 8000px; /* sama dengan atau lebih besar dari lebar sidebar */
+    padding: 30px;
 }

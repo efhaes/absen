@@ -17,8 +17,7 @@
                 <a href="{% url 'dashboard_admin' %}">
                     <img src="/media/logo.jpeg" alt="Foto Admin">
                 </a>
-                <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-                <p >Admin</p>
+                <h4><a href="{% url 'generate_admin_qrcode' %}"></a>Admin</h4>
             </div>
             <ul>
                 <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
@@ -29,18 +28,13 @@
             </ul>
         </div>
         <div class="main-content">
-            <div class="container">
-                
-                    <h1 class="fade-in">📷 QR Code Absensi</h1>
-                    <h4 class="fade-in-delay" style="color: black ; text-align: center;" > Selamat Pagi!! 🌞 <br>Silakan scan QR code di
-                        bawah
-                        ini
-                        untuk melakukan absensi.</h4>
-                    <div class="qr-wrapper float-in" style="display: flex; justify-content: center;" >
-                        <img src="{{ daily_qr.qrcode.url }}" alt="QR Code {{ daily_qr.tanggal }}">
-                    </div>
-                    <p class="tanggal" style="text-align: center;">📅 {{ daily_qr.tanggal|date:"l, d M Y" }}</p>
-                
+            <div class="centered-content">
+                <h1>📷 QR Code Absensi</h1>
+                <h4>Selamat Pagi!! 🌞<br>Silakan scan QR code di bawah ini untuk melakukan absensi.</h4>
+                <div class="qr-wrapper">
+                    <img src="{{ daily_qr.qrcode.url }}" alt="QR Code {{ daily_qr.tanggal }}">
+                </div>
+                <p class="tanggal">📅 {{ daily_qr.tanggal|date:"l, d M Y" }}</p>
             </div>
         </div>
     </div>
