@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
-import uuid   
+import uuid
 from django.db import models
 from django.utils import timezone
 
@@ -12,7 +12,7 @@ class Absensi(models.Model):
         ('Sakit', 'Sakit'),
         ('Alfa', 'Alfa'),
     ]
-    guru = models.ForeignKey(User, on_delete=models.CASCADE)  
+    guru = models.ForeignKey(User, on_delete=models.CASCADE)
     tanggal = models.DateField(auto_now_add=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
     keterangan = models.TextField(blank=True, null=True)  # Keterangan umum

@@ -1,31 +1,48 @@
+/* File: D_guru.css */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .dashboard {
     display: flex;
     height: 100vh;
     background: #f4f4f4;
+    overflow: hidden;
 }
 
 .sidebar {
     width: 250px;
     background: rgb(104, 4, 135);
     color: white;
+    display: flex;
+    flex-direction: column;
     padding: 20px;
-    height: 100%;
+    height: 100vh;
+    position: fixed;
+    overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #c184f9;
+    border-radius: 10px;
 }
 
 .sidebar ul {
     list-style: none;
     padding: 0;
+    margin-top: 20px;
+    flex-grow: 1;
 }
 
 .sidebar ul li {
-    margin: 15px 0;
+    margin-bottom: 10px;
 }
 
 .sidebar ul li a {
@@ -33,22 +50,22 @@
     text-decoration: none;
     display: block;
     padding: 12px;
-    transition: 0.3s;
-    font-size: 16px;
+    border-radius: 6px;
+    transition: background 0.3s, transform 0.2s;
+    font-size: 15px;
 }
 
 .sidebar ul li a:hover {
-    color: #991abc;
+    background: #991abc;
+    transform: translateX(5px);
 }
 
-/* Profil Guru */
+/* Profil Admin */
 .profile {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Menjadikan foto dan teks sejajar di tengah */
-    border-radius: 10px;
-    width: 100%;
-    max-width: 400px; /* Menyesuaikan ukuran */
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .clickable-profile {
@@ -57,6 +74,7 @@
     border-radius: 50%;
     cursor: pointer;
     transition: transform 0.3s ease;
+    object-fit: cover;
 }
 
 .clickable-profile:hover {
@@ -66,10 +84,16 @@
 /* Konten Utama */
 .content {
     flex: 1;
+    margin-left: 250px;
     padding: 40px;
+    overflow-y: auto;
+    height: 100vh;
 }
-.paragraf{
+
+.paragraf {
     color: #333;
+    font-size: 16px;
+    margin-top: 10px;
 }
 
 h1 {
@@ -78,6 +102,7 @@ h1 {
 }
 
 p {
-    font-size: 16px;
-    color: white;
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
 }

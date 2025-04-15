@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-f%xp1rk5gsf80_r-gxp=(jtcs^o3m*u-bnkws4huc(1z(!f(^h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
@@ -128,8 +129,8 @@ STATIC_URL = '/static/'
 
 # Lokasi sekolah (latitude, longitude)
 SCHOOL_LOCATION = {
-    "latitude": -6.428734,  # Ganti dengan latitude sekolah
-    "longitude": 106.688407  # Ganti dengan longitude sekolah
+    "latitude": -6.347026500806624,  # Ganti dengan latitude sekolah
+    "longitude": 106.69148695767142  # Ganti dengan longitude sekolah
 }
 
 

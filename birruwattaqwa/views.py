@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
 from .forms import AdminCreateUserForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
@@ -16,20 +17,25 @@ from .forms import AbsensiForm
 from .models import ProfilGuru
 from django.shortcuts import get_object_or_404
 from datetime import date
+import datetime
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment
 import qrcode
 import math
+
 
 from django.http import HttpResponse
 
 
+lokasi_qr = {"lat": -6.347026500806624, "lon": 106.69148695767142, "radius": 5}
+
 def haversine(lat1, lon1, lat2, lon2):
-    """Menghitung jarak antara dua titik koordinat dalam meter."""
-    R = 6371  # Radius bumi dalam km
+    R = 6371  # km
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
-    a = math.sin(dlat/2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2) ** 2
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-    return R * c * 1000  # Konversi ke meter
+    a = math.sin(dlat/2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c * 1000  # meter
 
 @login_required
 def absen_guru(request):
@@ -109,7 +115,7 @@ def absen_guru(request):
             else:
                 error_message = "Lokasi tidak terdeteksi. Pastikan GPS aktif."
 
-    return render(request, 'birruwattaqwa/absent.html', {
+    return render(request, 'birruwattaqwa/guru/absent.html', {
         'qr_code_value': qr_code_value,
         'error_message': error_message,
         'form': form,
@@ -139,31 +145,87 @@ from django.contrib.auth.models import User  # Import model User
 @login_required
 def view_absensi(request):
     user = request.user
-    guru_filter = request.GET.get('guru', '')  # Ambil nilai filter dari URL
+    guru_filter = request.GET.get('guru', '')
+    search_query = request.GET.get('search', '')
 
     if user.groups.filter(name='Admin').exists():
-        absensi_list = Absensi.objects.all()  # Admin melihat semua absensi
-        guru_list = User.objects.filter(groups__name='Guru')  # Ambil daftar guru
-        if guru_filter:  # Jika admin memilih guru tertentu
-            absensi_list = absensi_list.filter(guru__id=guru_filter)
-    else:
-        absensi_list = Absensi.objects.filter(guru=user)  # Guru hanya melihat absensinya sendiri
-        guru_list = None  # Guru tidak perlu melihat filter daftar guru
+        absensi_list = Absensi.objects.all()
+        guru_list = User.objects.filter(groups__name='Guru')
 
-    return render(request, 'birruwattaqwa/list_absen.html', {
+        if guru_filter:
+            absensi_list = absensi_list.filter(guru__id=guru_filter)
+        if search_query:
+            absensi_list = absensi_list.filter(keterangan__icontains=search_query)
+    else:
+        absensi_list = Absensi.objects.filter(guru=user)
+        guru_list = None
+        if search_query:
+            absensi_list = absensi_list.filter(keterangan__icontains=search_query)
+
+    # ✅ Export ke Excel jika diminta
+    if 'export' in request.GET:
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename=rekap_absensi_{datetime.date.today()}.xlsx'
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Rekap Absensi"
+
+        # Header style
+        headers = ['Nama', 'Tanggal', 'Status', 'Keterangan']
+        header_font = Font(bold=True, color='FFFFFF')
+        header_fill = PatternFill(start_color='4F81BD', end_color='4F81BD', fill_type='solid')
+        header_alignment = Alignment(horizontal='center')
+
+        ws.append(headers)
+        for col_num, column_title in enumerate(headers, 1):
+            cell = ws.cell(row=1, column=col_num)
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.alignment = header_alignment
+
+        # Data rows
+        for absensi in absensi_list:
+            ws.append([
+                absensi.guru.username,
+                absensi.tanggal.strftime("%Y-%m-%d"),
+                absensi.status,
+                absensi.keterangan
+            ])
+
+        # Auto-width kolom
+        for column_cells in ws.columns:
+            max_length = 0
+            column = column_cells[0].column_letter
+            for cell in column_cells:
+                try:
+                    if cell.value:
+                        max_length = max(max_length, len(str(cell.value)))
+                except:
+                    pass
+            adjusted_width = max_length + 2
+            ws.column_dimensions[column].width = adjusted_width
+
+        wb.save(response)
+        return response
+
+    return render(request, 'birruwattaqwa/admin/list_absen.html', {
         'absensi_list': absensi_list,
         'guru_list': guru_list,
         'selected_guru': guru_filter,
+        'search_query': search_query,
     })
 
 
 @login_required
 def dashboard_admin(request):
-    return render(request, 'birruwattaqwa/dashboard_admin.html')
+    return render(request, 'birruwattaqwa/admin/dashboard_admin.html')
 
 @login_required
 def dashboard_guru(request):
-    return render(request, 'birruwattaqwa/dashboard_guru.html')
+    return render(request, 'birruwattaqwa/guru/dashboard_guru.html')
 
 @login_required
 def redirect_dashboard(request):
@@ -174,7 +236,7 @@ def redirect_dashboard(request):
     else:
         return redirect('home')  # Jika role tidak terdaftar
 
-
+@csrf_exempt
 def login_guru(request):
     """Halaman Login: Setelah login, diarahkan ke halaman absen"""
     if request.method == 'POST':
@@ -222,7 +284,7 @@ def jadwal_admin(request):
 
     jadwal_list = JadwalGuru.objects.all()  # Ambil semua jadwal
 
-    return render(request, 'birruwattaqwa/jadwal_admin.html', {'form': form, 'jadwal_list': jadwal_list})
+    return render(request, 'birruwattaqwa/admin/jadwal_admin.html', {'form': form, 'jadwal_list': jadwal_list})
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  
@@ -245,7 +307,7 @@ def edit_jadwal(request, jadwal_id):
 def jadwal_guru(request):
     """Guru melihat jadwal yang sudah diposting oleh Admin."""
     jadwal_guru = JadwalGuru.objects.filter(guru=request.user)  # Ambil jadwal untuk user login
-    return render(request, 'birruwattaqwa/jadwal_guru.html', {'jadwal_guru': jadwal_guru})
+    return render(request, 'birruwattaqwa/guru/jadwal_guru.html', {'jadwal_guru': jadwal_guru})
 
 
 
@@ -286,7 +348,7 @@ def create_user(request):
 @user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  # Hanya Admin bisa akses
 def list_users(request):
     users = User.objects.filter(groups__name__in=['Guru', 'Admin'])  # Ambil user dengan role Guru/Admin
-    return render(request, 'registrasi/list_users.html', {'users': users})
+    return render(request, 'birruwattaqwa/admin/list_users.html', {'users': users})
 
 
 
@@ -307,19 +369,20 @@ def generate_daily_qrcode(request, tanggal):
     if request.user.groups.filter(name='Guru').exists():
         tanggal = timezone.localdate()
 
-        # Ambil lat & lon dari query string
+        # Ambil lokasi dari query string
         try:
             lat = float(request.GET.get("lat"))
             lon = float(request.GET.get("lon"))
         except (TypeError, ValueError):
-            return HttpResponse("❌ Lokasi tidak valid atau tidak diizinkan.")
+            return HttpResponse("❌ Lokasi tidak valid atau tidak tersedia.")
 
-        # Lokasi QR code (sekolah)
-        lokasi_qr = {"lat": -6.428734, "lon": 106.688407, "radius": 50}  # <- ganti sesuai sekolahmu
-
+        # Hitung jarak
         jarak = haversine(lat, lon, lokasi_qr["lat"], lokasi_qr["lon"])
+        print(f"Lokasi user: {lat}, {lon}")
+        print(f"Lokasi sekolah: {lokasi_qr['lat']}, {lokasi_qr['lon']}")
+        print(f"Jarak dihitung: {jarak} meter")
         if jarak > lokasi_qr["radius"]:
-            return HttpResponse(f"❌ Kamu terlalu jauh dari lokasi! (Jarakmu {int(jarak)} meter)")
+            return HttpResponse(f"📍 Kamu terlalu jauh dari lokasi absen. (Jarakmu: {int(jarak)} m)")
 
         # Cek apakah sudah absen
         if not Absensi.objects.filter(guru=request.user, tanggal=tanggal).exists():
@@ -334,7 +397,8 @@ def generate_daily_qrcode(request, tanggal):
             return HttpResponse("✅ Absensi berhasil tercatat.")
         else:
             return HttpResponse("⚠️ Kamu sudah absen hari ini.")
-    return HttpResponse("❌ Hanya guru yang bisa absen lewat QR.")
+    
+    return HttpResponse("❌ Hanya guru yang bisa absen lewat QR code.")
 
 
 
@@ -355,8 +419,12 @@ def generate_admin_qrcode(request):
         qr_img.save(buffer, format='PNG')
         daily_qr.qrcode.save(f'qr_{today}.png', ContentFile(buffer.getvalue()))
         daily_qr.save()
-    return render(request, 'admin_qrcode.html', {'daily_qr': daily_qr})
+    return render(request, 'birruwattaqwa/admin/admin_qrcode.html', {'daily_qr': daily_qr})
 
 @login_required
 def scan_qr_view(request):
     return render(request, 'qrcodes.html')
+
+
+def simple_view(request):
+    return HttpResponse("Hello Ngrok!")

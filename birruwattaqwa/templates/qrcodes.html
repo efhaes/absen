@@ -4,61 +4,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABSEN</title>
+    <title>Scan QR untuk Absen</title>
+    <link rel="stylesheet" href="{% static 'css/qrcodes.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    {% block content %}
-    <h2>Scan QR Code untuk Absen</h2>
-    
-    <div id="reader" style="width: 300px;"></div>
-    <div id="result"></div>
-    
+    <h2>📷 Scan QR Code untuk Absen</h2>
+    <p>Pastikan kamu berada di sekitar sekolah untuk bisa absen.</p>
+
+    <div id="reader" style="width: 300px; margin-top: 20px;"></div>
+    <div id="status" style="margin-top: 15px; color: red;"></div>
+
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
         let scanned = false;
-    
+
         function onScanSuccess(decodedText, decodedResult) {
             if (!scanned) {
                 scanned = true;
-    
-                // Ambil lokasi
+                document.getElementById('status').innerText = "📡 Mengambil lokasi...";
+
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(function (position) {
                         const lat = position.coords.latitude;
                         const lon = position.coords.longitude;
-    
+
                         console.log("📍 Lokasi:", lat, lon);
                         console.log("✅ QR terbaca:", decodedText);
-    
+
+                        // ✅ Tampilkan lokasi dan URL ke layar
+                        document.getElementById('status').innerHTML = 
+                            `📍 Lokasi: ${lat}, ${lon}<br>🔗 Mengarahkan ke: ${decodedText}`;
+
                         const urlWithLocation = `${decodedText}?lat=${lat}&lon=${lon}`;
-    
+
                         html5QrcodeScanner.clear().then(_ => {
                             setTimeout(() => {
                                 window.location.href = urlWithLocation;
                             }, 1000);
                         }).catch(error => {
-                            console.error('❌ Clear failed:', error);
-                            scanned = false; // reset kalau gagal clear
+                            console.error('❌ Gagal clear scanner:', error);
+                            scanned = false;
                         });
-    
                     }, function (error) {
-                        alert("⚠️ Gagal ambil lokasi: " + error.message);
+                        document.getElementById('status').innerText = "⚠️ Gagal ambil lokasi: " + error.message;
                         scanned = false;
                     });
                 } else {
-                    alert("❌ Browser tidak mendukung Geolocation.");
+                    document.getElementById('status').innerText = "❌ Browser tidak mendukung Geolocation.";
                     scanned = false;
                 }
             }
         }
-    
+
         const html5QrcodeScanner = new Html5QrcodeScanner(
             "reader", { fps: 10, qrbox: 250 });
         html5QrcodeScanner.render(onScanSuccess);
     </script>
-    
-    
-
-    {% endblock %}
 </body>
 </html>

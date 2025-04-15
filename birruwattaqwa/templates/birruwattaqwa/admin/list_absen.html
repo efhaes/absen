@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Daftar Absensi</title>
+    <link rel="stylesheet" href="{% static 'css/list_absen.css' %}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="profile">
+            <img src="/media/admin_profile.png" alt="Foto Admin">
+            <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+            <p>Admin</p>
+        </div>
+        <ul>
+            <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
+            <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
+            <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
+            <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
+            <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
+        </ul>
+    </div>
+
+    <!-- Konten Utama -->
+    <div class="content">
+        <h1>Selamat Datang, {{ request.user.first_name }}</h1>
+        <div class="paragraf">
+            Gunakan menu di sebelah kiri untuk mengelola absensi, jadwal guru, dan pengajuan izin.
+        </div>
+
+        <div class="rekap-container">
+            <h2>📋 Daftar Absensi</h2>
+
+            {% if guru_list %}
+            <div class="filter-bar">
+                <form method="GET" action="{% url 'list_absen' %}">
+                    <label for="guru">Pilih Guru:</label>
+                    <select name="guru" id="guru">
+                        <option value="">-- Semua Guru --</option>
+                        {% for guru in guru_list %}
+                            <option value="{{ guru.id }}" {% if guru.id|stringformat:"s" == selected_guru %}selected{% endif %}>
+                                {{ guru }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <input type="text" name="search" placeholder="Cari nama..." value="{{ request.GET.search }}">
+                    <button type="submit">🔍 Filter</button>
+                    <button type="submit" name="export" value="1">⬇️ Export Excel</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Waktu</th>
+                            <th>Status</th>
+                            <th>Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for absensi in absensi_list %}
+                        <tr>
+                            <td>{{ absensi.guru }}</td>
+                            <td>{{ absensi.tanggal }}</td>
+                            <td>{{ absensi.status }}</td>
+                            <td>{{ absensi.keterangan }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" style="text-align:center;">Tidak ada data absensi.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

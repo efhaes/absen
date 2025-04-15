@@ -1,74 +1,106 @@
-/* Reset dan Font */
-* {
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f5f7fa;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
-/* Styling Halaman */
-body {
-    background: #f4f4f4;
-    padding: 20px;
-    text-align: center;
-}
-
-/* Container */
-.container {
-    max-width: 900px;
-    margin: auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Judul */
-h2 {
-    margin-bottom: 20px;
     color: #333;
 }
 
-/* Styling Tabel */
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+h2 {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+
+.filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.filter-section input,
+.filter-section select {
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 200px;
+    transition: all 0.3s ease;
+}
+
+.filter-section input:focus,
+.filter-section select:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    border-radius: 8px;
-    overflow: hidden;
+    animation: slideUp 0.5s ease;
 }
 
-/* Header Tabel */
-th {
-    background: #673AB7; /* Ungu elegan */
+table thead {
+    background: #3498db;
     color: white;
-    padding: 12px;
-    text-transform: uppercase;
 }
 
-/* Isi Tabel */
-td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+table th, table td {
+    padding: 14px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
 }
 
-/* Warna Latar Belakang Alternatif */
-tr:nth-child(even) {
-    background: #f3e5f5; /* Ungu muda */
+table tbody tr:hover {
+    background-color: #f0f9ff;
+    transition: 0.3s;
 }
 
-/* Hover Effect */
-tr:hover {
-    background: #D1C4E9; /* Warna ungu pastel */
+table td[colspan] {
+    text-align: center;
+    font-style: italic;
+    color: #888;
+}
+
+/* Animasi */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsif */
 @media (max-width: 768px) {
-    table {
+    .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-section input,
+    .filter-section select {
         width: 100%;
     }
-    th, td {
-        padding: 8px;
-        font-size: 14px;
+
+    table th, table td {
+        font-size: 13px;
+        padding: 10px;
     }
 }

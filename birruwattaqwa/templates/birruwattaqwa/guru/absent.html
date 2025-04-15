@@ -7,14 +7,13 @@
     <link rel="stylesheet" href="{% static 'css/absen.css' %}">
 </head>
 <body>
-    <h2>Form Absensi</h2>
+    <h2>Ajukan Izin</h2>
     <form method="POST">
         {% csrf_token %}
 
         <!-- Status Absensi -->
         <label for="status">Status Absensi:</label>
         <select name="status" id="status">
-            <option value="Hadir">Hadir</option>
             <option value="Izin">Izin</option>
             <option value="Sakit">Sakit</option>
             <option value="Alfa">Alfa</option>
