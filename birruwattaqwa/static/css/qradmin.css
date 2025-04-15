@@ -1,102 +1,4 @@
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #f0f4f8;
-    margin: 0;
-    padding: 0;
-    color: #333;
-    display: flex;
-}
 
-.dashboard {
-    display: flex;
-    height: 100vh;
-    width: 100%;
-}
-
-.sidebar {
-    width: 250px;
-    background: rgb(104, 4, 135);
-    color: white;
-    padding: 20px;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-}
-
-.main-content {
-    margin-left: 250px; /* Biar gak numpuk sidebar */
-    width: calc(100% - 250px);
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-}
-
-.container {
-    padding: 30px;
-    background-color: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    animation: fadeIn 1s ease forwards;
-    max-width: 350px;
-    width: 100%;
-}
-
-
-.qr-wrapper {
-    margin-top: 20px;
-    animation: float 3s ease-in-out infinite;
-}
-
-img {
-    width: 100%;
-    max-width: 300px;
-    border: 10px solid #e1e1e1;
-    border-radius: 20px;
-    background: white;
-}
-
-.tanggal {
-    margin-top: 20px;
-    font-weight: 600;
-    color: #4a4a4a;
-}
-
-.fade-in {
-
-    opacity: 0;
-    animation: fadeIn 1s ease forwards;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-}
-
-.fade-in-delay {
-    opacity: 0;
-    animation: fadeIn 1s ease 0.5s forwards;
-}
-
-.float-in {
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
-}
 
 
 
@@ -111,7 +13,7 @@ body {
 /* Sidebar styling */
 .sidebar {
     width: 250px;
-    background-color: #2c3e50;
+    background-color: #6f2c4f;
     color: white;
     height: 100vh; /* Full height */
     position: fixed;
@@ -164,10 +66,19 @@ body {
 }
 
 .sidebar ul li a:hover {
-    background-color: #34495e;
+    background-color: #a24a7b;
+
+
     transform: translateX(5px);
 }
 
+img {
+    width: 100%;
+    max-width: 300px;
+    border: 10px solid #e1e1e1;
+    border-radius: 20px;
+    background: white;
+}
 /* Konten Utama */
 .content {
     margin-left: 270px; /* Sesuaikan dengan lebar sidebar */
@@ -216,3 +127,6 @@ p {
     font-size: 16px;
     color: white;
 }
+
+
+  

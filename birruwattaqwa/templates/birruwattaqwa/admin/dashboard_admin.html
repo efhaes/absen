@@ -17,7 +17,7 @@
             <div class="profile">
                 <img src="/media/logo.jpeg" alt="Foto Admin">
                 <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-                <p><a href="{% url 'generate_admin_qrcode' %}"></a>Admin</p>
+                <h4><a href="{% url 'generate_admin_qrcode' %}"></a>Admin</h4>
             </div>
             <ul>
                 <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
