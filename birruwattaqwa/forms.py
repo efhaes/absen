@@ -13,10 +13,18 @@ class AbsensiForm(forms.ModelForm):
         fields = [ 'keterangan', 'status']  # Sesuaikan dengan field yang dibutuhkan
         
 class JadwalGuruForm(forms.ModelForm):
-    guru = forms.ModelChoiceField(queryset=User.objects.filter(groups__name='Guru'))  # Hanya pilih guru
+    guru = forms.ModelChoiceField(
+        queryset=User.objects.filter(groups__name='Guru'),
+        label="Guru"
+    )
+
     class Meta:
         model = JadwalGuru
-        fields = ['guru', 'hari', 'jam_mulai', 'jam_selesai', 'mata_pelajaran']
+        fields = ['guru', 'hari', 'jam_mulai', 'jam_selesai', 'mata_pelajaran', 'kelas']
+        widgets = {
+            'jam_mulai': forms.TimeInput(attrs={'type': 'time'}),
+            'jam_selesai': forms.TimeInput(attrs={'type': 'time'}),
+        }
         
 
 
@@ -27,7 +35,6 @@ class AdminCreateUserForm(UserCreationForm):
     )
     username = forms.CharField(label="Nama Lengkap", max_length=150, required=True)
     email = forms.EmailField(required=True)
-    alamat = forms.CharField(label="Alamat", widget=forms.Textarea(attrs={'rows': 2}), required=True)
     jabatan = forms.CharField(label="Jabatan", max_length=100, required=True)
     role = forms.ChoiceField(choices=ROLE_CHOICES, required=True)
     class Meta:
@@ -44,7 +51,6 @@ class AdminCreateUserForm(UserCreationForm):
             ProfilGuru.objects.create(
                 user=user,
                 jabatan=self.cleaned_data['jabatan'],
-                alamat=self.cleaned_data['alamat']
             )
 
             # Tambahkan user ke grup sesuai role

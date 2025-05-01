@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrasi Akun Guru/Admin</title>
     <link rel="stylesheet" href="{% static 'css/registrasi.css' %}">
-    <link rel="stylesheet" href="{% static 'css/D_sidebar.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
 </head>
 
 <body>
@@ -28,18 +28,36 @@
                 <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
             </ul>
         </div>
+    </div>
 
-        <div class="form-container">
-            <div class="form-card">
-                <h2 class="form-title">Buat Akun Guru/Admin</h2>
-                <form method="POST" class="form-content">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="submit-btn">Buat Akun</button>
-                </form>
-            </div>
+    <div class="container">
+        <div class="form-card">
+            <h2 class="form-title">Buat Akun Guru/Admin</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div id="pwd-feedback"></div>
+                <button type="submit">Daftar</button>
+            </form>
         </div>
-
+    </div>
+    
+        <script>
+            (function(){
+              const pwd = document.getElementById('id_password1');   // ganti sesuai field name
+              const fb  = document.getElementById('pwd-feedback');
+              pwd.addEventListener('input', () => {
+                const val = pwd.value;
+                if (!val) { fb.textContent = ''; return; }
+                const res = zxcvbn(val);
+                // feedback.warning + array suggestions
+                let msgs = [];
+                if (res.feedback.warning) msgs.push(res.feedback.warning);
+                msgs = msgs.concat(res.feedback.suggestions);
+                fb.innerHTML = msgs.map(m => `<p>${m}</p>`).join('');
+              });
+            })();
+          </script>
 </body>
 
 </html>

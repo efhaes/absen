@@ -1,0 +1,112 @@
+.container {
+    margin-left: 270px; /* Lebih dari width sidebar (250px) + sedikit jarak */
+    padding: 40px 20px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Judul halaman */
+.container h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #6f2c4f;
+    font-weight: bold;
+    text-align: center;
+}
+
+#reader {
+    margin-top: 20px;
+    width: 400px; /* ukuran diperbesar */
+    height: 400px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: white;
+}
+
+.scanner-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container p {
+    margin-top: 10px;
+    font-size: 16px;
+    text-align: center;
+    color: #555;
+}
+
+
+/* Form styling */
+.container form {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #fafafa;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Form input */
+.container form p {
+    margin-bottom: 15px;
+}
+
+.container form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.container form input,
+.container form select,
+.container form textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* Tombol submit */
+.container form button[type="submit"] {
+    background-color: #6f2c4f;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.container form button[type="submit"]:hover {
+    background-color: #8e3d66;
+}
+
+/* Link kembali */
+.container a {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #6f2c4f;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.container a:hover {
+    text-decoration: underline;
+}
+
+/* Responsif untuk mobile */
+@media (max-width: 768px) {
+    .container {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .container form {
+        width: 100%;
+    }
+}
+    

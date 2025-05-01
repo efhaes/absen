@@ -9,9 +9,10 @@ class AbsensiAdmin(admin.ModelAdmin):
 
 # Tambahkan konfigurasi untuk JadwalGuru
 class JadwalGuruAdmin(admin.ModelAdmin):
-    list_display = ('guru', 'hari', 'jam_mulai', 'jam_selesai', 'mata_pelajaran')
-    search_fields = ('guru__username', 'mata_pelajaran', 'hari')
-    list_filter = ('hari',)
+    list_display = ('guru', 'hari', 'jam_mulai', 'jam_selesai', 'mata_pelajaran', 'kelas')
+    list_filter = ('hari', 'mata_pelajaran', 'kelas', 'guru')
+    search_fields = ('guru__username', 'mata_pelajaran', 'kelas')
+    ordering = ('hari', 'jam_mulai')
 
 # Daftarkan model ke Django Admin
 admin.site.register(Absensi, AbsensiAdmin)

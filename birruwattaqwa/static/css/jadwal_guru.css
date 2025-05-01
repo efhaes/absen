@@ -1,33 +1,91 @@
-/* Reset dan Font */
+/* Reset dasar */
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
 }
 
-/* Styling Halaman */
 body {
-    background: #f4f7fc;
+    display: flex;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f8f8;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #6f2c4f;
+    color: white;
+    height: 100vh;
+    position: fixed;
     padding: 20px;
+    border-radius: 0 20px 20px 0;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar .profile {
     text-align: center;
+    margin-bottom: 30px;
 }
 
-/* Container */
+.sidebar .profile img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar .profile img:hover {
+    transform: scale(1.05);
+}
+
+.sidebar h3 {
+    margin-top: 10px;
+}
+
+.sidebar h4 {
+    font-size: 14px;
+    color: #e0d4e8;
+    font-weight: 300;
+}
+
+.sidebar ul {
+    list-style: none;
+    margin-top: 20px;
+    padding-left: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 15px;
+}
+
+.sidebar ul li a {
+    display: block;
+    padding: 10px 15px;
+    background-color: transparent;
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #a24a7b;
+    transform: translateX(5px);
+}
+
+/* Konten Utama */
 .container {
-    max-width: 900px;
-    margin: auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-left: 270px;
+    padding: 40px 20px;
+    width: 100%;
 }
 
-/* Judul */
 h2 {
-    color: #4a148c; /* Ungu tua */
-    margin-bottom: 20px;
-    font-size: 24px;
+    font-size: 26px;
+    margin-bottom: 30px;
+    color: #4a148c;
     text-transform: uppercase;
     font-weight: bold;
 }
@@ -35,62 +93,69 @@ h2 {
 /* Tabel */
 table {
     width: 100%;
-    max-width: 900px;
-    margin: auto;
     border-collapse: collapse;
-    background: white;
+    background-color: white;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Header Tabel */
+th, td {
+    padding: 14px 18px;
+    text-align: left;
+}
+
 th {
-    background: #6a1b9a;
+    background-color: #6a1b9a;
     color: white;
-    padding: 12px;
     text-transform: uppercase;
-    font-size: 16px;
+    font-size: 14px;
 }
 
-/* Isi Tabel */
 td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
     font-size: 14px;
     color: #333;
+    border-bottom: 1px solid #ddd;
 }
 
-/* Warna Latar Belakang Baris */
 tr:nth-child(even) {
-    background: #f3e5f5; /* Ungu muda */
+    background-color: #f3e5f5;
 }
 
 tr:nth-child(odd) {
-    background: #e1bee7; /* Ungu lebih terang */
+    background-color: #e1bee7;
 }
 
-/* Hover Effect */
 tr:hover {
-    background: #d1c4e9; /* Lebih gelap saat hover */
-    transition: 0.3s;
+    background-color: #d1c4e9;
+    transition: background-color 0.3s ease;
 }
 
-/* Pesan Jika Tidak Ada Jadwal */
-td[colspan="4"] {
+td[colspan] {
     text-align: center;
     font-style: italic;
     color: #757575;
 }
 
-/* Responsif */
+/* Responsive */
 @media (max-width: 768px) {
-    table {
+    .sidebar {
+        position: relative;
         width: 100%;
+        border-radius: 0;
+        height: auto;
     }
-    th, td {
-        padding: 10px;
-        font-size: 14px;
+
+    .container {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    table, th, td {
+        font-size: 12px;
+    }
+
+    h2 {
+        font-size: 20px;
     }
 }

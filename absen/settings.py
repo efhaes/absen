@@ -88,20 +88,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+AUTH_PASSWORD_VALIDATORS = []
 
 LOGIN_REDIRECT_URL = '/dashboard/'
 # Internationalization
@@ -129,8 +116,8 @@ STATIC_URL = '/static/'
 
 # Lokasi sekolah (latitude, longitude)
 SCHOOL_LOCATION = {
-    "latitude": -6.347026500806624,  # Ganti dengan latitude sekolah
-    "longitude": 106.69148695767142  # Ganti dengan longitude sekolah
+    "latitude": -6.4301401,  # Ganti dengan latitude sekolah
+    "longitude": 106.6882291  # Ganti dengan longitude sekolah
 }
 
 

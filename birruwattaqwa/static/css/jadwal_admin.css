@@ -1,117 +1,104 @@
-/* Reset dan Font */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
-/* Styling Halaman */
-body {
-    background: #f4f7fc;
-    padding: 20px;
-    text-align: center;
-}
 
 /* Judul */
+.container {
+    margin-left: 270px; /* lebih besar sedikit dari .sidebar (250px) */
+    padding: 30px;
+    flex: 1;
+}
+
+
 h2, h3 {
-    color: #4a148c; /* Ungu tua */
+    color: #34495e;
+    margin-bottom: 20px;
+}
+
+form {
+    background-color: #f50707;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+}
+
+form p {
     margin-bottom: 15px;
 }
 
-/* Form Tambah Jadwal */
-form {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    margin: auto;
-    text-align: left;
-}
-
 form label {
-    font-weight: bold;
-    color: #333;
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #555;
 }
 
 form input, form select, form textarea {
     width: 100%;
-    padding: 10px;
-    margin: 5px 0 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 10px 14px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
 }
 
-button {
-    background: #4a148c; /* Ungu */
+form button {
+    margin-top: 20px;
+    width: 100%;
+    background-color: #6C63FF;
     color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    padding: 12px;
     font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-button:hover {
-    background: #6a1b9a;
+form button:hover {
+    background-color: #5848c2;
 }
 
-/* Tabel */
 table {
     width: 100%;
-    max-width: 900px;
-    margin: auto;
     border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    border-radius: 12px;
     overflow: hidden;
-    margin-top: 20px;
 }
 
-/* Header Tabel */
-th {
-    background: #6a1b9a;
-    color: white;
-    padding: 12px;
-    text-transform: uppercase;
+th, td {
+    padding: 16px 20px;
+    text-align: left;
 }
 
-/* Isi Tabel */
-td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
+thead {
+    background-color: #6C63FF;
+    color: #fff;
 }
 
-/* Warna Latar Belakang Baris */
-tr:nth-child(even) {
-    background: #f3e5f5; /* Ungu muda */
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
 }
 
-tr:nth-child(odd) {
-    background: #e1bee7; /* Ungu lebih terang */
+tbody tr:hover {
+    background-color: #f1f1f1;
 }
 
-/* Hover Effect */
-tr:hover {
-    background: #d1c4e9; /* Lebih gelap saat hover */
-}
-
-/* Tombol Edit */
 .btn-warning {
-    background: #ff9800;
+    background-color: #f39c12;
     color: white;
     padding: 8px 12px;
-    border-radius: 5px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
     text-decoration: none;
-    display: inline-block;
 }
 
 .btn-warning:hover {
-    background: #e68900;
+    background-color: #e67e22;
 }
-
 /* Responsif */
 @media (max-width: 768px) {
     table {

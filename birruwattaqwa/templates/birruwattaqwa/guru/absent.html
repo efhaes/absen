@@ -1,55 +1,62 @@
 {% load static %}
-<html lang="en">
+<!DOCTYPE html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Absensi</title>
+    <title>Jadwal Mengajar Guru</title>
     <link rel="stylesheet" href="{% static 'css/absen.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h2>Ajukan Izin</h2>
-    <form method="POST">
-        {% csrf_token %}
 
-        <!-- Status Absensi -->
-        <label for="status">Status Absensi:</label>
-        <select name="status" id="status">
-            <option value="Izin">Izin</option>
-            <option value="Sakit">Sakit</option>
-            <option value="Alfa">Alfa</option>
-        </select><br>
-
-        <!-- Field Alasan (Default Hidden) -->
-        <div id="keterangan-field" style="display: none;">
-            <label for="keterangan">Alasan:</label>
-            <textarea name="keterangan" id="keterangan"></textarea>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="profile">
+            <img src="/media/logo.jpeg" alt="Foto Admin">
+            <h3>{{ request.user }}</h3>
+            <h4>Guru</h4>
         </div>
+        <ul>
+            <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
+            <li><a href="{% url 'list_absen' %}">📄 Lihat Rekap</a></li>
+            <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
+            <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
+        </ul>
+    </aside>
 
-        <input type="hidden" name="latitude" id="latitude">
-        <input type="hidden" name="longitude" id="longitude">
+    <!-- Konten Utama -->
+    <main class="container">
+        <h2>Jadwal Mengajar Anda</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Hari</th>
+                    <th>Jam Mulai</th>
+                    <th>Jam Selesai</th>
+                    <th>Mata Pelajaran</th>
+                    <th>Kelas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for jadwal in jadwal_guru %}
+                <tr>
+                    <td>{{ jadwal.guru }}</td>
+                    <td>{{ jadwal.hari }}</td>
+                    <td>{{ jadwal.jam_mulai }}</td>
+                    <td>{{ jadwal.jam_selesai }}</td>
+                    <td>{{ jadwal.mata_pelajaran }}</td>
+                    <td>{{ jadwal.kelas }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">Belum ada jadwal.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
 
-        <button type="submit">Submit</button>
-    </form>
 </body>
-
-<script>
-    // Ambil lokasi GPS pengguna
-    navigator.geolocation.getCurrentPosition(function(position) {
-        document.getElementById("latitude").value = position.coords.latitude;
-        document.getElementById("longitude").value = position.coords.longitude;
-    }, function(error) {
-        alert("GPS tidak aktif atau tidak dapat mengambil lokasi.");
-    });
-
-    // Tampilkan field keterangan jika status "Sakit" atau "Izin" dipilih
-    document.getElementById('status').addEventListener('change', function () {
-        let keteranganField = document.getElementById('keterangan-field');
-
-        if (this.value === "Sakit" || this.value === "Izin") {
-            keteranganField.style.display = 'block';
-        } else {
-            keteranganField.style.display = 'none';
-        }
-    });
-</script>
 </html>
