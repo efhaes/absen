@@ -1,0 +1,202 @@
+/* Sidebar Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f4f8;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    padding-right: 500px;
+    text-align: center;
+    max-width: none; /* hilangkan batas lebar default */
+    width: calc(100% - 270px); /* otomatis menyesuaikan sisa layar */
+    animation: fadeInUp 0.5s ease;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    min-height: 100vh;
+    margin-left: 290px;
+
+}
+
+/* Layout form dan gambar */
+.form-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 30px;
+    justify-content: space-between;
+}
+
+.form-box {
+    flex: 1;
+    min-width: 300px;
+}
+
+.form-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-box select{
+    padding: 10px;
+    border: 1px solid #6a0dad;
+    border-radius: 10px;
+    font-size: 14px;
+    resize: none;
+}
+.form-box textarea {
+    border: 1px solid #6a0dad;
+    border-radius: 10px;
+    font-size: 14px;
+    resize: none;
+    height: 150px;
+    width: 300px;
+}
+
+.form-box button {
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: #6a0dad;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-box button:hover {
+    background-color: #9b30ff;
+}
+.form-box select:focus,
+.form-box textarea:focus {
+    outline: none;
+    border-color: #9b30ff; /* ungu terang */
+    box-shadow: 0 0 5px #9b30ff;
+}
+/* Gaya untuk <select> */
+select {
+    padding: 10px;
+    border: 2px solid #a020f0; /* warna ungu */
+    border-radius: 8px;
+    background-color: white;
+    color: black;
+    font-size: 16px;
+    box-shadow: 0 0 8px #a020f0; /* ungu terang glow */
+    transition: 0.3s;
+    appearance: none; /* Hilangkan panah default untuk styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='292.4' height='292.4'%3E%3Cpath fill='%236a0dad' d='M287 69.4L166.6 189.8c-4.7 4.7-12.3 4.7-17 0L5.4 69.4C-1.8 62.2 2.6 50 12.7 50h267c10.1 0 14.5 12.2 7.3 19.4z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 0.65rem auto;
+}
+
+/* Gaya saat select difokuskan */
+select:focus {
+    outline: none;
+    border-color: #6a0dad;
+    box-shadow: 0 0 8px #6a0dad;
+}
+
+/* Tidak semua browser bisa ubah warna option saat dropdown terbuka,
+   tapi ini bisa bantu untuk browser yang mendukung: */
+select option {
+    background-color: white;
+    color: black;
+}
+
+/* Firefox khusus: warna latar saat option aktif */
+select option:hover{
+    background-color: #9b30ff;
+}
+/* Ilustrasi gambar di sebelah form */
+.form-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    
+}
+
+.form-image img {
+    max-width: 200px;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border-color: #6a0dad;
+}
+
+/* Catatan di bawah form */
+.note {
+    margin-top: 5px;
+    background-color: #fff3cd;
+    padding: 10px;
+    border-left: 5px solid #ffc107;
+    border-radius: 10px;
+    color: #856404;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        margin-left: 0;
+    }
+
+    .form-content {
+        flex-direction: column;
+    }
+
+    .form-image {
+        justify-content: center;
+    }
+}
+/* Responsive Design for Smaller Screens */
+@media (max-width: 768px) {
+    .dashboard {
+        flex-direction: column; /* Sidebar di atas konten pada layar kecil */
+    }
+    
+    .sidebar {
+        width: 100%;  /* Sidebar mengambil lebar penuh */
+        height: auto;  /* Sesuaikan tinggi untuk perangkat kecil */
+        position: relative; /* Ganti menjadi relative agar tidak fixed */
+        border-radius: 0;
+    }
+    
+    .container {
+        margin-left: 0; /* Menghilangkan margin kiri pada layar kecil */
+        padding: 20px;
+    }
+
+    .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-section input,
+    .filter-section select {
+        width: 100%;
+    }
+
+    table th, table td {
+        font-size: 13px;
+        padding: 10px;
+    }
+}
+
+
+/* Animations */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}

@@ -3,35 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="{% static 'css/scan.css' %}">
-    <link rel="stylesheet" href="{% static 'css/side_guru.css' %}">
+    <title>Scan QR Guru</title>
+    <link rel="stylesheet" href="{% static 'css/guru/scan.css' %}">
+    <link rel="stylesheet" href="{% static 'css/guru/side_guru.css' %}">
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="profile">
-            <img src="/media/logo.jpeg" alt="Foto Admin">
-            <h3>{{ request.user }}</h3>
-            <h4>Guru</h4>
-        </div>
-        <ul>
-            <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
-            <li><a href="{% url 'list_absen' %}">📄 Lihat Rekap</a></li>
-            <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
-            <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
-        </ul>
-    </aside>
-    <main class="container">
-        <h2>SCAN UNTUK ABSEN HARI INI</h2>
-        {% block content %}
-        <h2>Tambah Absensi</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Simpan</button>
-        </form>
-        <a href="{% url 'view_absensi' %}">Kembali</a>
-        {% endblock %}
-    </main>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="profile">
+                <a href="{% url 'dashboard_guru' %}">
+                    <img src="/media/logo.jpeg" alt="Foto Guru">
+                </a>
+                <h3>{{ request.user }}</h3>
+                <h4>Guru</h4>
+            </div>
+            <ul>
+                <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
+                <li><a href="{% url 'rekap_guru' %}">📄 Lihat Rekap</a></li>
+                <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
+                <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="container">
+            <h2>SCAN UNTUK ABSEN HARI INI</h2>
+            {% block content %}
+                <h2>Tambah Absensi</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn">Simpan</button>
+                </form>
+                <a href="{% url 'view_absensi' %}">← Kembali</a>
+            {% endblock %}
+        </main>
+    </div>
 </body>
 </html>

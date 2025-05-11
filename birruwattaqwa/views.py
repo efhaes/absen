@@ -61,7 +61,7 @@ def absen_guru(request):
                 jam_absensi=now().time(),
             )
             messages.warning(request, "Waktu absensi sudah lewat. Anda dianggap Alfa hari ini.")
-            return redirect('home')  # Atau redirect ke halaman lain kalau mau
+            return redirect('absesnt')  # Atau redirect ke halaman lain kalau mau
 
     # Kalau belum lewat jam 9, atau udah absen, lanjut ke form absensi biasa
     if request.method == 'POST':
@@ -133,7 +133,6 @@ def absen_guru(request):
 
     
 def tandai_guru_yang_alfa_pagi():
-    
     today = now().date()
     bulan = now().strftime('%B')
     tahun = now().year
@@ -182,6 +181,7 @@ def scan_qr(request, qr_code):
 from django.contrib.auth.models import User  # Import model User
 
 @login_required
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists()) 
 def view_absensi(request):
     user = request.user
     guru_filter = request.GET.get('guru', '')
@@ -315,9 +315,43 @@ def dashboard_admin(request):
 
     return render(request, 'birruwattaqwa/admin/dashboard_admin.html', context)
 
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from datetime import timedelta
+from .models import Absensi, JadwalGuru  # Tambahkan model JadwalGuru jika ada
+
 @login_required
 def dashboard_guru(request):
-    return render(request, 'birruwattaqwa/guru/dashboard_guru.html')
+    today = timezone.now().date()
+    bulan_ini = today.replace(day=1)
+    tujuh_hari_lalu = today - timedelta(days=6)
+
+    # Ambil absensi user saat ini
+    absensi_user = Absensi.objects.filter(guru=request.user)
+
+    # Statistik bulan ini
+    total_hadir_bulan_ini = absensi_user.filter(status='Hadir', tanggal__gte=bulan_ini).count()
+    total_izin_bulan_ini = absensi_user.filter(status='Izin', tanggal__gte=bulan_ini).count()
+    total_sakit_bulan_ini = absensi_user.filter(status='Sakit', tanggal__gte=bulan_ini).count()
+    total_alpha_bulan_ini = absensi_user.filter(status='Alfa', tanggal__gte=bulan_ini).count()
+
+    # Hari aktif total
+    total_hari_aktif = absensi_user.count()
+
+    # Ambil jadwal minggu ini
+    jadwal_minggu_ini = JadwalGuru.objects.filter(guru=request.user)
+
+    context = {
+        'total_hadir_bulan_ini': total_hadir_bulan_ini,
+        'total_izin_bulan_ini': total_izin_bulan_ini,
+        'total_sakit_bulan_ini': total_sakit_bulan_ini,
+        'total_alpha_bulan_ini': total_alpha_bulan_ini,
+        'total_hari_aktif': total_hari_aktif,
+        'jadwal_minggu_ini': jadwal_minggu_ini,
+    }
+
+    return render(request, 'birruwattaqwa/guru/dashboard_guru.html', context)
+
 
 @login_required
 def redirect_dashboard(request):
@@ -433,7 +467,7 @@ def create_user(request):
     else:
         form = AdminCreateUserForm()
     
-    return render(request, 'registrasi/registrasi.html', {'form': form})
+    return render(request, 'birruwattaqwa/admin/registrasi.html', {'form': form})
 
 
 
@@ -516,7 +550,81 @@ def generate_admin_qrcode(request):
 
 @login_required
 def scan_qr_view(request):
-    return render(request, 'qrcodes.html')
+    return render(request, 'birruwattaqwa/guru/qrcodes.html')
+
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.shortcuts import render
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, PatternFill
+import datetime
+from .models import Absensi
+
+@login_required
+def rekap_absensi_guru(request):
+    user = request.user
+
+    if not user.groups.filter(name='Guru').exists():
+        return HttpResponse("Anda tidak memiliki akses ke halaman ini.", status=403)
+
+    absensi_list = Absensi.objects.filter(guru=user)
+    search_query = request.GET.get('search', '')
+
+    if search_query:
+        absensi_list = absensi_list.filter(keterangan__icontains=search_query)
+
+    if 'export' in request.GET:
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename=rekap_absensi_{user.username}_{datetime.date.today()}.xlsx'
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Rekap Absensi"
+
+        # Header style
+        headers = ['Tanggal', 'Status', 'Keterangan']
+        header_font = Font(bold=True, color='FFFFFF')
+        header_fill = PatternFill(start_color='4F81BD', end_color='4F81BD', fill_type='solid')
+        header_alignment = Alignment(horizontal='center')
+
+        ws.append(headers)
+        for col_num, column_title in enumerate(headers, 1):
+            cell = ws.cell(row=1, column=col_num)
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.alignment = header_alignment
+
+        # Data rows
+        for absensi in absensi_list:
+            ws.append([
+                absensi.tanggal.strftime("%Y-%m-%d"),
+                absensi.status,
+                absensi.keterangan
+            ])
+
+        # Auto-width kolom
+        for column_cells in ws.columns:
+            max_length = 0
+            column = column_cells[0].column_letter
+            for cell in column_cells:
+                try:
+                    if cell.value:
+                        max_length = max(max_length, len(str(cell.value)))
+                except:
+                    pass
+            adjusted_width = max_length + 2
+            ws.column_dimensions[column].width = adjusted_width
+
+        wb.save(response)
+        return response
+
+    return render(request, 'birruwattaqwa/guru/rekap_guru.html', {
+        'absensi_list': absensi_list,
+        'search_query': search_query,
+    })
+
 
 
 def simple_view(request):

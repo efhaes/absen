@@ -1,62 +1,129 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Mengajar Guru</title>
-    <link rel="stylesheet" href="{% static 'css/absen.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Form Absensi</title>
+    <link rel="stylesheet" href="{% static 'css/guru/izin_guru.css' %}">
+    <link rel="stylesheet" href="{% static 'css/guru/Dash_guru.css' %}">
 </head>
 <body>
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="profile">
-            <img src="/media/logo.jpeg" alt="Foto Admin">
-            <h3>{{ request.user }}</h3>
-            <h4>Guru</h4>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="profile">
+                <a href="{% url 'dashboard_guru' %}">
+                    <img src="/media/logo.jpeg" alt="Foto Guru">
+                </a>
+                <h3>{{ request.user }} </h3>
+                <h4><a href="#"></a>Guru</h4>
+            </div>
+            <ul>
+                <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
+                <li><a href="{% url 'rekap_guru' %}">📄 Lihat Rekap</a></li>
+                <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
+                <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
+            </ul>
         </div>
-        <ul>
-            <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
-            <li><a href="{% url 'list_absen' %}">📄 Lihat Rekap</a></li>
-            <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
-            <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
-        </ul>
-    </aside>
+        
+    </div>
 
-    <!-- Konten Utama -->
-    <main class="container">
-        <h2>Jadwal Mengajar Anda</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nama</th>
-                    <th>Hari</th>
-                    <th>Jam Mulai</th>
-                    <th>Jam Selesai</th>
-                    <th>Mata Pelajaran</th>
-                    <th>Kelas</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for jadwal in jadwal_guru %}
-                <tr>
-                    <td>{{ jadwal.guru }}</td>
-                    <td>{{ jadwal.hari }}</td>
-                    <td>{{ jadwal.jam_mulai }}</td>
-                    <td>{{ jadwal.jam_selesai }}</td>
-                    <td>{{ jadwal.mata_pelajaran }}</td>
-                    <td>{{ jadwal.kelas }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6">Belum ada jadwal.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </main>
+        <div class="container">
+            <!-- Header -->
+            <div class="form-header" >
+                <h2 style="color: #6a0dad;">📝 Form Absensi Guru</h2>
+                <p>Silakan isi absensi sesuai dengan status kehadiran Anda hari ini.</p>
+            </div>
 
+            <!-- Waktu -->
+            <div class="time-stamp">
+                <p><strong>Tanggal:</strong> <span id="tanggal"></span></p>
+                <p><strong>Waktu:</strong> <span id="jam"></span></p>
+            </div>
+
+            <!-- Form & Ilustrasi -->
+            <div class="form-content">
+                <div class="form-box">
+                    <form method="POST" id="formAbsensi" ">
+                        {% csrf_token %}
+                        <label for="status">Status Absensi:</label>
+                        <select name="status" id="status" required>
+                            <option value="silahkan pilih">--Silahkan Pilih Salah satu --</option>
+                            <option value="Izin">Izin</option>
+                            <option value="Sakit">Sakit</option>
+ 
+                        </select><br>
+                    
+                        <div id="keterangan-field" style="display: none;">
+                            <label for="keterangan">Alasan:</label>
+                            <textarea name="keterangan" id="keterangan" required></textarea>
+                        </div>
+                    
+                        <input type="hidden" name="latitude" id="latitude">
+                        <input type="hidden" name="longitude" id="longitude">
+                    
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>
+                <div class="form-image" >
+                    <img src="/media/gambar.jpeg" alt="Ilustrasi Absensi">
+                </div>
+            </div>
+
+            <!-- Note -->
+            <div class="note">
+                <p><strong>Catatan:</strong> Jika memilih "Izin" atau "Sakit", harap cantumkan alasan dengan jelas.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fungsi untuk validasi form
+        document.getElementById('formAbsensi').addEventListener('submit', function(event) {
+            // Cek status
+            var status = document.getElementById('status').value;
+            var keteranganField = document.getElementById('keterangan-field');
+            var keterangan = document.getElementById('keterangan').value;
+    
+            // Tampilkan field keterangan hanya jika status Izin/Sakit
+            if (status === "Sakit" || status === "Izin") {
+                keteranganField.style.display = 'block';
+                
+                // Validasi: pastikan alasan diisi
+                if (keterangan.trim() === "") {
+                    event.preventDefault(); // Mencegah form submit
+                    alert("Harap isi alasan jika status Izin atau Sakit.");
+                }
+            } else {
+                keteranganField.style.display = 'none'; // Tidak perlu alasan jika status Alfa
+            }
+        });
+    
+        // Tampilkan textarea keterangan
+        document.getElementById('status').addEventListener('change', function () {
+            let keteranganField = document.getElementById('keterangan-field');
+            keteranganField.style.display = (this.value === "Sakit" || this.value === "Izin") ? 'block' : 'none';
+        });
+    
+        // GPS
+        navigator.geolocation.getCurrentPosition(function(position) {
+            document.getElementById("latitude").value = position.coords.latitude;
+            document.getElementById("longitude").value = position.coords.longitude;
+        }, function(error) {
+            alert("GPS tidak aktif atau tidak dapat mengambil lokasi.");
+        });
+    
+        // Waktu dan tanggal real-time
+        const today = new Date();
+        const tanggal = today.toLocaleDateString('id-ID', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+        document.getElementById('tanggal').textContent = tanggal;
+    
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('jam').textContent = now.toLocaleTimeString('id-ID');
+        }, 1000);
+    </script>
 </body>
 </html>

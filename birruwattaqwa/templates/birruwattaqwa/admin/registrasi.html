@@ -1,4 +1,17 @@
-body {
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrasi Akun Guru/Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+
+</head>
+<style>
+    body {
     display: flex;
     margin: 0;
     padding: 0;
@@ -8,7 +21,7 @@ body {
 /* Sidebar styling */
 .sidebar {
     width: 250px;
-    background-color: #6f2c4f;
+    background-color: #6a0dad;
     color: white;
     height: 100vh; /* Full height */
     position: fixed;
@@ -61,7 +74,7 @@ body {
 }
 
 .sidebar ul li a:hover {
-    background-color: #a24a7b;
+    background-color: #9b30ff;
 
 
     transform: translateX(5px);
@@ -98,14 +111,14 @@ img {
     font-size: 24px;
     margin-bottom: 20px;
     text-align: center;
-    color: #6f2c4f;
+    color: #6a0dad;
 }
 
 form label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #333;
+    color: #6a0dad;
 }
 
 form input,
@@ -113,7 +126,7 @@ form select,
 form textarea {
     width: 100%;
     padding: 12px 16px;
-    border: 1px solid #ddd;
+    border: 1px solid #6a0dad;
     border-radius: 8px;
     font-size: 14px;
     margin-bottom: 20px;
@@ -123,13 +136,13 @@ form textarea {
 form input:focus,
 form select:focus,
 form textarea:focus {
-    border-color: #6f2c4f;
+    border-color: #9b30ff;
     box-shadow: 0 0 0 3px rgba(111, 44, 79, 0.2);
 }
 
 form button {
     width: 100%;
-    background-color: #6f2c4f;
+    background-color: #6a0dad;
     color: white;
     padding: 12px;
     font-size: 16px;
@@ -140,7 +153,7 @@ form button {
 }
 
 form button:hover {
-    background-color: #8e3e67;
+    background-color: #9b30ff;
     transform: scale(1.03);
 }
 
@@ -174,3 +187,56 @@ form button:hover {
         padding: 20px;
     }
 }
+</style>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="profile">
+                <a href="{% url 'dashboard_admin' %}">
+                    <img src="/media/logo.jpeg" alt="Foto Admin">
+                </a>
+                <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+                <h4><a href="{% url 'generate_admin_qrcode' %}"></a>Admin</h4>
+            </div>
+            <ul>
+                <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
+                <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
+                <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
+                <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
+                <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-card">
+            <h2 class="form-title">Buat Akun Guru/Admin</h2>
+            <form method="post" style="color: #6a0dad;">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div id="pwd-feedback"></div>
+                <button type="submit">Daftar</button>
+            </form>
+        </div>
+    </div>
+    
+        <script>
+            (function(){
+              const pwd = document.getElementById('id_password1');   // ganti sesuai field name
+              const fb  = document.getElementById('pwd-feedback');
+              pwd.addEventListener('input', () => {
+                const val = pwd.value;
+                if (!val) { fb.textContent = ''; return; }
+                const res = zxcvbn(val);
+                // feedback.warning + array suggestions
+                let msgs = [];
+                if (res.feedback.warning) msgs.push(res.feedback.warning);
+                msgs = msgs.concat(res.feedback.suggestions);
+                fb.innerHTML = msgs.map(m => <p>${m}</p>).join('');
+              });
+            })();
+          </script>
+</body>
+
+</html>

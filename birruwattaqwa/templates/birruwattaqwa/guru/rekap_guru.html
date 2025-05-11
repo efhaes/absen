@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Absensi Guru</title>
+    <link rel="stylesheet" href="{% static 'css/guru/rekap_guru.css' %}">
+    <link rel="stylesheet" href="{% static 'css/guru/Dash_rekap.css' %}">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="profile">
+                <a href="{% url 'dashboard_guru' %}">
+                    <img src="/media/logo.jpeg" alt="Foto Guru">
+                </a>
+                <h4>{{ request.user.username }}</h4>
+            </div>
+            <ul>
+                <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
+                <li><a href="{% url 'rekap_guru' %}">📄 Lihat Rekap</a></li>
+                <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
+                <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <h2>Rekap Absensi Anda</h2>
+
+            <div class="actions">
+                <form method="get" class="search-bar">
+                    <input type="text" name="search" placeholder="Cari keterangan..." value="{{ search_query }}">
+                    <button type="submit" class="btn">Cari</button>
+                </form>
+                <a href="?export=true" class="btn">⬇️ Export ke Excel</a>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Status</th>
+                            <th>Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for absen in absensi_list %}
+                            <tr>
+                                <td>{{ absen.tanggal }}</td>
+                                <td>{{ absen.status }}</td>
+                                <td>{{ absen.keterangan|default:"-" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">Tidak ada data absensi.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="form-image">
+                    <img src="/media/absen.jpeg" alt="Ilustrasi Absensi">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

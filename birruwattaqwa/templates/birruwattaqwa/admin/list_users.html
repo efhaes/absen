@@ -19,7 +19,7 @@ body {
 /* Sidebar styling */
 .sidebar {
     width: 250px;
-    background-color: #6f2c4f;
+    background-color: #6a0dad;
     color: white;
     height: 100vh; /* Full height */
     position: fixed;
@@ -73,7 +73,7 @@ body {
 }
 
 .sidebar ul li a:hover {
-    background-color: #a24a7b;
+    background-color: #9b30ff;
     transform: translateX(5px);
 }
 
@@ -98,7 +98,7 @@ h2 {
     text-align: center;
     font-weight: 600;
     margin-bottom: 30px;
-    color: #2c3e50;
+    color: #6a0dad;
 }
 
 /* Filter Section */
@@ -122,7 +122,7 @@ h2 {
 
 .filter-section input:focus,
 .filter-section select:focus {
-    border-color: #3498db;
+    border-color: #9b30ff;
     outline: none;
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
 }
@@ -136,7 +136,7 @@ table {
 }
 
 table thead {
-    background: #3498db;
+    background: #6a0dad;
     color: white;
 }
 
@@ -147,7 +147,7 @@ table th, table td {
 }
 
 table tbody tr:hover {
-    background-color: #f0f9ff;
+    background-color: #9b30ff;
     transition: 0.3s;
 }
 
@@ -206,7 +206,9 @@ table td[colspan] {
 <body>
     <div class="sidebar">
         <div class="profile">
-            <img src="/media/logo.jpeg" alt="Foto Admin">
+            <a href="{% url 'dashboard_admin' %}">
+                <img src="/media/logo.jpeg" alt="Foto Admin">
+            </a>
             <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
             <h4>Admin</h4>
         </div>

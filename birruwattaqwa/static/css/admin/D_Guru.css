@@ -9,7 +9,7 @@
 .stat-box {
     min-width: 200px;
     padding: 20px;
-    background-color: #6f2c4f;
+    background-color: #6a0dad;
     border-radius: 10px;
     text-align: center;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
@@ -46,7 +46,7 @@
         font-family: 'Segoe UI', sans-serif;
         font-size: 22px;
         margin-bottom: 20px;
-        color: #6f2c4f;
+        color: #6a0dad;
     }
 
     canvas {

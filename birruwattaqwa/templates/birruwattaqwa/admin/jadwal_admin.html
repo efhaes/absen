@@ -9,17 +9,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        body {
+    body {
     display: flex;
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
+    color: #6a0dad;
 }
 
 /* Sidebar styling */
 .sidebar {
     width: 250px;
-    background-color: #6f2c4f;
+    background-color: #6a0dad;
     color: white;
     height: 100vh; /* Full height */
     position: fixed;
@@ -72,7 +73,7 @@
 }
 
 .sidebar ul li a:hover {
-    background-color: #a24a7b;
+    background-color: #9b30ff;
 
 
     transform: translateX(5px);
@@ -90,6 +91,7 @@ img {
             flex: 1;
             padding: 40px;
             margin-left: 270px;
+            color: #6a0dad;
         }
 
         h2, h3 {
@@ -103,6 +105,7 @@ img {
             border-radius: 16px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             margin-bottom: 40px;
+
         }
 
         form p {
@@ -124,12 +127,13 @@ img {
             border-radius: 8px;
             outline: none;
             font-size: 14px;
+            border-color: #6a0dad;
         }
 
         form button {
             margin-top: 20px;
             width: 100%;
-            background-color: #6C63FF;
+            background-color: #6a0dad;
             color: white;
             padding: 12px;
             font-size: 16px;
@@ -140,7 +144,7 @@ img {
         }
 
         form button:hover {
-            background-color: #5848c2;
+            background-color: #9b30ff;
         }
 
         table {
@@ -158,7 +162,7 @@ img {
         }
 
         thead {
-            background-color: #6C63FF;
+            background-color: #6a0dad;
             color: #fff;
         }
 
@@ -171,7 +175,7 @@ img {
         }
 
         .btn-warning {
-            background-color: #f39c12;
+            background-color: #6a0dad;
             color: white;
             padding: 8px 12px;
             border: none;
@@ -182,7 +186,7 @@ img {
         }
 
         .btn-warning:hover {
-            background-color: #e67e22;
+            background-color: #9b30ff;
         }
     </style>
 </head>
@@ -191,7 +195,9 @@ img {
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="profile">
-            <img src="/media/logo.jpeg" alt="Foto Admin">
+            <a href="{% url 'dashboard_admin' %}">
+                <img src="/media/logo.jpeg" alt="Foto Admin">
+            </a>
             <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
             <h4>Admin</h4>
         </div>
@@ -205,17 +211,17 @@ img {
     </div>
 
     <!-- Container -->
-    <div class="container">
-        <h2>Kelola Jadwal Guru</h2>
+    <div class="container" style="color: #6a0dad;">
+        <h2 style="color: #6a0dad; text-align: center;">Kelola Jadwal Guru</h2>
 
-        <h3>Tambah Jadwal Guru</h3>
-        <form method="POST">
+        <h3 style="color: #6a0dad; text-align: center;">Tambah Jadwal Guru</h3>
+        <form method="POST" style="color: #6a0dad;">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-success">Simpan</button>
         </form>
 
-        <h3>Daftar Jadwal Guru</h3>
+        <h3 style="color: #6a0dad;">Daftar Jadwal Guru</h3>
         <table>
             <thead>
                 <tr>

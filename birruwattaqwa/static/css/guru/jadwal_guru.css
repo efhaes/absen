@@ -1,85 +1,12 @@
-/* Reset dasar */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
 body {
     display: flex;
     font-family: 'Poppins', sans-serif;
     background-color: #f8f8f8;
 }
-
-/* Sidebar */
-.sidebar {
-    width: 250px;
-    background-color: #6f2c4f;
-    color: white;
-    height: 100vh;
-    position: fixed;
-    padding: 20px;
-    border-radius: 0 20px 20px 0;
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar .profile {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.sidebar .profile img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    transition: transform 0.3s ease-in-out;
-}
-
-.sidebar .profile img:hover {
-    transform: scale(1.05);
-}
-
-.sidebar h3 {
-    margin-top: 10px;
-}
-
-.sidebar h4 {
-    font-size: 14px;
-    color: #e0d4e8;
-    font-weight: 300;
-}
-
-.sidebar ul {
-    list-style: none;
-    margin-top: 20px;
-    padding-left: 0;
-}
-
-.sidebar ul li {
-    margin-bottom: 15px;
-}
-
-.sidebar ul li a {
-    display: block;
-    padding: 10px 15px;
-    background-color: transparent;
-    color: white;
-    text-decoration: none;
-    border-radius: 12px;
-    transition: 0.3s;
-}
-
-.sidebar ul li a:hover {
-    background-color: #a24a7b;
-    transform: translateX(5px);
-}
-
-/* Konten Utama */
 .container {
-    margin-left: 270px;
-    padding: 40px 20px;
-    width: 100%;
+    flex: 1;
+    padding: 30px;
+    margin-left: 0; /* ubah ini dari 270px ke 0 */
 }
 
 h2 {

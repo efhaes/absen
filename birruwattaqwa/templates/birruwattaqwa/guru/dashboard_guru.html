@@ -1,52 +1,80 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Guru</title>
-    <link rel="stylesheet" href="{% static 'css/side_guru.css' %}">
-    <link rel="stylesheet" href="{% static 'css/list.css' %}">
+    <link rel="stylesheet" href="{% static 'css/guru/Dash_guru.css' %}">
+    <link rel="stylesheet" href="{% static 'css/guru/isi_dash_guru.css' %}">
 
 </head>
+
 <body>
     <div class="dashboard">
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="profile">
-                <img src="/media/logo.jpeg" alt="Foto Admin">
+                <a href="{% url 'dashboard_guru' %}">
+                    <img src="/media/logo.jpeg" alt="Foto Guru">
+                </a>
                 <h3>{{ request.user }} </h3>
                 <h4><a href="#"></a>Guru</h4>
             </div>
             <ul>
-                <li><a href="{% url 'scan_qr_view' %}" class="btn btn-primary">📷Scan QR</a></li>
-                <li><a href="{% url 'list_absen' %}" class="btn btn-success">Lihat Rekap</a></li>
-                <li><a href="{% url 'jadwal_guru' %}"class="btn btn-info">Lihat Jadwal</a></li>
-                <li><a href="{% url 'absent' %}" class="btn btn-warning">Ajukan Izin</a></li>
+                <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
+                <li><a href="{% url 'rekap_guru' %}">📄 Lihat Rekap</a></li>
+                <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
+                <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
             </ul>
         </div>
-    </div>
+
         <div class="content">
             <h1>Selamat Datang, {{ request.user }}</h1>
             <div class="paragraf">
-                Gunakan menu di sebelah kiri untuk mengelola absensi, jadwal, dan pengajuan izin.
+                Gunakan menu di sebelah kiri untuk mengelola absensi harian, rekap absensi, jadwal, dan pengajuan izin.
             </div>
-        {%block content%}
-        <div class="absensi-status card">
-            <h3>📍 Status Absensi Hari Ini</h3>
-            {% if status %}
+            {%block content%}
+            <div class="absensi-status card">
+                <h3>📍 Status Absensi Hari Ini</h3>
+                {% if status %}
                 <p>✅ Kamu sudah absen sebagai <strong>{{ status }}</strong>.</p>
-            {% else %}
+                {% else %}
                 <p>⏳ Kamu belum melakukan absensi hari ini.</p>
-            {% endif %}
-        </div>
-        
+                {% endif %}
+            </div>
+            <div class="summary-cards">
+                <div class="summary-cards">
+                    <div class="card card-hadir">📅 Total Hari Aktif: <strong>{{ total_hari_aktif }}</strong></div>
+                    <div class="card card-hadir-bulan">✅ Hadir Bulan Ini: <strong>{{ total_hadir_bulan_ini }}</strong>
+                    </div>
+                    <div class="card card-izin-sakit-alfa">❌ Izin: <strong>{{ total_izin_bulan_ini }}</strong> |
+                        Sakit: <strong>{{ total_sakit_bulan_ini }}</strong> | Alfa: <strong>{{ total_alpha_bulan_ini}}</strong>
+                    </div>
 
-        {% endblock %}
+                </div>
+            </div>
+            <div class="jadwal">
+                <div class="card card-jadwal-minggu" style="padding: 11px;">
+                    <h4>📚 Jadwal Minggu Ini:</h4>
+                    {% if jadwal_minggu_ini %}
+                    <ul>
+                        {% for jadwal in jadwal_minggu_ini %}
+                        <li>{{ jadwal.hari }} - {{ jadwal.mata_pelajaran }} - {{ jadwal.kelas }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p><em>Tidak ada jadwal minggu ini.</em></p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% endblock %}
 
         </div>
-   
+    </div>
 
 </body>
-</html>
 
+</html>

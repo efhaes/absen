@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scan QR untuk Absen</title>
-    <link rel="stylesheet" href="{% static 'css/qradmin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/qradmin.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 
@@ -29,12 +29,12 @@
         </div>
         <div class="main-content">
             <div class="centered-content">
-                <h1>📷 QR Code Absensi</h1>
+                <h1 style="color:#6a0dad ;">📷 QR Code Absensi</h1>
                 <h4>Selamat Pagi!! 🌞<br>Silakan scan QR code di bawah ini untuk melakukan absensi.</h4>
                 <div class="qr-wrapper">
                     <img src="{{ daily_qr.qrcode.url }}" alt="QR Code {{ daily_qr.tanggal }}">
                 </div>
-                <p class="tanggal">📅 {{ daily_qr.tanggal|date:"l, d M Y" }}</p>
+                <p class="tanggal" style="color: #9b30ff;">📅 {{ daily_qr.tanggal|date:"l, d M Y" }}</p>
             </div>
         </div>
     </div>
