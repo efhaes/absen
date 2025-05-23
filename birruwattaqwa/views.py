@@ -17,6 +17,11 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from .forms import (AdminCreateUserForm,JadwalGuruForm,AbsensiForm)
 from .models import (JadwalGuru,Absensi,ProfilGuru)
 from django.http import HttpResponse
+import json
+from django.http import JsonResponse
+from django.utils.dateparse import parse_time
+
+
 
 
 lokasi_qr = {"lat": -6.4301401, "lon": 106.6882291, "radius": 50}
@@ -33,24 +38,19 @@ def haversine(lat1, lon1, lat2, lon2):
 
 @login_required
 def absen_guru(request):
-    user = request.user  
+    user = request.user
     now_time = now().time()
     today = now().date()
     bulan, tahun = now().strftime('%B'), now().year
     qr_code_value = f"ABSEN-{today}"
 
-    error_message = None  
     form = AbsensiForm()
+    batas_absen = time(9, 0)
 
-    # Cek apakah sudah lewat jam 9 pagi
-    batas_absen = time(9, 0)  # Jam 9 pagi
-
+    # Otomatis dianggap Alfa jika belum absen dan sudah lewat batas waktu
     if now_time > batas_absen:
-        # Cek apakah user sudah absen hari ini
         sudah_absen = Absensi.objects.filter(guru=user, tanggal=today).exists()
-
         if not sudah_absen:
-            # Kalau belum absen, otomatis buat absensi Alfa
             Absensi.objects.create(
                 guru=user,
                 tanggal=today,
@@ -61,24 +61,16 @@ def absen_guru(request):
                 jam_absensi=now().time(),
             )
             messages.warning(request, "Waktu absensi sudah lewat. Anda dianggap Alfa hari ini.")
-            return redirect('absesnt')  # Atau redirect ke halaman lain kalau mau
+            return redirect('absent')
 
-    # Kalau belum lewat jam 9, atau udah absen, lanjut ke form absensi biasa
     if request.method == 'POST':
         form = AbsensiForm(request.POST)
 
         if form.is_valid():
             status = form.cleaned_data['status']
-            keterangan = ""
+            keterangan = request.POST.get('keterangan', '').strip() if status in ["Sakit", "Izin"] else "Tidak Hadir (Alpha)"
 
-            if status == "Sakit" or status == "Izin":
-                keterangan = request.POST.get('keterangan', '').strip()
-            elif status == "Alfa":
-                keterangan = "Tidak Hadir (Alpha)"
-        
-            print(f"Status: {status}, Keterangan: {keterangan}")
-            print(f"Data POST: {request.POST}")
-
+            # Jika status Sakit atau Izin, langsung catat absensi tanpa cek lokasi
             if status in ["Sakit", "Izin"]:
                 Absensi.objects.create(
                     guru=user,
@@ -89,45 +81,52 @@ def absen_guru(request):
                     tahun=tahun,
                     jam_absensi=now().time(),
                 )
-                return redirect('home')
+                messages.success(request, f"Absensi {status} berhasil diajukan.")
+                return render(request, 'birruwattaqwa/guru/absent.html', {
+                    'qr_code_value': qr_code_value,
+                    'form': form,
+                    
+                })
 
-            latitude = request.POST.get('latitude', '').strip()
-            longitude = request.POST.get('longitude', '').strip()
+            # Jika status Hadir, lakukan pengecekan lokasi
+            elif status == "Hadir":
+                latitude = request.POST.get('latitude', '').strip()
+                longitude = request.POST.get('longitude', '').strip()
 
-            if latitude and longitude:
-                try:
-                    latitude = float(latitude)
-                    longitude = float(longitude)
+                if latitude and longitude:
+                    try:
+                        latitude = float(latitude)
+                        longitude = float(longitude)
 
-                    school_lat = settings.SCHOOL_LOCATION["latitude"]
-                    school_lon = settings.SCHOOL_LOCATION["longitude"]
+                        school_lat = settings.SCHOOL_LOCATION["latitude"]
+                        school_lon = settings.SCHOOL_LOCATION["longitude"]
 
-                    distance = haversine((latitude, longitude), (school_lat, school_lon), unit=Unit.METERS)
+                        distance = haversine(latitude, longitude, school_lat, school_lon)
 
-                    if distance > 50:
-                        error_message = f"Anda berada di luar area absensi! Jarak: {distance:.2f} meter"
-                    else:
-                        Absensi.objects.create(
-                            guru=user,
-                            tanggal=today,
-                            status=status,
-                            keterangan=keterangan,
-                            bulan=bulan,
-                            tahun=tahun,
-                            jam_absensi=now().time(),
-                            latitude=latitude,
-                            longitude=longitude
-                        )
-                        return redirect('home')
+                        if distance > 50:
+                            messages.error(request, f"Anda berada di luar area absensi! Jarak: {distance:.2f} meter")
+                        else:
+                            Absensi.objects.create(
+                                guru=user,
+                                tanggal=today,
+                                status=status,
+                                keterangan="Hadir",
+                                bulan=bulan,
+                                tahun=tahun,
+                                jam_absensi=now().time(),
+                                latitude=latitude,
+                                longitude=longitude
+                            )
+                            messages.success(request, "Absensi berhasil.")
+                            return redirect('dashboard_guru')
 
-                except ValueError:
-                    error_message = "Lokasi tidak valid. Pastikan GPS aktif dan coba lagi."
-            else:
-                error_message = "Lokasi tidak terdeteksi. Pastikan GPS aktif."
+                    except ValueError:
+                        messages.error(request, "Lokasi tidak valid. Pastikan GPS aktif dan coba lagi.")
+                else:
+                    messages.error(request, "Lokasi tidak terdeteksi. Pastikan GPS aktif.")
 
     return render(request, 'birruwattaqwa/guru/absent.html', {
         'qr_code_value': qr_code_value,
-        'error_message': error_message,
         'form': form,
     })
 
@@ -412,21 +411,35 @@ def jadwal_admin(request):
 
     return render(request, 'birruwattaqwa/admin/jadwal_admin.html', {'form': form, 'jadwal_list': jadwal_list})
 
+@csrf_exempt
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())
 def edit_jadwal(request, jadwal_id):
-    """Admin mengedit jadwal guru"""
-    jadwal = get_object_or_404(JadwalGuru, id=jadwal_id)
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
 
-    if request.method == "POST":
-        form = JadwalGuruForm(request.POST, instance=jadwal)
-        if form.is_valid():
-            form.save()
-            return redirect('jadwal_admin')  # Redirect setelah edit
-    else:
-        form = JadwalGuruForm(instance=jadwal)
+            # Ambil objek jadwal berdasarkan ID
+            jadwal = JadwalGuru.objects.get(id=jadwal_id)
 
-    return render(request, 'birruwattaqwa/edit_jadwal.html', {'form': form})
+            # Update data
+            guru_nama = data.get('guru')
+            guru_obj = User.objects.get(username=guru_nama)  # Pastikan guru kirim username
+
+            jadwal.guru = guru_obj
+            jadwal.hari = data.get('hari')
+            jadwal.jam_mulai = parse_time(data.get('jam_mulai'))  # parsing jam
+            jadwal.jam_selesai = parse_time(data.get('jam_selesai'))
+            jadwal.mata_pelajaran = data.get('mata_pelajaran')
+            jadwal.kelas = data.get('kelas')
+
+            jadwal.save()
+
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            print(e)
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
 
 @login_required
@@ -555,8 +568,6 @@ def scan_qr_view(request):
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
-from openpyxl import Workbook
-from openpyxl.styles import Font, Alignment, PatternFill
 import datetime
 from .models import Absensi
 

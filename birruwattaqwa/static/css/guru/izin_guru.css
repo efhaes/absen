@@ -141,6 +141,79 @@ select option:hover{
     color: #856404;
 }
 
+.flash-messages {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.flash {
+    min-width: 250px;
+    max-width: 220px;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 300;
+    margin: 0;
+    color: #fff;
+    animation: flashIn 0.6s ease-out forwards, flashOut 6s ease-in forwards;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+    transform-origin: top right;
+}
+
+/* Background gradient masing-masing tipe */
+.flash.success {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+}
+
+.flash.error {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+}
+
+.flash.warning {
+    background: linear-gradient(135deg, #f9d423, #ff4e50);
+    color: #333;
+}
+
+/* Animasi masuk (fade + slide + scale) */
+@keyframes flashIn {
+    0% {
+        opacity: 0;
+        transform: translateX(50px) scale(0.8);
+    }
+    60% {
+        opacity: 1;
+        transform: translateX(-5px) scale(1.05);
+    }
+    100% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Animasi keluar (fade + shrink) */
+@keyframes flashOut {
+    0%, 80% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(50px) scale(0.7);
+    }
+}
+
+
+
+
+
 /* Responsive */
 @media (max-width: 768px) {
     .container {

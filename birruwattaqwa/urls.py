@@ -6,7 +6,7 @@ from .views import view_absensi
 from .views import dashboard_guru, dashboard_admin,redirect_dashboard,jadwal_guru,jadwal_admin,edit_jadwal,create_user,list_users
 from .views import  generate_daily_qrcode, generate_admin_qrcode, scan_qr_view, simple_view,rekap_absensi_guru
 urlpatterns = [
-    path('', home, name='home'),  # Redirect ke halaman login
+    path('', home, name='home'),  
     path('login/', login_guru, name='login'),
     path('logout/', logout_guru, name='logout'),
     path('absen/', absen_guru, name='absent'),
@@ -19,7 +19,7 @@ urlpatterns = [
     path('dashboard/', redirect_dashboard, name='dashboard'),
     path('jadwal-guru/', jadwal_guru, name='jadwal_guru'),
     path('jadwal-admin/', jadwal_admin, name='jadwal_admin'),
-    path('jadwal/edit/<int:jadwal_id>/', edit_jadwal, name='edit_jadwal'),
+    path('edit-jadwal-ajax/<int:jadwal_id>/', edit_jadwal, name='edit_jadwal_ajax'),
     path('registrasi/', create_user, name='registrasi'),
     path('users/', list_users, name='list_users'),
     path('admin_qrcode/', generate_admin_qrcode, name='generate_admin_qrcode'),

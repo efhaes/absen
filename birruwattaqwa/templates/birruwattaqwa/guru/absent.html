@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Absensi</title>
+    <link rel="icon" type="image/jpeg" href="/media/logo.jpeg">
     <link rel="stylesheet" href="{% static 'css/guru/izin_guru.css' %}">
     <link rel="stylesheet" href="{% static 'css/guru/Dash_guru.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="dashboard">
@@ -32,7 +34,7 @@
             <!-- Header -->
             <div class="form-header" >
                 <h2 style="color: #6a0dad;">📝 Form Absensi Guru</h2>
-                <p>Silakan isi absensi sesuai dengan status kehadiran Anda hari ini.</p>
+                <p>Jika Anda sakit atau Izin Isi Form dibawah Ini.</p>
             </div>
 
             <!-- Waktu -->
@@ -44,7 +46,16 @@
             <!-- Form & Ilustrasi -->
             <div class="form-content">
                 <div class="form-box">
-                    <form method="POST" id="formAbsensi" ">
+                    {% if messages %}
+<div class="flash-messages" style="display: none;">
+    {% for message in messages %}
+        <div class="flash" data-tag="{{ message.tags }}" data-message="{{ message }}">
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+                    <form method="POST" id="formAbsensi" >
                         {% csrf_token %}
                         <label for="status">Status Absensi:</label>
                         <select name="status" id="status" required>
@@ -124,6 +135,46 @@
             const now = new Date();
             document.getElementById('jam').textContent = now.toLocaleTimeString('id-ID');
         }, 1000);
+
+        setTimeout(() => {
+        const flash = document.querySelectorAll('.flash');
+        flash.forEach(el => el.remove());
+    }, 3000);
+
+document.addEventListener('DOMContentLoaded', function () {
+    const flashMessages = document.querySelectorAll('.flash-messages .flash');
+    flashMessages.forEach(function(flash) {
+        const tag = flash.dataset.tag;     // contoh: 'success', 'error', 'info'
+        const message = flash.dataset.message;
+
+        let icon = 'info'; // default
+        if (tag.includes('success')) {
+            icon = 'success';
+        } else if (tag.includes('error')) {
+            icon = 'error';
+        } else if (tag.includes('warning')) {
+            icon = 'warning';
+        }
+
+        Swal.fire({
+            icon: icon,
+            title: tag.charAt(0).toUpperCase() + tag.slice(1),
+            text: message,
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            }
+        });
+    });
+});
+
     </script>
+
+
 </body>
 </html>
