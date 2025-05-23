@@ -1,43 +1,58 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Login</title>
+  <title>Login - Absensi Guru</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins&display=swap">
   <style>
     body {
-      background-color: #121212;
+      background: linear-gradient(to right, #4b0082, #8a2be2);
       font-family: 'Poppins', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+      overflow: hidden;
     }
 
     .login-box {
-      background-color: #1f1f1f;
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 0 15px rgba(0,255,255,0.3), 0 0 15px rgba(255,0,255,0.3);
-      text-align: center;
-      width: 320px;
-      transition: all 0.4s ease;
-      position: relative;
-      color: #fff;
-    }
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
+  text-align: center;
+  width: 340px;
+  backdrop-filter: blur(15px);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.4s ease;
+  position: relative;
+  transform: scale(1);
+}
+
+.login-box:hover {
+  box-shadow:
+    0 0 20px rgba(186, 85, 211, 0.5),
+    0 0 30px rgba(186, 85, 211, 0.6),
+    0 0 40px rgba(0, 255, 255, 0.3);
+  transform: scale(1.02);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
 
     .avatar {
       width: 80px;
       border-radius: 50%;
       margin-bottom: 10px;
-      box-shadow: 0 0 8px #00ffe7;
+      border: 2px solid #fff;
+      box-shadow: 0 0 10px rgba(255,255,255,0.4);
     }
 
-    .login-box h2 {
-      margin-bottom: 10px;
-      font-size: 26px;
+    h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
       cursor: pointer;
     }
 
@@ -45,7 +60,7 @@
       opacity: 0;
       max-height: 0;
       overflow: hidden;
-      transition: all 0.4s ease;
+      transition: all 1s ease;
     }
 
     form.show {
@@ -55,63 +70,69 @@
     }
 
     .input-group {
-      position: relative;
-      margin: 20px 0;
+      margin: 30px;
+      border-radius: 25px;
+
     }
 
     .input-group input {
       width: 100%;
       padding: 12px;
       border-radius: 25px;
-      background: #2b2b2b;
       border: none;
-      color: white;
       outline: none;
       font-size: 14px;
       text-align: center;
-      box-shadow: 0 0 8px rgba(0,255,255,0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+      transition: background 0.3s ease;
     }
-
-    .input-group label {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      color: #aaa;
-      pointer-events: none;
+  .input-group input::placeholder {
+    color: white;
+  } 
+    .input-group input:focus {
+      background: rgba(255, 255, 255, 0.2);
     }
 
     .login-btn {
-      width: 100%;
+      width: 90%;
       padding: 12px;
+      margin-left: 29px;
       border: none;
       border-radius: 25px;
-      background: linear-gradient(to right, #00e0ff, #ff00c8);
+      background: linear-gradient(to right, #6a00ff, #b388ff);
       color: white;
       font-size: 16px;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(0,255,255,0.3);
-      transition: all 0.3s ease;
+      font-weight: bold;
+      transition: 0.3s ease;
+      box-shadow: 0 0 12px rgba(186, 85, 211, 0.6);
+    }
+
+    .login-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 16px rgba(186, 85, 211, 0.9);
     }
 
     .messages {
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
 
     .messages p {
       font-size: 14px;
-      padding: 6px;
+      padding: 8px;
       border-radius: 8px;
     }
 
     .success {
-      background: #0f0;
-      color: #000;
+      background: #bbf7d0;
+      color: #0a0;
     }
 
     .error {
-      background: #f33;
-      color: white;
+      background: #fecaca;
+      color: #a00;
     }
   </style>
 </head>
@@ -132,23 +153,25 @@
   <form method="POST" action="{% url 'login' %}">
     {% csrf_token %}
     <div class="input-group">
-      <input type="text" id="username" name="username" required>
-      <label for="username">Username</label>
+      <input type="text" name="username" placeholder="Username" required>
     </div>
     <div class="input-group">
-      <input type="password" id="password" name="password" required>
-      <label for="password">Password</label>
+      <input type="password" name="password" placeholder="Password" required>
     </div>
     <button type="submit" class="login-btn">Login</button>
   </form>
 </div>
 
 <script>
-  const title = document.querySelector('.login-box h2');
+  const loginBox = document.querySelector('.login-box');
   const form = document.querySelector('.login-box form');
 
-  title.addEventListener('click', () => {
-    form.classList.toggle('show');
+  loginBox.addEventListener('mouseenter', () => {
+    form.classList.add('show');
+  });
+
+  loginBox.addEventListener('mouseleave', () => {
+    form.classList.remove('show');
   });
 </script>
 

@@ -99,3 +99,12 @@ class DailyQRCode(models.Model):
     
     def __str__(self):
         return f"QR Code {self.tanggal}"
+    
+class LokasiAbsen(models.Model):
+    nama_tempat = models.CharField(max_length=100, default='Sekolah')
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    radius_meter = models.IntegerField(default=50)  # radius area absensi dalam meter
+
+    def __str__(self):
+        return f"{self.nama_tempat} ({self.latitude}, {self.longitude})"

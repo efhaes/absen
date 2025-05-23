@@ -4,7 +4,7 @@ from birruwattaqwa.views import login_guru, logout_guru, absen_guru, home, scan_
 from django.conf.urls.static import static
 from .views import view_absensi
 from .views import dashboard_guru, dashboard_admin,redirect_dashboard,jadwal_guru,jadwal_admin,edit_jadwal,create_user,list_users
-from .views import  generate_daily_qrcode, generate_admin_qrcode, scan_qr_view, simple_view,rekap_absensi_guru
+from .views import  generate_daily_qrcode, generate_admin_qrcode, scan_qr_view, simple_view,rekap_absensi_guru,atur_lokasi
 urlpatterns = [
     path('', home, name='home'),  
     path('login/', login_guru, name='login'),
@@ -26,6 +26,7 @@ urlpatterns = [
     path('absensi/<str:tanggal>/', generate_daily_qrcode, name='generate_daily_qrcode'),
     path('scan-qr/', scan_qr_view, name='scan_qr_view'),
     path("test-ngrok/",simple_view, name="test_ngrok"),
+    path('atur-lokasi/', atur_lokasi, name='atur_lokasi_absen'),
 
 ]
 

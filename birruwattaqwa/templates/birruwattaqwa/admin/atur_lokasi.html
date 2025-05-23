@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atur Lokasi Absensi</title>
+
+    <!-- AOS CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f0ff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h2 {
+            color: #5e2a84;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        form {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 0 15px rgba(93, 53, 158, 0.2);
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 30px;
+        }
+
+        label {
+            font-weight: 500;
+            color: #5e2a84;
+        }
+
+        input, select, textarea {
+            border-radius: 50px !important;
+            padding-left: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background-color: #7b35c8;
+            border-color: #7b35c8;
+            border-radius: 999px;
+            padding: 10px 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #6929aa;
+            border-color: #6929aa;
+        }
+
+        .alert {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+
+{% block content %}
+<h2 data-aos="fade-down">Atur Lokasi Absensi</h2>
+
+<form method="post" data-aos="zoom-in" data-aos-delay="200">
+    {% csrf_token %}
+    
+    {% for field in form %}
+    <div class="form-group row">
+        <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label">{{ field.label }}</label>
+        <div class="col-sm-8">
+            {{ field }}
+            {% if field.errors %}
+                <div class="text-danger small">{{ field.errors|striptags }}</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary w-100 mt-3">Simpan Lokasi</button>
+</form>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" data-aos="fade-up">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+{% endblock %}
+
+<!-- AOS Script -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+
+</body>
+</html>

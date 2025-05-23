@@ -2,6 +2,7 @@ from django import forms
 from .models import Absensi
 from .models import JadwalGuru
 from .models import ProfilGuru
+from .models import LokasiAbsen
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group 
 from django.contrib.auth.forms import UserCreationForm # Tambahkan ini!
@@ -58,3 +59,9 @@ class AdminCreateUserForm(UserCreationForm):
             user.groups.add(group)
 
         return user
+
+
+class LokasiAbsenForm(forms.ModelForm):
+    class Meta:
+        model = LokasiAbsen
+        fields = ['nama_tempat', 'latitude', 'longitude', 'radius_meter']

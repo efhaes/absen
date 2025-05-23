@@ -20,11 +20,13 @@ from django.http import HttpResponse
 import json
 from django.http import JsonResponse
 from django.utils.dateparse import parse_time
+from .models import LokasiAbsen
 
 
 
 
-lokasi_qr = {"lat": -6.4301401, "lon": 106.6882291, "radius": 50}
+
+lokasi_qr = {"lat": -6.923535, "lon": 110.568171, "radius": 50}
 
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371  # km
@@ -35,6 +37,7 @@ def haversine(lat1, lon1, lat2, lon2):
     return R * c * 1000  # meter
 
 
+from .models import LokasiAbsen  # pastikan ini di-import
 
 @login_required
 def absen_guru(request):
@@ -85,7 +88,6 @@ def absen_guru(request):
                 return render(request, 'birruwattaqwa/guru/absent.html', {
                     'qr_code_value': qr_code_value,
                     'form': form,
-                    
                 })
 
             # Jika status Hadir, lakukan pengecekan lokasi
@@ -98,27 +100,28 @@ def absen_guru(request):
                         latitude = float(latitude)
                         longitude = float(longitude)
 
-                        school_lat = settings.SCHOOL_LOCATION["latitude"]
-                        school_lon = settings.SCHOOL_LOCATION["longitude"]
-
-                        distance = haversine(latitude, longitude, school_lat, school_lon)
-
-                        if distance > 50:
-                            messages.error(request, f"Anda berada di luar area absensi! Jarak: {distance:.2f} meter")
+                        lokasi = LokasiAbsen.objects.first()  # ambil lokasi dari DB
+                        if not lokasi:
+                            messages.error(request, "Lokasi absensi belum dikonfigurasi oleh admin.")
                         else:
-                            Absensi.objects.create(
-                                guru=user,
-                                tanggal=today,
-                                status=status,
-                                keterangan="Hadir",
-                                bulan=bulan,
-                                tahun=tahun,
-                                jam_absensi=now().time(),
-                                latitude=latitude,
-                                longitude=longitude
-                            )
-                            messages.success(request, "Absensi berhasil.")
-                            return redirect('dashboard_guru')
+                            distance = haversine(latitude, longitude, lokasi.latitude, lokasi.longitude)
+
+                            if distance > lokasi.radius_meter:
+                                messages.error(request, f"Anda berada di luar area absensi! Jarak: {distance:.2f} meter")
+                            else:
+                                Absensi.objects.create(
+                                    guru=user,
+                                    tanggal=today,
+                                    status=status,
+                                    keterangan="Hadir",
+                                    bulan=bulan,
+                                    tahun=tahun,
+                                    jam_absensi=now().time(),
+                                    latitude=latitude,
+                                    longitude=longitude
+                                )
+                                messages.success(request, "Absensi berhasil.")
+                                return redirect('dashboard_guru')
 
                     except ValueError:
                         messages.error(request, "Lokasi tidak valid. Pastikan GPS aktif dan coba lagi.")
@@ -508,43 +511,54 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
+from django.utils.timezone import localdate
+from django.contrib import messages
+from django.shortcuts import redirect
 
 @login_required
 def generate_daily_qrcode(request, tanggal):
     if request.user.groups.filter(name='Guru').exists():
-        tanggal = timezone.localdate()
+        try:
+            tanggal_qr = datetime.datetime.strptime(tanggal, "%Y-%m-%d").date()
+        except ValueError:
+            messages.error(request, "❌ Format tanggal tidak valid.")
+            return redirect('scan_qr_view')
 
-        # Ambil lokasi dari query string
+        tanggal_hari_ini = localdate()
+        if tanggal_qr != tanggal_hari_ini:
+            messages.error(request, "❌ QR code ini bukan untuk hari ini.")
+            return redirect('scan_qr_view')
+
         try:
             lat = float(request.GET.get("lat"))
             lon = float(request.GET.get("lon"))
         except (TypeError, ValueError):
-            return HttpResponse("❌ Lokasi tidak valid atau tidak tersedia.")
+            messages.error(request, "❌ Lokasi tidak valid atau tidak tersedia.")
+            return redirect('scan_qr_view')
 
-        # Hitung jarak
         jarak = haversine(lat, lon, lokasi_qr["lat"], lokasi_qr["lon"])
-        print(f"Lokasi user: {lat}, {lon}")
-        print(f"Lokasi sekolah: {lokasi_qr['lat']}, {lokasi_qr['lon']}")
-        print(f"Jarak dihitung: {jarak} meter")
         if jarak > lokasi_qr["radius"]:
-            return HttpResponse(f"📍 Kamu terlalu jauh dari lokasi absen. (Jarakmu: {int(jarak)} m)")
+            messages.warning(request, f"📍 Kamu terlalu jauh dari lokasi absen. (Jarakmu: {int(jarak)} m)")
+            return redirect('scan_qr_view')
 
-        # Cek apakah sudah absen
-        if not Absensi.objects.filter(guru=request.user, tanggal=tanggal).exists():
+        if not Absensi.objects.filter(guru=request.user, tanggal=tanggal_hari_ini).exists():
             Absensi.objects.create(
                 guru=request.user,
-                tanggal=tanggal,
-                tahun=tanggal.year,
-                bulan=tanggal.strftime("%B"),
+                tanggal=tanggal_hari_ini,
+                tahun=tanggal_hari_ini.year,
+                bulan=tanggal_hari_ini.strftime("%B"),
                 status="Hadir",
                 keterangan="Absen via QR"
             )
-            return HttpResponse("✅ Absensi berhasil tercatat.")
+            messages.success(request, "✅ Absensi berhasil tercatat.")
         else:
-            return HttpResponse("⚠️ Kamu sudah absen hari ini.")
-    
-    return HttpResponse("❌ Hanya guru yang bisa absen lewat QR code.")
+            messages.info(request, "⚠️ Kamu sudah absen hari ini.")
 
+        return redirect('scan_qr_view')
+
+    messages.error(request, "❌ Hanya guru yang bisa absen lewat QR code.")
+    return redirect('scan_qr_view')
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  # Cuma admin bisa akses
@@ -641,6 +655,32 @@ def rekap_absensi_guru(request):
 def simple_view(request):
     return HttpResponse("Hello Ngrok!")
 
+from .forms import LokasiAbsenForm
+
+@login_required
+def atur_lokasi(request):
+    lokasi, created = LokasiAbsen.objects.get_or_create(
+        id=1,
+        defaults={
+            'nama_tempat': 'Sekolah',
+            'latitude': -6.923535,
+            'longitude':110.568171,
+            'radius_meter': 10,
+        }
+    )
+
+    if request.method == 'POST':
+        form = LokasiAbsenForm(request.POST, instance=lokasi)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Lokasi berhasil diperbarui.")
+            return redirect('atur_lokasi')
+    else:
+        form = LokasiAbsenForm(instance=lokasi)
+
+    return render(request, 'birruwattaqwa/admin/atur_lokasi.html', {
+        'form': form
+    })
 
 
 
