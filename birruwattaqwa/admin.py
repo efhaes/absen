@@ -1,5 +1,5 @@
 from django.contrib import admin
-from birruwattaqwa.models import Absensi,JadwalGuru,DailyQRCode, LokasiAbsen # Tambahkan JadwalGuru
+from birruwattaqwa.models import Absensi,JadwalGuru,DailyQRCode, LokasiAbsen,MataPelajaran,Kelas # Tambahkan JadwalGuru
 
 class AbsensiAdmin(admin.ModelAdmin):
     list_display = ('guru', 'tanggal', 'status', 'keterangan', 'bulan', 'tahun', 'jam_absensi', 'lokasi', 'latitude', 'longitude')
@@ -13,6 +13,17 @@ class JadwalGuruAdmin(admin.ModelAdmin):
     list_filter = ('hari', 'mata_pelajaran', 'kelas', 'guru')
     search_fields = ('guru__username', 'mata_pelajaran', 'kelas')
     ordering = ('hari', 'jam_mulai')
+    
+@admin.register(MataPelajaran)
+class MataPelajaranAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nama')
+
+@admin.register(Kelas)
+class KelasAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nama')
+
+
+
 
 
 admin.site.register(LokasiAbsen)

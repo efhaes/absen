@@ -14,13 +14,13 @@ from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
-from .forms import (AdminCreateUserForm,JadwalGuruForm,AbsensiForm)
+from .forms import (AdminCreateUserForm,JadwalGuruForm,AbsensiForm,KelasForm,MataPelajaranForm)
 from .models import (JadwalGuru,Absensi,ProfilGuru)
 from django.http import HttpResponse
 import json
 from django.http import JsonResponse
 from django.utils.dateparse import parse_time
-from .models import LokasiAbsen
+from .models import LokasiAbsen,MataPelajaran,Kelas
 
 
 
@@ -674,13 +674,65 @@ def atur_lokasi(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Lokasi berhasil diperbarui.")
-            return redirect('atur_lokasi')
+            return redirect('atur_lokasi_absen')
     else:
         form = LokasiAbsenForm(instance=lokasi)
 
     return render(request, 'birruwattaqwa/admin/atur_lokasi.html', {
         'form': form
     })
+    
+@login_required
+def list_kelas(request):
+    kelas_list = Kelas.objects.all()
+    
+    if request.method == 'POST':
+        if 'edit_id' in request.POST:
+            kelas = get_object_or_404(Kelas, id=request.POST.get('edit_id'))
+            form = KelasForm(request.POST, instance=kelas)
+            if form.is_valid():
+                form.save()
+                return redirect('list_kelas')
+        elif 'delete_id' in request.POST:
+            kelas = get_object_or_404(Kelas, id=request.POST.get('delete_id'))
+            kelas.delete()
+            return redirect('list_kelas')
+        else:
+            form = KelasForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('list_kelas')
+    else:
+        form = KelasForm()
+
+    return render(request, 'birruwattaqwa/admin/kelola_kelas.html', {'kelas_list': kelas_list, 'form': form})
+
+@login_required
+def list_mapel(request):
+    mapel_list = MataPelajaran.objects.all()
+
+    if request.method == 'POST':
+        if 'edit_id' in request.POST:
+            mapel = get_object_or_404(MataPelajaran, id=request.POST.get('edit_id'))
+            form = MataPelajaranForm(request.POST, instance=mapel)
+            if form.is_valid():
+                form.save()
+                return redirect('list_mapel')
+        elif 'delete_id' in request.POST:
+            mapel = get_object_or_404(MataPelajaran, id=request.POST.get('delete_id'))
+            mapel.delete()
+            return redirect('list_mapel')
+        else:
+            form = MataPelajaranForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('list_mapel')
+    else:
+        form = MataPelajaranForm()
+
+    return render(request, 'birruwattaqwa/admin/kelola_matpel.html', {'mapel_list': mapel_list, 'form': form})
+
+
 
 
 

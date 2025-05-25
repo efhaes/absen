@@ -33,20 +33,21 @@ class Absensi(models.Model):
     def __str__(self):
         return f"{self.guru.username} - {self.tanggal} - {self.status}"
     
-class JadwalGuru(models.Model):
-    MATA_PELAJARAN_CHOICES = [
-        ('IPA', 'IPA'),
-        ('IPS', 'IPS'),
-        ('Bahasa Indonesia', 'Bahasa Indonesia'),
-        ('Bahasa Inggris', 'Bahasa Inggris'),
-        ('Bahasa Arab', 'Bahasa Arab'),
-        ('Matematika', 'Matematika'),
-        ('PKN', 'PKN'),
-        ('Seni Budaya', 'Seni Budaya'),
-        ('Penjaskes', 'Penjaskes'),
-        ('Pend. Agama Islam', 'Pend. Agama Islam'),
-    ]
+class MataPelajaran(models.Model):
+    nama = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.nama
+
+
+class Kelas(models.Model):
+    nama = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.nama
+
+
+class JadwalGuru(models.Model):
     HARI_CHOICES = [
         ('Senin', 'Senin'),
         ('Selasa', 'Selasa'),
@@ -56,31 +57,15 @@ class JadwalGuru(models.Model):
         ('Sabtu', 'Sabtu'),
     ]
 
-    KELAS_CHOICES = [
-        ('1A', '1A'),
-        ('1B', '1B'),
-        ('2A', '2A'),
-        ('2B', '2B'),
-        ('3A', '3A'),
-        ('3B', '3B'),
-        ('4A', '4A'),
-        ('4B', '4B'),
-        ('5A', '5A'),
-        ('5B', '5B'),
-        ('6A', '6A'),
-        ('6B', '6B')
-        # Tambahkan sesuai kebutuhan
-    ]
-
     guru = models.ForeignKey(User, on_delete=models.CASCADE)
     hari = models.CharField(max_length=20, choices=HARI_CHOICES)
     jam_mulai = models.TimeField()
     jam_selesai = models.TimeField()
-    mata_pelajaran = models.CharField(max_length=100, choices=MATA_PELAJARAN_CHOICES)
-    kelas = models.CharField(max_length=10, choices=KELAS_CHOICES)
+    mata_pelajaran = models.ForeignKey(MataPelajaran, on_delete=models.CASCADE)
+    kelas = models.ForeignKey(Kelas, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.guru.username} - {self.hari} - {self.mata_pelajaran} - {self.kelas}"
+        return f"{self.guru.username} - {self.hari} - {self.mata_pelajaran.nama} - {self.kelas.nama}"
     
 class ProfilGuru(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

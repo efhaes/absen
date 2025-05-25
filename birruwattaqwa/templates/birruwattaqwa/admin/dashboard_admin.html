@@ -2,23 +2,34 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Dashboard Admin</title>
-    <link rel="icon" type="image/jpeg" href="/media/logo.jpeg">
-    <link rel="stylesheet" href="{% static 'css/admin/D_sidebar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/admin/D_guru.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/jpeg" href="/media/logo.jpeg" />
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/admin/nyoba.css' %}" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+
+    <!-- AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <!-- Loader -->
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
+
     <div class="dashboard">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="profile">
-                <img src="/media/logo.jpeg" alt="Foto Admin">
+        <div class="sidebar" data-aos="fade-right">
+            <div class="profile" data-aos="zoom-in">
+                <img src="/media/logo.jpeg" alt="Foto Admin" />
                 <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-                <h4><a href="{% url 'generate_admin_qrcode' %}"></a>Admin</h4>
+                <h4>Admin</h4>
             </div>
             <ul>
                 <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
@@ -26,43 +37,46 @@
                 <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
                 <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
                 <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
-                <li><a href="{% url 'atur_lokasi_absen' %}">📍atur lokasi</a></li>
+                <li><a href="{% url 'atur_lokasi_absen' %}">📍 Atur Lokasi</a></li>
+                <li><a href="{% url 'list_kelas' %}">🏫 Buat Kelas</a></li>
+                <li><a href="{% url 'list_mapel' %}">📖 Buat Mata Pelajaran</a></li>
             </ul>
         </div>
 
-        <!-- Main Content -->
+        <!-- Konten -->
         <div class="content">
-            <!-- Statistik Kecil -->
+            <!-- Statistik -->
             <div class="stats">
-                <div class="stat-box">
+                <div class="stat-box" data-aos="zoom-in">
                     <h3>{{ total_guru }}</h3>
                     <p>Guru Terdaftar</p>
                 </div>
-                <div class="stat-box">
-                    <h3>{{ total_hadir}}</h3>
+                <div class="stat-box" data-aos="zoom-in" data-aos-delay="100">
+                    <h3>{{ total_hadir }}</h3>
                     <p>Absen Hari Ini</p>
                 </div>
-                <div class="stat-box">
+                <div class="stat-box" data-aos="zoom-in" data-aos-delay="200">
                     <h3>{{ total_izin }}</h3>
                     <p>Pengajuan Izin</p>
                 </div>
-                <div class="stat-box">
+                <div class="stat-box" data-aos="zoom-in" data-aos-delay="300">
                     <h3>{{ total_sakit }}</h3>
-                    <p>Pengajuan sakit</p>
+                    <p>Pengajuan Sakit</p>
                 </div>
-                <div class="stat-box">
-                    <h3>{{ total_alfa}}</h3>
-                    <p>Pengajuan alfa</p>
+                <div class="stat-box" data-aos="zoom-in" data-aos-delay="400">
+                    <h3>{{ total_alfa }}</h3>
+                    <p>Pengajuan Alfa</p>
                 </div>
             </div>
 
             <!-- Grafik Absensi -->
-            <div class="chart-container" style="margin-top: 40px;">
+            <div class="chart-container" data-aos="fade-up" data-aos-delay="500">
                 <h3 style="text-align: center;">📊 Statistik Kehadiran Mingguan</h3>
                 <canvas id="absensiChart" height="100"></canvas>
             </div>
         </div>
     </div>
+
     <!-- Script Chart.js -->
     <script>
         const ctx = document.getElementById('absensiChart').getContext('2d');
@@ -96,11 +110,35 @@
             options: {
                 responsive: true,
                 scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+                    y: { beginAtZero: true }
                 }
             }
+        });
+    </script>
+<script>
+    window.addEventListener("load", () => {
+        document.body.classList.add("loaded");
+    });
+
+    AOS.init({
+        duration: 900,
+        easing: 'ease-in-out',
+        once: true
+    });
+</script>
+
+    <!-- AOS init -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        window.addEventListener("load", () => {
+            document.body.classList.add("loaded");
+        });
+
+        AOS.init({
+            duration: 900,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
         });
     </script>
 </body>

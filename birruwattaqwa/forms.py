@@ -2,7 +2,7 @@ from django import forms
 from .models import Absensi
 from .models import JadwalGuru
 from .models import ProfilGuru
-from .models import LokasiAbsen
+from .models import LokasiAbsen,Kelas, MataPelajaran
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group 
 from django.contrib.auth.forms import UserCreationForm # Tambahkan ini!
@@ -65,3 +65,15 @@ class LokasiAbsenForm(forms.ModelForm):
     class Meta:
         model = LokasiAbsen
         fields = ['nama_tempat', 'latitude', 'longitude', 'radius_meter']
+        
+
+
+class KelasForm(forms.ModelForm):
+    class Meta:
+        model = Kelas
+        fields = ['nama']
+
+class MataPelajaranForm(forms.ModelForm):
+    class Meta:
+        model = MataPelajaran
+        fields = ['nama']
