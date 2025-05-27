@@ -14,7 +14,7 @@ from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
-from .forms import (AdminCreateUserForm,JadwalGuruForm,AbsensiForm,KelasForm,MataPelajaranForm)
+from .forms import (AdminCreateUserForm,JadwalGuruForm,AbsensiForm,KelasForm,MataPelajaranForm,AbsensiManualForm)
 from .models import (JadwalGuru,Absensi,ProfilGuru)
 from django.http import HttpResponse
 import json
@@ -26,7 +26,7 @@ from .models import LokasiAbsen,MataPelajaran,Kelas
 
 
 
-lokasi_qr = {"lat": -6.923535, "lon": 110.568171, "radius": 50}
+
 
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371  # km
@@ -515,7 +515,6 @@ from datetime import datetime
 from django.utils.timezone import localdate
 from django.contrib import messages
 from django.shortcuts import redirect
-
 @login_required
 def generate_daily_qrcode(request, tanggal):
     if request.user.groups.filter(name='Guru').exists():
@@ -537,8 +536,13 @@ def generate_daily_qrcode(request, tanggal):
             messages.error(request, "❌ Lokasi tidak valid atau tidak tersedia.")
             return redirect('scan_qr_view')
 
-        jarak = haversine(lat, lon, lokasi_qr["lat"], lokasi_qr["lon"])
-        if jarak > lokasi_qr["radius"]:
+        lokasi = LokasiAbsen.objects.first()
+        if not lokasi:
+            messages.error(request, "❌ Lokasi absensi belum diatur oleh admin.")
+            return redirect('scan_qr_view')
+
+        jarak = haversine(lat, lon, lokasi.latitude, lokasi.longitude)
+        if jarak > lokasi.radius_meter:
             messages.warning(request, f"📍 Kamu terlalu jauh dari lokasi absen. (Jarakmu: {int(jarak)} m)")
             return redirect('scan_qr_view')
 
@@ -559,6 +563,7 @@ def generate_daily_qrcode(request, tanggal):
 
     messages.error(request, "❌ Hanya guru yang bisa absen lewat QR code.")
     return redirect('scan_qr_view')
+
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  # Cuma admin bisa akses
@@ -731,6 +736,26 @@ def list_mapel(request):
         form = MataPelajaranForm()
 
     return render(request, 'birruwattaqwa/admin/kelola_matpel.html', {'mapel_list': mapel_list, 'form': form})
+
+from django.utils.timezone import now
+@login_required
+def input_absensi_manual(request):
+    if request.method == 'POST':
+        form = AbsensiManualForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('input_absensi_manual')
+        # jika form tidak valid, jangan redirect, render ulang dengan form berisi error
+    else:
+        form = AbsensiManualForm()
+
+    context = {
+        'form': form,
+        'guru_list': User.objects.filter(groups__name='Guru'),
+        'today': now().date(),
+        'now': now()
+    }
+    return render(request, 'birruwattaqwa/admin/input_manual.html', context)
 
 
 

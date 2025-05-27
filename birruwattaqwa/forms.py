@@ -4,6 +4,7 @@ from .models import JadwalGuru
 from .models import ProfilGuru
 from .models import LokasiAbsen,Kelas, MataPelajaran
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 from django.contrib.auth.models import Group 
 from django.contrib.auth.forms import UserCreationForm # Tambahkan ini!
 
@@ -77,3 +78,21 @@ class MataPelajaranForm(forms.ModelForm):
     class Meta:
         model = MataPelajaran
         fields = ['nama']
+        
+class AbsensiManualForm(forms.ModelForm):
+    class Meta:
+        model = Absensi
+        fields = ['guru', 'status', 'keterangan']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'keterangan': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+        }
+
+    # Override untuk isi bulan dan tahun otomatis
+    def save(self, commit=True):
+        absensi = super().save(commit=False)
+        absensi.bulan = now().strftime('%B')  # Misal: 'Mei'
+        absensi.tahun = now().year
+        if commit:
+            absensi.save()
+        return absensi
