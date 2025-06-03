@@ -1,24 +1,21 @@
-/* Reset & Font */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-}
-
-/* Sidebar styling */
+/* ========== Sidebar (tidak diubah sesuai permintaan) ========== */
 .sidebar {
     width: 250px;
-    background-color: #6f2c4f;
-    color: white;
-    height: 100vh; /* Full height */
+    height: 100vh;
     position: fixed;
+    top: 0; left: 0;
+    background-color: #6a0dad;
+    color: white;
     padding: 20px;
     border-radius: 20px;
     box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
     transition: 0.3s;
-    z-index: 1000; /* Ensure sidebar is above content */
+
+    overflow-y: auto;    /* Enable vertical scrolling */
+    overflow-x: hidden;  /* Hide horizontal scrollbar */
 }
+
 
 .sidebar .profile {
     text-align: center;
@@ -40,6 +37,7 @@ body {
 .sidebar h3 {
     margin: 10px 0 5px;
 }
+
 .sidebar p {
     margin: 0;
     font-size: 14px;
@@ -50,9 +48,11 @@ body {
     list-style: none;
     padding: 0;
 }
+
 .sidebar ul li {
     margin: 15px 0;
 }
+
 .sidebar ul li a {
     color: white;
     text-decoration: none;
@@ -63,102 +63,173 @@ body {
 }
 
 .sidebar ul li a:hover {
-    background-color: #a24a7b;
+    background-color: #9b30ff;
     transform: translateX(5px);
 }
 
-img {
-    width: 100%;
-    max-width: 300px;
-    border: 10px solid #e1e1e1;
-    border-radius: 20px;
-    background: white;
+/* ========== Content ========== */
+.content {
+    margin-left: 270px; /* lebarkan agar ada space dari sidebar */
+    padding: 30px 40px;
+    background-color: #f8f9fc;
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
-/* Main content container */
-.container {
-    margin-left: 270px; /* Give space for sidebar */
-    padding: 40px 30px;
-    flex: 1;
-    transition: margin-left 0.3s ease; /* Smooth transition for sidebar toggle */
-}
-
-/* Content Headings */
-h2 {
-    text-align: center;
-    font-weight: 600;
-    margin-bottom: 30px;
-    color: #2c3e50;
-}
-
-/* Filter Section */
-.filter-section {
+/* ========== Filters ========== */
+.filters {
+    margin-bottom: 20px;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     gap: 15px;
-    margin-bottom: 25px;
+    flex-wrap: wrap;
 }
 
-.filter-section input,
-.filter-section select {
-    padding: 10px 12px;
-    font-size: 14px;
+.filters input[type="text"],
+.filters select {
+    padding: 8px 12px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    width: 200px;
-    transition: all 0.3s ease;
+    font-size: 14px;
+    flex: 1 1 200px;
 }
 
-.filter-section input:focus,
-.filter-section select:focus {
-    border-color: #3498db;
-    outline: none;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
-}
-
-/* Table Styles */
+/* ========== Table ========== */
 table {
     width: 100%;
     border-collapse: collapse;
-    animation: slideUp 0.5s ease;
-    margin-top: 20px;
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
 }
 
-table thead {
-    background: #3498db;
+thead {
+    background-color: #6a0dad;
     color: white;
 }
 
-table th, table td {
-    padding: 14px 12px;
+thead th {
+    padding: 15px;
     text-align: left;
-    border-bottom: 1px solid #eee;
+    font-weight: 600;
 }
 
-table tbody tr:hover {
-    background-color: #f0f9ff;
-    transition: 0.3s;
+tbody tr {
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.2s;
 }
 
-table td[colspan] {
-    text-align: center;
-    font-style: italic;
-    color: #888;
+tbody tr:hover {
+    background-color: #f1e7ff;
 }
 
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+tbody td {
+    padding: 12px 15px;
+    vertical-align: middle;
 }
 
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+tbody td button {
+    background-color: #6a0dad;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    margin-right: 5px;
+    font-size: 13px;
+    transition: background-color 0.3s;
 }
 
-/* Responsive Design */
+tbody td button:hover {
+    background-color: #9b30ff;
+}
+
+/* ========== Modal ========== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 15px;
+    padding: 30px 40px;
+    max-width: 400px;
+    width: 90%;
+    box-sizing: border-box;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #6a0dad;
+}
+
+.modal-content form input[type="text"],
+.modal-content form input[type="email"],
+.modal-content form select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.modal-content form button[type="submit"] {
+    background-color: #6a0dad;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+}
+
+.modal-content form button[type="submit"]:hover {
+    background-color: #9b30ff;
+}
+
+.modal-content form button[type="button"] {
+    background-color: #ccc;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.modal-content form button[type="button"]:hover {
+    background-color: #aaa;
+}
+
+/* ========== Alert ========== */
+.alert {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #6a0dad;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    font-weight: 600;
+    z-index: 3000;
+    user-select: none;
+}
+
+/* ========== Responsive ========== */
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
@@ -166,27 +237,20 @@ table td[colspan] {
         position: relative;
         border-radius: 0;
         padding: 15px;
+        box-shadow: none;
     }
-    
-    .container {
+
+    .content {
         margin-left: 0;
-        margin-top: 20px; /* Add top margin for content on mobile */
         padding: 20px;
-        width: 100%;
     }
 
-    .filter-section {
+    .filters {
         flex-direction: column;
-        align-items: stretch;
     }
 
-    .filter-section input,
-    .filter-section select {
-        width: 100%;
-    }
-
-    table th, table td {
-        font-size: 13px;
-        padding: 10px;
+    tbody td button {
+        font-size: 12px;
+        padding: 5px 10px;
     }
 }

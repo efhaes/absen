@@ -192,13 +192,11 @@ form button:hover {
 <body>
     <div class="dashboard">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="profile">
-                <a href="{% url 'dashboard_admin' %}">
-                    <img src="/media/logo.jpeg" alt="Foto Admin">
-                </a>
+        <div class="sidebar" data-aos="fade-right">
+            <div class="profile" data-aos="zoom-in">
+                <img src="/media/logo.jpeg" alt="Foto Admin" />
                 <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-                <h4><a href="{% url 'generate_admin_qrcode' %}"></a>Admin</h4>
+                <h4>Admin</h4>
             </div>
             <ul>
                 <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
@@ -206,6 +204,10 @@ form button:hover {
                 <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
                 <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
                 <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
+                <li><a href="{% url 'atur_lokasi_absen' %}">📍 Atur Lokasi</a></li>
+                <li><a href="{% url 'input_absensi_manual' %}">📝Presensi Manual Guru</a></li>
+                <li><a href="{% url 'list_kelas' %}">🏫 Buat Kelas</a></li>
+                <li><a href="{% url 'list_mapel' %}">📖 Buat Mata Pelajaran</a></li>
             </ul>
         </div>
     </div>

@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,11 +30,26 @@
             <h2>Rekap Absensi Anda</h2>
 
             <div class="actions">
-                <form method="get" class="search-bar">
+                <form method="get" class="filter-bar">
                     <input type="text" name="search" placeholder="Cari keterangan..." value="{{ search_query }}">
-                    <button type="submit" class="btn">Cari</button>
+
+                    <select name="bulan">
+                        <option value="">-- Semua Bulan --</option>
+                        {% for kode, nama in bulan_list %}
+                            <option value="{{ kode }}" {% if selected_bulan == kode %}selected{% endif %}>{{ nama }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select name="tahun">
+                        <option value="">-- Semua Tahun --</option>
+                        {% for tahun in tahun_list %}
+                            <option value="{{ tahun }}" {% if selected_tahun == tahun %}selected{% endif %}>{{ tahun }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" class="btn">🔍 Cari</button>
+                    <a href="?{% if selected_bulan %}bulan={{ selected_bulan }}&{% endif %}{% if selected_tahun %}tahun={{ selected_tahun }}&{% endif %}export=true" class="btn">⬇️ Export ke Excel</a>
                 </form>
-                <a href="?export=true" class="btn">⬇️ Export ke Excel</a>
             </div>
 
             <div class="table-wrapper">

@@ -11,46 +11,68 @@
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <div class="dashboard">
-        <div class="sidebar">
-            <div class="profile">
-                <a href="{% url 'dashboard_admin' %}">
-                    <img src="/media/logo.jpeg" alt="Foto Admin">
-                </a>
-                <h4><a href="{% url 'generate_admin_qrcode' %}"></a>Admin</h4>
-            </div>
-            <ul>
-                <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
-                <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
-                <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
-                <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
-                <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
-            </ul>
+<div class="dashboard">
+    <div class="sidebar" data-aos="fade-right">
+        <div class="profile" data-aos="zoom-in">
+            <img src="/media/logo.jpeg" alt="Foto Admin" />
+            <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+            <h4>Admin</h4>
         </div>
-    <!-- Konten Utama -->
+        <ul>
+            <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
+            <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
+            <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
+            <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
+            <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
+            <li><a href="{% url 'atur_lokasi_absen' %}">📍 Atur Lokasi</a></li>
+            <li><a href="{% url 'input_absensi_manual' %}">📝 Presensi Manual Guru</a></li>
+            <li><a href="{% url 'list_kelas' %}">🏫 Buat Kelas</a></li>
+            <li><a href="{% url 'list_mapel' %}">📖 Buat Mata Pelajaran</a></li>
+        </ul>
+    </div>
+
     <div class="content">
         <div class="rekap-container">
             <h2>📋 Daftar Absensi</h2>
-            {% if guru_list %}
+
             <div class="filter-bar">
                 <form method="GET" action="{% url 'list_absen' %}">
-                    <label for="guru">Pilih Guru:</label>
+                    {% if guru_list %}
+                    <label for="guru">Guru:</label>
                     <select name="guru" id="guru">
                         <option value="">-- Semua Guru --</option>
                         {% for guru in guru_list %}
-                            <option value="{{ guru.id }}" {% if guru.id|stringformat:"s" == selected_guru %}selected{% endif %}>
-                                {{ guru }}
+                            <option value="{{ guru.id }}" {% if selected_guru == guru.id|stringformat:"s" %}selected{% endif %}>
+                                {{ guru.get_full_name|default:guru.username }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+
+                    <label for="bulan">Bulan:</label>
+                    <select name="bulan" id="bulan">
+                        <option value="">-- Semua Bulan --</option>
+                        {% for kode, nama in bulan_list %}
+                            <option value="{{ kode }}" {% if selected_bulan == kode %}selected{% endif %}>
+
+                                {{ nama }}
                             </option>
                         {% endfor %}
                     </select>
 
-                    <input type="text" name="search" placeholder="Cari nama..." value="{{ request.GET.search }}">
+                    <label for="tahun">Tahun:</label>
+                    <select name="tahun" id="tahun">
+                        <option value="">-- Semua Tahun --</option>
+                        {% for tahun in tahun_list %}
+                            <option value="{{ tahun }}" {% if selected_tahun == tahun %}selected{% endif %}>{{ tahun }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <input type="text" name="search" placeholder="Cari keterangan..." value="{{ search_query }}">
                     <button type="submit">🔍 Filter</button>
                     <button type="submit" name="export" value="1">⬇️ Export Excel</button>
                 </form>
             </div>
-            {% endif %}
 
             <div class="table-wrapper">
                 <table>
@@ -65,7 +87,7 @@
                     <tbody>
                         {% for absensi in absensi_list %}
                         <tr>
-                            <td>{{ absensi.guru }}</td>
+                            <td>{{ absensi.guru.get_full_name|default:absensi.guru.username }}</td>
                             <td>{{ absensi.tanggal }}</td>
                             <td>{{ absensi.status }}</td>
                             <td>{{ absensi.keterangan }}</td>
@@ -80,6 +102,7 @@
             </div>
         </div>
     </div>
+</div>
 
 </body>
 </html>

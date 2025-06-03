@@ -11,10 +11,10 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.utils.timezone import now
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
-from .forms import (AdminCreateUserForm,JadwalGuruForm,AbsensiForm,KelasForm,MataPelajaranForm,AbsensiManualForm)
+from .forms import (AdminCreateUserForm,JadwalGuruForm,AbsensiForm,KelasForm,MataPelajaranForm,AbsensiManualForm,ProfilGuruForm)
 from .models import (JadwalGuru,Absensi,ProfilGuru)
 from django.http import HttpResponse
 import json
@@ -183,11 +183,28 @@ def scan_qr(request, qr_code):
 from django.contrib.auth.models import User  # Import model User
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='Admin').exists()) 
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())
 def view_absensi(request):
     user = request.user
     guru_filter = request.GET.get('guru', '')
     search_query = request.GET.get('search', '')
+    bulan_filter = request.GET.get('bulan')
+    tahun_filter = request.GET.get('tahun')
+    bulan_list = [
+    ("01", "Januari"),
+    ("02", "Februari"),
+    ("03", "Maret"),
+    ("04", "April"),
+    ("05", "May"),
+    ("06", "Juni"),
+    ("07", "Juli"),
+    ("08", "Agustus"),
+    ("09", "September"),
+    ("10", "Oktober"),
+    ("11", "November"),
+    ("12", "Desember"),
+]
+    tahun_list = [str(tahun) for tahun in range(2023, datetime.date.today().year + 1)]
 
     if user.groups.filter(name='Admin').exists():
         absensi_list = Absensi.objects.all()
@@ -197,13 +214,17 @@ def view_absensi(request):
             absensi_list = absensi_list.filter(guru__id=guru_filter)
         if search_query:
             absensi_list = absensi_list.filter(keterangan__icontains=search_query)
+        if bulan_filter and tahun_filter:
+            absensi_list = absensi_list.filter(tanggal__month=bulan_filter, tanggal__year=tahun_filter)
     else:
         absensi_list = Absensi.objects.filter(guru=user)
         guru_list = None
         if search_query:
             absensi_list = absensi_list.filter(keterangan__icontains=search_query)
+        if bulan_filter and tahun_filter:
+            absensi_list = absensi_list.filter(tanggal__month=bulan_filter, tanggal__year=tahun_filter)
 
-    # ✅ Export ke Excel jika diminta
+    # Export ke Excel
     if 'export' in request.GET:
         response = HttpResponse(
             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -214,7 +235,6 @@ def view_absensi(request):
         ws = wb.active
         ws.title = "Rekap Absensi"
 
-        # Header style
         headers = ['Nama', 'Tanggal', 'Status', 'Keterangan']
         header_font = Font(bold=True, color='FFFFFF')
         header_fill = PatternFill(start_color='4F81BD', end_color='4F81BD', fill_type='solid')
@@ -227,7 +247,6 @@ def view_absensi(request):
             cell.fill = header_fill
             cell.alignment = header_alignment
 
-        # Data rows
         for absensi in absensi_list:
             ws.append([
                 absensi.guru.username,
@@ -236,7 +255,6 @@ def view_absensi(request):
                 absensi.keterangan
             ])
 
-        # Auto-width kolom
         for column_cells in ws.columns:
             max_length = 0
             column = column_cells[0].column_letter
@@ -246,8 +264,7 @@ def view_absensi(request):
                         max_length = max(max_length, len(str(cell.value)))
                 except:
                     pass
-            adjusted_width = max_length + 2
-            ws.column_dimensions[column].width = adjusted_width
+            ws.column_dimensions[column].width = max_length + 2
 
         wb.save(response)
         return response
@@ -257,7 +274,12 @@ def view_absensi(request):
         'guru_list': guru_list,
         'selected_guru': guru_filter,
         'search_query': search_query,
+        'selected_bulan': bulan_filter,
+        'selected_tahun': tahun_filter,
+        'bulan_list': bulan_list,
+        'tahun_list': tahun_list,
     })
+
 
 
 from django.shortcuts import render
@@ -380,11 +402,7 @@ def login_guru(request):
 
     return render(request, 'registrasi/login.html')
 
-def generate_qr_code(request):
-    """Mengembalikan QR Code unik per hari dalam bentuk JSON"""
-    today = now().strftime('%Y-%m-%d')
-    qr_code_value = f"ABSEN-{today}"
-    return JsonResponse({"qr_code_value": qr_code_value})
+
 
 def logout_guru(request):
     """Logout dan kembali ke halaman home"""
@@ -500,6 +518,61 @@ def list_users(request):
     return render(request, 'birruwattaqwa/admin/list_users.html', {'users': users, 'jabatan_list': jabatan_list})
 
 
+@csrf_exempt
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  # Hanya Admin bisa akses
+def edit_user(request, user_id):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            email = data.get('email')
+            jabatan = data.get('jabatan')
+            role = data.get('role')  # role harus dikirim dari frontend
+
+            user = User.objects.get(id=user_id)
+            
+            if username:
+                user.username = username
+            if email:
+                user.email = email
+            user.save()
+
+            # Update ProfilGuru (jabatan)
+            try:
+                profil = user.profilguru
+            except ProfilGuru.DoesNotExist:
+                # Jika belum ada ProfilGuru, buat baru
+                profil = ProfilGuru(user=user)
+            if jabatan:
+                profil.jabatan = jabatan
+            profil.save()
+
+            # Update role (Group)
+            if role:
+                # Hapus user dari semua grup yang terkait (Admin, Guru)
+                user.groups.clear()
+
+                # Tambah ke grup baru
+                group, created = Group.objects.get_or_create(name=role)
+                user.groups.add(group)
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+@csrf_exempt
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())
+def delete_user(request, user_id):
+    if request.method == "POST":
+        try:
+            user = User.objects.get(id=user_id)
+            user.delete()
+            return JsonResponse({'success': True})
+        except User.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
 # views.py
 
 from io import BytesIO
@@ -590,19 +663,45 @@ from django.shortcuts import render
 import datetime
 from .models import Absensi
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.http import HttpResponse
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, PatternFill
+import datetime
+
+from .models import Absensi
+
 @login_required
 def rekap_absensi_guru(request):
     user = request.user
 
     if not user.groups.filter(name='Guru').exists():
-        return HttpResponse("Anda tidak memiliki akses ke halaman ini.", status=403)
+        return HttpResponse("Unauthorized", status=403)
+
+    search_query = request.GET.get('search', '')
+    bulan_filter = request.GET.get('bulan')
+    tahun_filter = request.GET.get('tahun')
+
+    bulan_list = [
+        ("01", "Januari"), ("02", "Februari"), ("03", "Maret"),
+        ("04", "April"), ("05", "Mei"), ("06", "Juni"),
+        ("07", "Juli"), ("08", "Agustus"), ("09", "September"),
+        ("10", "Oktober"), ("11", "November"), ("12", "Desember"),
+    ]
+    tahun_list = [str(tahun) for tahun in range(2023, datetime.date.today().year + 1)]
 
     absensi_list = Absensi.objects.filter(guru=user)
-    search_query = request.GET.get('search', '')
 
     if search_query:
         absensi_list = absensi_list.filter(keterangan__icontains=search_query)
+    if bulan_filter and tahun_filter:
+        absensi_list = absensi_list.filter(
+            tanggal__month=int(bulan_filter),
+            tanggal__year=int(tahun_filter)
+        )
 
+    # Export ke Excel
     if 'export' in request.GET:
         response = HttpResponse(
             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -613,7 +712,6 @@ def rekap_absensi_guru(request):
         ws = wb.active
         ws.title = "Rekap Absensi"
 
-        # Header style
         headers = ['Tanggal', 'Status', 'Keterangan']
         header_font = Font(bold=True, color='FFFFFF')
         header_fill = PatternFill(start_color='4F81BD', end_color='4F81BD', fill_type='solid')
@@ -626,7 +724,6 @@ def rekap_absensi_guru(request):
             cell.fill = header_fill
             cell.alignment = header_alignment
 
-        # Data rows
         for absensi in absensi_list:
             ws.append([
                 absensi.tanggal.strftime("%Y-%m-%d"),
@@ -634,7 +731,6 @@ def rekap_absensi_guru(request):
                 absensi.keterangan
             ])
 
-        # Auto-width kolom
         for column_cells in ws.columns:
             max_length = 0
             column = column_cells[0].column_letter
@@ -644,8 +740,7 @@ def rekap_absensi_guru(request):
                         max_length = max(max_length, len(str(cell.value)))
                 except:
                     pass
-            adjusted_width = max_length + 2
-            ws.column_dimensions[column].width = adjusted_width
+            ws.column_dimensions[column].width = max_length + 2
 
         wb.save(response)
         return response
@@ -653,7 +748,12 @@ def rekap_absensi_guru(request):
     return render(request, 'birruwattaqwa/guru/rekap_guru.html', {
         'absensi_list': absensi_list,
         'search_query': search_query,
+        'selected_bulan': bulan_filter,
+        'selected_tahun': tahun_filter,
+        'bulan_list': bulan_list,
+        'tahun_list': tahun_list,
     })
+
 
 
 

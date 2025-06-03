@@ -96,3 +96,11 @@ class AbsensiManualForm(forms.ModelForm):
         if commit:
             absensi.save()
         return absensi
+
+class ProfilGuruForm(forms.ModelForm):
+    class Meta:
+        model = ProfilGuru
+        fields = ['jabatan']
+        widgets = {
+            'jabatan': forms.TextInput(attrs={'class': 'form-control'}),
+        }
