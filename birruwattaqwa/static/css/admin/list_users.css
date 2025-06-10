@@ -213,6 +213,57 @@ tbody td button:hover {
     background-color: #aaa;
 }
 
+/* ========== Modal Delete Tambahan Style ========== */
+#deleteModal .modal-content {
+    text-align: center;
+    background-color: white;
+    border-radius: 15px;
+    padding: 30px 40px;
+    max-width: 400px;
+    width: 90%;
+    box-sizing: border-box;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+#deleteModal h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #d32f2f;
+}
+
+#deleteModal p {
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+
+#deleteModal button {
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#deleteModal #confirmDeleteBtn {
+    background-color: #f44336;
+    color: white;
+}
+
+#deleteModal #confirmDeleteBtn:hover {
+    background-color: #d32f2f;
+}
+
+#deleteModal button:last-child {
+    background-color: #ccc;
+    color: #333;
+}
+
+#deleteModal button:last-child:hover {
+    background-color: #aaa;
+}
+
 /* ========== Alert ========== */
 .alert {
     display: none;

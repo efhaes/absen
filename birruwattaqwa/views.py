@@ -281,6 +281,37 @@ def view_absensi(request):
     })
 
 
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())
+def edit_absensi(request, absensi_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            absensi = Absensi.objects.get(id=absensi_id)
+            absensi.status = data.get('status')
+            absensi.keterangan = data.get('keterangan')
+            absensi.save()
+            return JsonResponse({'success': True, 'message': 'Absensi berhasil diupdate.'})
+        except Absensi.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Absensi tidak ditemukan.'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON data.'}, status=400)
+    return JsonResponse({'success': False, 'message': 'Metode tidak diizinkan.'}, status=405)
+
+
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())
+def delete_absensi(request, absensi_id):
+    if request.method == 'POST':
+        try:
+            absensi = Absensi.objects.get(id=absensi_id)
+            absensi.delete()
+            return JsonResponse({'success': True, 'message': 'Absensi berhasil dihapus.'})
+        except Absensi.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Absensi tidak ditemukan.'}, status=404)
+    return JsonResponse({'success': False, 'message': 'Metode tidak diizinkan.'}, status=405)
+
 
 from django.shortcuts import render
 from django.utils import timezone
@@ -520,7 +551,7 @@ def list_users(request):
 
 @csrf_exempt
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  # Hanya Admin bisa akses
+@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())
 def edit_user(request, user_id):
     if request.method == "POST":
         try:
@@ -528,21 +559,23 @@ def edit_user(request, user_id):
             username = data.get('username')
             email = data.get('email')
             jabatan = data.get('jabatan')
-            role = data.get('role')  # role harus dikirim dari frontend
+            role = data.get('role')
+            password = data.get('password')  # Tambahkan ini
 
             user = User.objects.get(id=user_id)
-            
+
             if username:
                 user.username = username
             if email:
                 user.email = email
+            if password:
+                user.set_password(password)  # Ganti password
             user.save()
 
-            # Update ProfilGuru (jabatan)
+            # Update ProfilGuru
             try:
                 profil = user.profilguru
             except ProfilGuru.DoesNotExist:
-                # Jika belum ada ProfilGuru, buat baru
                 profil = ProfilGuru(user=user)
             if jabatan:
                 profil.jabatan = jabatan
@@ -550,10 +583,7 @@ def edit_user(request, user_id):
 
             # Update role (Group)
             if role:
-                # Hapus user dari semua grup yang terkait (Admin, Guru)
                 user.groups.clear()
-
-                # Tambah ke grup baru
                 group, created = Group.objects.get_or_create(name=role)
                 user.groups.add(group)
 

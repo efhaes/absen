@@ -3,11 +3,12 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Daftar Absensi</title>
+    <title>Rekap Absensi</title>
     <link rel="stylesheet" href="{% static 'css/admin/list_absen.css' %}">
     <link rel="stylesheet" href="{% static 'css/admin/D_sidebar.css' %}">
     <link rel="icon" type="image/jpeg" href="/media/logo.jpeg">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+   
 </head>
 <body>
 
@@ -33,30 +34,27 @@
 
     <div class="content">
         <div class="rekap-container">
-            <h2>📋 Daftar Absensi</h2>
+            <h2>📋 Rekap Absensi</h2>
 
             <div class="filter-bar">
                 <form method="GET" action="{% url 'list_absen' %}">
                     {% if guru_list %}
-                    <label for="guru">Guru:</label>
-                    <select name="guru" id="guru">
-                        <option value="">-- Semua Guru --</option>
-                        {% for guru in guru_list %}
-                            <option value="{{ guru.id }}" {% if selected_guru == guru.id|stringformat:"s" %}selected{% endif %}>
-                                {{ guru.get_full_name|default:guru.username }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                        <label for="guru">Guru:</label>
+                        <select name="guru" id="guru">
+                            <option value="">-- Semua Guru --</option>
+                            {% for guru in guru_list %}
+                                <option value="{{ guru.id }}" {% if selected_guru == guru.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ guru.get_full_name|default:guru.username }}
+                                </option>
+                            {% endfor %}
+                        </select>
                     {% endif %}
 
                     <label for="bulan">Bulan:</label>
                     <select name="bulan" id="bulan">
                         <option value="">-- Semua Bulan --</option>
                         {% for kode, nama in bulan_list %}
-                            <option value="{{ kode }}" {% if selected_bulan == kode %}selected{% endif %}>
-
-                                {{ nama }}
-                            </option>
+                            <option value="{{ kode }}" {% if selected_bulan == kode %}selected{% endif %}>{{ nama }}</option>
                         {% endfor %}
                     </select>
 
@@ -74,6 +72,9 @@
                 </form>
             </div>
 
+            <!-- Tambahkan div untuk pesan sukses/error -->
+            <div id="messageBox" class="message-box"></div>
+
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -82,19 +83,34 @@
                             <th>Waktu</th>
                             <th>Status</th>
                             <th>Keterangan</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for absensi in absensi_list %}
-                        <tr>
+                        <tr id="absensi-row-{{ absensi.id }}"> {# Tambahkan ID untuk memudahkan update baris #}
                             <td>{{ absensi.guru.get_full_name|default:absensi.guru.username }}</td>
-                            <td>{{ absensi.tanggal }}</td>
-                            <td>{{ absensi.status }}</td>
-                            <td>{{ absensi.keterangan }}</td>
+                            <td class="absensi-tanggal">{{ absensi.tanggal }}</td>
+                            <td class="absensi-status">{{ absensi.status }}</td>
+                            <td class="absensi-keterangan">{{ absensi.keterangan }}</td>
+                            <td>
+                                <button class="btn-custom edit-btn" 
+        data-id="{{ absensi.id }}" 
+        data-status="{{ absensi.status }}" 
+        data-keterangan="{{ absensi.keterangan }}">
+     Edit
+</button>
+
+<button class="btn-custom delete-btn" 
+        data-id="{{ absensi.id }}">
+     Hapus
+</button>
+
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4" style="text-align:center;">Tidak ada data absensi.</td>
+                            <td colspan="5" style="text-align:center;">Tidak ada data absensi.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -103,6 +119,176 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Edit -->
+<div id="editModal" class="modal"> {# Hapus style="display:none;" karena CSS class 'active' yang akan mengontrolnya #}
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Edit Absensi</h3>
+        <form id="editForm">
+            <input type="hidden" id="editId">
+            <label>Status:</label>
+            <select id="editStatus">
+                <option value="Hadir">Hadir</option>
+                <option value="Izin">Izin</option>
+                <option value="Sakit">Sakit</option>
+                <option value="Alpha">Alpha</option>
+            </select>
+            <br>
+            <label>Keterangan:</label>
+            <input type="text" id="editKeterangan">
+            <br><br>
+            <button type="submit">Simpan</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Delete -->
+<div id="deleteModal" class="modal"> {# Hapus style="display:none;" karena CSS class 'active' yang akan mengontrolnya #}
+    <div class="modal-content">
+        <span class="close-delete">&times;</span>
+        <h3>Hapus Absensi</h3>
+        <p>Apakah Anda yakin ingin menghapus absen ini?</p>
+        <input type="hidden" id="deleteId">
+        <button id="confirmDelete">Ya, Hapus</button>
+        <button id="cancelDelete">Batal</button>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const editModal = document.getElementById("editModal");
+    const deleteModal = document.getElementById("deleteModal");
+
+    const closeEdit = document.querySelector(".close");
+    const closeDelete = document.querySelector(".close-delete");
+
+    const confirmDeleteBtn = document.getElementById("confirmDelete");
+    const cancelDeleteBtn = document.getElementById("cancelDelete");
+    const messageBox = document.getElementById("messageBox"); // Pastikan div ini ada di HTML Anda
+
+    // Fungsi untuk menampilkan pesan sukses/error
+    function showMessage(message, type) {
+        messageBox.textContent = message;
+        // Atur ulang class dan tambahkan type (success atau error)
+        messageBox.className = `message-box ${type}`;
+        messageBox.style.display = "block"; // Tampilkan pesan
+        setTimeout(() => {
+            messageBox.style.display = "none"; // Sembunyikan setelah 3 detik
+        }, 3000);
+    }
+
+    // Buka Modal Edit
+    document.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            document.getElementById("editId").value = this.dataset.id;
+            document.getElementById("editStatus").value = this.dataset.status;
+            document.getElementById("editKeterangan").value = this.dataset.keterangan || "";
+            editModal.classList.add('active'); // Gunakan class 'active' untuk menampilkan modal
+        });
+    });
+
+    // Buka Modal Hapus
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            document.getElementById("deleteId").value = this.dataset.id;
+            deleteModal.classList.add('active'); // Gunakan class 'active' untuk menampilkan modal
+        });
+    });
+
+    // Tutup Modal ketika tombol 'x' diklik
+    closeEdit.onclick = () => editModal.classList.remove('active'); // Hapus class 'active' untuk menyembunyikan
+    closeDelete.onclick = () => deleteModal.classList.remove('active'); // Hapus class 'active' untuk menyembunyikan
+
+    // Tutup Modal ketika tombol 'Batal' di modal delete diklik
+    cancelDeleteBtn.onclick = () => deleteModal.classList.remove('active'); // Hapus class 'active' untuk menyembunyikan
+
+    // Tutup Modal ketika area luar modal diklik
+    window.onclick = function(e) {
+        if (e.target === editModal) editModal.classList.remove('active');
+        if (e.target === deleteModal) deleteModal.classList.remove('active');
+    };
+
+    // Submit form Edit
+    document.getElementById("editForm").onsubmit = function(e) {
+        e.preventDefault(); // Mencegah reload halaman
+        const id = document.getElementById("editId").value;
+        const status = document.getElementById("editStatus").value;
+        const keterangan = document.getElementById("editKeterangan").value;
+
+        fetch(`/edit-absensi/${id}/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}", // Penting untuk keamanan CSRF
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ status, keterangan })
+        })
+        .then(res => {
+            if (!res.ok) { // Jika respons bukan 2xx (misal 400, 404, 500)
+                return res.json().then(errorData => {
+                    throw new Error(errorData.message || 'Terjadi kesalahan server.');
+                });
+            }
+            return res.json(); // Parsing respons JSON
+        })
+        .then(data => {
+            if (data.success) {
+                showMessage(data.message, 'success');
+                editModal.classList.remove('active'); // Sembunyikan modal setelah sukses
+                // Update baris tabel secara dinamis tanpa reload halaman
+                const row = document.getElementById(`absensi-row-${id}`);
+                if (row) {
+                    row.querySelector('.absensi-status').textContent = status;
+                    row.querySelector('.absensi-keterangan').textContent = keterangan;
+                }
+            } else {
+                showMessage(data.message, 'error'); // Tampilkan pesan error dari server
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error); // Log error ke console
+            showMessage(error.message || "Terjadi kesalahan saat menyimpan data.", 'error'); // Tampilkan pesan error generik
+        });
+    };
+
+    // Konfirmasi Hapus
+    confirmDeleteBtn.addEventListener("click", function() {
+        const id = document.getElementById("deleteId").value;
+        fetch(`/delete-absensi/${id}/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}" // Penting untuk keamanan CSRF
+            }
+        })
+        .then(res => {
+            if (!res.ok) { // Jika respons bukan 2xx
+                return res.json().then(errorData => {
+                    throw new Error(errorData.message || 'Terjadi kesalahan server.');
+                });
+            }
+            return res.json(); // Parsing respons JSON
+        })
+        .then(data => {
+            if (data.success) {
+                showMessage(data.message, 'success');
+                deleteModal.classList.remove('active'); // Sembunyikan modal setelah sukses
+                // Hapus baris tabel secara dinamis tanpa reload halaman
+                const row = document.getElementById(`absensi-row-${id}`);
+                if (row) {
+                    row.remove(); // Hapus elemen baris dari DOM
+                }
+            } else {
+                showMessage(data.message, 'error'); // Tampilkan pesan error dari server
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error); // Log error ke console
+            showMessage(error.message || "Terjadi kesalahan saat menghapus data.", 'error'); // Tampilkan pesan error generik
+        });
+    });
+});
+</script>
 
 </body>
 </html>

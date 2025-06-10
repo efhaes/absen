@@ -31,172 +31,242 @@
             </ul>
         </div>
 
-    <div class="content" data-aos="fade-up">
-        <h1>Daftar Pengguna</h1>
+        <div class="content" data-aos="fade-up">
+            <h1>Daftar Pengguna</h1>
 
-        <div class="filters">
-            <input type="text" id="searchInput" placeholder="Cari nama atau email..." oninput="filterTable()">
-            <select id="roleFilter" onchange="filterTable()">
-                <option value="">Semua Role</option>
-                <option value="Guru">Guru</option>
-                <option value="Admin">Admin</option>
-            </select>
-            <select id="jabatanFilter" onchange="filterTable()">
-                <option value="">Semua Jabatan</option>
-                {% for jabatan in jabatans %}
-                    <option value="{{ jabatan }}">{{ jabatan }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <table id="userTable">
-            <thead>
-                <tr>
-                    <th>Nama</th>
-                    <th>Email</th>
-                    <th>Jabatan</th>
-                    <th>Role</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr id="user-row-{{ user.id }}" data-role="{{ user.groups.first.name }}">
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.profilguru.jabatan }}</td>
-                    <td>{{ user.groups.first.name }}</td>
-                    <td>
-                        <button onclick="editUser({{ user.id }})">Edit</button>
-                        <button onclick="deleteUser({{ user.id }})">Hapus</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Modal Edit -->
-    <div class="modal" id="editModal">
-        <div class="modal-content" data-aos="zoom-in">
-            <h2>Edit Pengguna</h2>
-            <form id="editForm">
-                {% csrf_token %}
-                <input type="hidden" id="editUserId">
-                <input type="text" id="editUsername" placeholder="Nama" required>
-                <input type="email" id="editEmail" placeholder="Email" required>
-                <input type="text" id="editJabatan" placeholder="Jabatan" required>
-                <select id="editRole" required>
+            <div class="filters">
+                <input type="text" id="searchInput" placeholder="Cari nama atau email..." oninput="filterTable()">
+                <select id="roleFilter" onchange="filterTable()">
+                    <option value="">Semua Role</option>
                     <option value="Guru">Guru</option>
                     <option value="Admin">Admin</option>
                 </select>
-                <button type="submit">Simpan</button>
-                <button type="button" onclick="closeModal()">Batal</button>
-            </form>
+                <select id="jabatanFilter" onchange="filterTable()">
+                    <option value="">Semua Jabatan</option>
+                    {% for jabatan in jabatans %}
+                        <option value="{{ jabatan }}">{{ jabatan }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <table id="userTable">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>Jabatan</th>
+                        <th>Role</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr id="user-row-{{ user.id }}" data-role="{{ user.groups.first.name }}">
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.profilguru.jabatan }}</td>
+                        <td>{{ user.groups.first.name }}</td>
+                        <td>
+                            <button onclick="editUser({{ user.id }})">Edit</button>
+                           <button onclick="openDeleteModal({{ user.id }})" style="background-color: #f44336;">Hapus</button>
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+
+        <!-- Modal Edit -->
+        <div class="modal" id="editModal">
+            <div class="modal-content" data-aos="zoom-in">
+                <h2>Edit Pengguna</h2>
+                <form id="editForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="editUserId">
+                    <input type="text" id="editUsername" placeholder="Nama" required>
+                    <input type="email" id="editEmail" placeholder="Email" required>
+                    <input type="password" id="editPassword" placeholder="Password Baru (opsional)">
+                    <small style="color: gray; display: block; margin-bottom: 15px;">Kosongkan jika tidak ingin mengubah password</small>
+                    <input type="text" id="editJabatan" placeholder="Jabatan" required>
+                    <select id="editRole" required>
+                        <option value="Guru">Guru</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    <div style="margin-top: 20px;">
+                        <button type="submit">Simpan</button>
+                        <button type="button" onclick="closeModal()" style="background-color: #f44336;">Batal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Modal Delete -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content text-center" data-aos="zoom-in">
+    <h2 class="text-xl font-bold mb-4">Konfirmasi Hapus</h2>
+    <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus pengguna ini?</p>
+    <div style="display: flex; justify-content: center; gap: 10px;">
+      <button id="confirmDeleteBtn" style="background-color: #f44336; color: white;">Hapus</button>
+      <button onclick="closeDeleteModal()" style="background-color: #ccc; color: #333;">Batal</button>
     </div>
+  </div>
+</div>
 
-    <!-- Alert -->
-    <div class="alert" id="alertBox">Perubahan berhasil disimpan!</div>
 
-    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-    <script>
-        AOS.init();
 
-        const csrftoken = '{{ csrf_token }}';
+        <!-- Alert -->
+        <div class="alert" id="alertBox"></div>
 
-        function showAlert(message = "Berhasil!") {
-            const alert = document.getElementById("alertBox");
-            alert.innerText = message;
-            alert.style.display = "block";
-            setTimeout(() => alert.style.display = "none", 3000);
-        }
+        <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+        <script>
+            // Initialize AOS animations
+            AOS.init();
 
-        function filterTable() {
-            const search = document.getElementById("searchInput").value.toLowerCase();
-            const role = document.getElementById("roleFilter").value;
-            const jabatan = document.getElementById("jabatanFilter").value;
-            const rows = document.querySelectorAll("#userTable tbody tr");
+            // Get CSRF token
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            rows.forEach(row => {
-                const nama = row.cells[0].innerText.toLowerCase();
-                const email = row.cells[1].innerText.toLowerCase();
-                const jab = row.cells[2].innerText;
-                const rol = row.getAttribute("data-role");
+            // Show alert message
+            function showAlert(message = "Berhasil!", isError = false) {
+                const alert = document.getElementById("alertBox");
+                alert.innerText = message;
+                alert.style.backgroundColor = isError ? "#f44336" : "#4CAF50";
+                alert.style.display = "block";
+                setTimeout(() => alert.style.display = "none", 3000);
+            }
 
-                const matches = 
-                    (nama.includes(search) || email.includes(search)) &&
-                    (role === "" || rol === role) &&
-                    (jabatan === "" || jab === jabatan);
+            // Filter table based on search and filters
+            function filterTable() {
+                const search = document.getElementById("searchInput").value.toLowerCase();
+                const role = document.getElementById("roleFilter").value;
+                const jabatan = document.getElementById("jabatanFilter").value;
+                const rows = document.querySelectorAll("#userTable tbody tr");
 
-                row.style.display = matches ? "" : "none";
+                rows.forEach(row => {
+                    const nama = row.cells[0].innerText.toLowerCase();
+                    const email = row.cells[1].innerText.toLowerCase();
+                    const jab = row.cells[2].innerText;
+                    const rol = row.getAttribute("data-role");
+
+                    const matches = 
+                        (nama.includes(search) || email.includes(search)) &&
+                        (role === "" || rol === role) &&
+                        (jabatan === "" || jab === jabatan);
+
+                    row.style.display = matches ? "" : "none";
+                });
+            }
+
+            // Open edit modal with user data
+            function editUser(userId) {
+                const row = document.getElementById("user-row-" + userId);
+                document.getElementById("editUserId").value = userId;
+                document.getElementById("editUsername").value = row.cells[0].innerText;
+                document.getElementById("editEmail").value = row.cells[1].innerText;
+                document.getElementById("editJabatan").value = row.cells[2].innerText;
+                document.getElementById("editRole").value = row.getAttribute("data-role");
+                document.getElementById("editPassword").value = "";
+                document.getElementById("editModal").style.display = "flex";
+            }
+
+            // Close modal
+            function closeModal() {
+                document.getElementById("editModal").style.display = "none";
+            }
+
+            // Handle form submission for editing user
+            document.getElementById("editForm").addEventListener("submit", async function(e) {
+                e.preventDefault();
+                
+                const userId = document.getElementById("editUserId").value;
+                const formData = {
+                    username: document.getElementById("editUsername").value,
+                    email: document.getElementById("editEmail").value,
+                    password: document.getElementById("editPassword").value,
+                    jabatan: document.getElementById("editJabatan").value,
+                    role: document.getElementById("editRole").value
+                };
+
+                try {
+                    const response = await fetch(`/users/${userId}/edit/`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrftoken
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Update the table row with new data
+                        const row = document.getElementById("user-row-" + userId);
+                        if (row) {
+                            row.cells[0].innerText = formData.username;
+                            row.cells[1].innerText = formData.email;
+                            row.cells[2].innerText = formData.jabatan;
+                            row.cells[3].innerText = formData.role;
+                            row.setAttribute("data-role", formData.role);
+                        }
+                        
+                        closeModal();
+                        showAlert("Data pengguna berhasil diperbarui!");
+                    } else {
+                        showAlert("Gagal memperbarui data: " + (data.error || ''), true);
+                    }
+                } catch (error) {
+                    showAlert("Terjadi kesalahan: " + error, true);
+                    console.error("Error:", error);
+                }
             });
+
+       
+      let userIdToDelete = null;
+
+  function openDeleteModal(userId) {
+    userIdToDelete = userId;
+    const modal = document.getElementById("deleteModal");
+    modal.style.display = "flex";
+    AOS.refresh();
+  }
+
+  function closeDeleteModal() {
+    userIdToDelete = null;
+    document.getElementById("deleteModal").style.display = "none";
+  }
+
+  document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
+    if (!userIdToDelete) return;
+    try {
+      const response = await fetch(`/users/${userIdToDelete}/delete/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrftoken,
+          "Content-Type": "application/json"
         }
+      });
+      const data = await response.json();
+      if (data.success) {
+        const row = document.getElementById("user-row-" + userIdToDelete);
+        if (row) row.remove();
+        showAlert("Pengguna berhasil dihapus!");
+      } else {
+        showAlert("Gagal menghapus pengguna: " + (data.error || ""), true);
+      }
+    } catch (err) {
+      showAlert("Terjadi kesalahan saat menghapus pengguna.", true);
+    } finally {
+      closeDeleteModal();
+    }
+  });
 
-        function editUser(userId) {
-            const row = document.getElementById("user-row-" + userId);
-            document.getElementById("editUserId").value = userId;
-            document.getElementById("editUsername").value = row.cells[0].innerText;
-            document.getElementById("editEmail").value = row.cells[1].innerText;
-            document.getElementById("editJabatan").value = row.cells[2].innerText;
-            document.getElementById("editRole").value = row.getAttribute("data-role");
-            document.getElementById("editModal").style.display = "flex";
-        }
+  window.addEventListener("click", function(event) {
+    const editModal = document.getElementById("editModal");
+    const deleteModal = document.getElementById("deleteModal");
+    if (event.target === editModal) closeModal();
+    if (event.target === deleteModal) closeDeleteModal();
+  });
+</script>
 
-        function closeModal() {
-            document.getElementById("editModal").style.display = "none";
-        }
-
-        document.getElementById("editForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const userId = document.getElementById("editUserId").value;
-            const data = {
-                username: document.getElementById("editUsername").value,
-                email: document.getElementById("editEmail").value,
-                jabatan: document.getElementById("editJabatan").value,
-                role: document.getElementById("editRole").value
-            };
-
-            fetch(`/users/${userId}/edit/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrftoken
-                },
-                body: JSON.stringify(data)
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.success) {
-                      const row = document.getElementById("user-row-" + userId);
-                      row.cells[0].innerText = data.username;
-                      row.cells[1].innerText = data.email;
-                      row.cells[2].innerText = data.jabatan;
-                      row.cells[3].innerText = data.role;
-                      row.setAttribute("data-role", data.role);
-                      closeModal();
-                      showAlert("Data berhasil diperbarui!");
-                  } else {
-                      showAlert("Gagal memperbarui data!");
-                  }
-              });
-        });
-
-        function deleteUser(userId) {
-            if (!confirm("Yakin ingin menghapus pengguna ini?")) return;
-
-            fetch(`/users/${userId}/delete/`, {
-                method: "POST",
-                headers: { "X-CSRFToken": csrftoken }
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.success) {
-                      document.getElementById("user-row-" + userId).remove();
-                      showAlert("Pengguna berhasil dihapus!");
-                  } else {
-                      showAlert("Gagal menghapus pengguna!");
-                  }
-              });
-        }
-    </script>
-</body>
-</html>
+    </body>
+    </html>

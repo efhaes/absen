@@ -3,7 +3,7 @@ from django.conf import settings
 from birruwattaqwa.views import login_guru, logout_guru, absen_guru, home, scan_qr
 from django.conf.urls.static import static
 from .views import view_absensi
-from .views import dashboard_guru, dashboard_admin,redirect_dashboard,jadwal_guru,jadwal_admin,edit_jadwal,create_user,list_users, edit_user, delete_user
+from .views import dashboard_guru, dashboard_admin,redirect_dashboard,jadwal_guru,jadwal_admin,edit_jadwal,create_user,list_users, edit_user, delete_user,edit_absensi,delete_absensi
 from .views import  generate_daily_qrcode, generate_admin_qrcode, scan_qr_view, simple_view,rekap_absensi_guru,atur_lokasi,list_mapel,list_kelas, input_absensi_manual
 urlpatterns = [
     path('', home, name='home'),  
@@ -12,6 +12,8 @@ urlpatterns = [
     path('absen/', absen_guru, name='absent'),
     path('scan/<str:qr_code>/', scan_qr, name='scan_qr'),
     path('absensi/', view_absensi, name='list_absen'),
+    path('edit-absensi/<int:absensi_id>/', edit_absensi, name='edit_absensi'),
+    path('delete-absensi/<int:absensi_id>/', delete_absensi, name='delete_absensi'),
     path('rekap-guru/', rekap_absensi_guru, name='rekap_guru'),
     path('dashboard/admin/', dashboard_admin, name='dashboard_admin'),
     path('dashboard/guru/', dashboard_guru, name='dashboard_guru'),
