@@ -12,16 +12,31 @@ body {
 }
 
 /* Sidebar styling */
+/* Sidebar dengan ujung melengkung */
 .sidebar {
-    width: 250px;
-    background-color: #6a0dad;
-    color: white;
-    height: 100vh; /* Full height */
-    position: fixed;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
-    transition: 0.3s;
+  width: 250px;
+  background-color: #6a0dad;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh; /* Selalu penuh tinggi layar */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; 
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+  transition: left 0.3s ease-in-out;
+  z-index: 998;
+}
+
+
+.sidebar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .sidebar .profile {

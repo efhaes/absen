@@ -7,12 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Guru</title>
     <link rel="icon" type="image/jpeg" href="/media/logo.jpeg">
-    <link rel="stylesheet" href="{% static 'css/guru/Dash_guru.css' %}">
     <link rel="stylesheet" href="{% static 'css/guru/isi_dash_guru.css' %}">
 
 </head>
 
 <body>
+<!-- Tombol Burger -->
+<div class="burger" onclick="toggleSidebar()">☰</div>
+
     <div class="dashboard">
         <!-- Sidebar -->
         <div class="sidebar">
@@ -26,8 +28,8 @@
             <ul>
                 <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
                 <li><a href="{% url 'rekap_guru' %}">📄 Lihat Rekap</a></li>
-                <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
                 <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
+                <li><a href="{% url 'logout' %}">🔚Logout</a></li>
             </ul>
         </div>
 
@@ -56,19 +58,6 @@
 
                 </div>
             </div>
-            <div class="jadwal">
-                <div class="card card-jadwal-minggu" style="padding: 11px;">
-                    <h4>📚 Jadwal Minggu Ini:</h4>
-                    {% if jadwal_minggu_ini %}
-                    <ul>
-                        {% for jadwal in jadwal_minggu_ini %}
-                        <li>{{ jadwal.hari }} - {{ jadwal.mata_pelajaran }} - {{ jadwal.kelas }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                    <p><em>Tidak ada jadwal minggu ini.</em></p>
-                    {% endif %}
-                </div>
             </div>
 
             {% endblock %}
@@ -77,5 +66,24 @@
     </div>
 
 </body>
+<script>
+    function toggleSidebar() {
+    const sidebar = document.querySelector(".sidebar");
+    sidebar.classList.toggle("active");
+        }
+
+        // Optional: klik di luar sidebar untuk menutup
+        document.addEventListener("click", function (event) {
+            const sidebar = document.querySelector(".sidebar");
+            const burger = document.querySelector(".burger");
+            if (
+                sidebar.classList.contains("active") &&
+                !sidebar.contains(event.target) &&
+                !burger.contains(event.target)
+            ) {
+                sidebar.classList.remove("active");
+            }
+        });
+</script>
 
 </html>

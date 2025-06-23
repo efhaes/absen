@@ -2,183 +2,276 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atur Lokasi Absensi</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Atur Lokasi Absensi</title>
 
-    <!-- AOS CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- AOS CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-        body {
-            background-color: #f8f0ff;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        /* Sidebar styling */
-.sidebar {
+  <style>
+
+  body {
+    background-color: #f8f0ff;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
     width: 250px;
     background-color: #6a0dad;
     color: white;
-    height: 100vh; /* Full height */
+    height: 100vh;
     position: fixed;
+    top: 0;
+    left: 0;
     padding: 20px;
-    border-radius: 20px;
+    border-radius: 0 20px 20px 0;
     box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
-    transition: 0.3s;
-}
+    overflow-y: auto;
+    transition: left 0.3s ease-in-out;
+    z-index: 150;
+  }
 
-.sidebar .profile {
+  .sidebar .profile {
     text-align: center;
     margin-bottom: 30px;
-}
+  }
 
-.sidebar .profile img {
+  .sidebar .profile img {
     width: 100px;
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
     transition: transform 0.3s ease-in-out;
-}
+  }
 
-.sidebar .profile img:hover {
+  .sidebar .profile img:hover {
     transform: scale(1.05);
-}
+  }
 
-.sidebar h3 {
+  .sidebar h3 {
     margin: 10px 0 5px;
-}
-.sidebar p {
+  }
+
+  .sidebar p {
     margin: 0;
     font-size: 14px;
     color: #bdc3c7;
-}
+  }
 
-.sidebar ul {
+  .sidebar ul {
     list-style: none;
     padding: 0;
-}
-.sidebar ul li {
+  }
+
+  .sidebar ul li {
     margin: 15px 0;
-}
-.sidebar ul li a {
+  }
+
+  .sidebar ul li a {
     color: white;
     text-decoration: none;
     display: block;
     padding: 10px 15px;
     border-radius: 12px;
     transition: background-color 0.3s, transform 0.3s;
-}
+  }
 
-.sidebar ul li a:hover {
+  .sidebar ul li a:hover {
     background-color: #9b30ff;
-
-
     transform: translateX(5px);
-}
+  }
 
-        h2 {
-            color: #5e2a84;
-            text-align: center;
-            margin-top: 30px;
-        }
+  /* JUDUL & FORM */
+  h2 {
+    color: #5e2a84;
+    text-align: center;
+    margin-top: 30px;
+  }
 
-        form {
-            background-color: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 0 15px rgba(93, 53, 158, 0.2);
-            max-width: 600px;
-            margin: 30px auto;
-            padding: 30px;
-        }
+  form {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 0 15px rgba(93, 53, 158, 0.2);
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 30px;
+  }
 
-        label {
-            font-weight: 500;
-            color: #5e2a84;
-        }
+  label {
+    font-weight: 500;
+    color: #5e2a84;
+  }
 
-        input, select, textarea {
-            border-radius: 50px !important;
-            padding-left: 20px;
-        }
+  input, select, textarea {
+    border-radius: 50px !important;
+    padding-left: 20px;
+  }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+  .form-group {
+    margin-bottom: 20px;
+  }
 
-        .btn-primary {
-            background-color: #7b35c8;
-            border-color: #7b35c8;
-            border-radius: 999px;
-            padding: 10px 20px;
-        }
+  .btn-primary {
+    background-color: #7b35c8;
+    border-color: #7b35c8;
+    border-radius: 999px;
+    padding: 10px 20px;
+  }
 
-        .btn-primary:hover {
-            background-color: #6929aa;
-            border-color: #6929aa;
-        }
+  .btn-primary:hover {
+    background-color: #6929aa;
+    border-color: #6929aa;
+  }
 
-        .alert {
-            max-width: 600px;
-            margin: 20px auto;
-        }
-    </style>
+  .alert {
+    max-width: 600px;
+    margin: 20px auto;
+  }
+
+  /* BURGER MENU */
+  .burger {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 999;
+    cursor: pointer;
+    width: 30px;
+    height: 22px;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .burger div {
+    height: 4px;
+    background-color: #6a0dad;
+    border-radius: 2px;
+    transition: 0.3s;
+  }
+
+  /* RESPONSIVE SIDEBAR */
+  @media (max-width: 768px) {
+    .sidebar {
+      left: -100%;
+      width: 80%;
+      max-width: 260px;
+      padding-top: 60px;
+      border-radius: 0 20px 20px 0;
+      box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .burger {
+      display: flex;
+    }
+  }
+</style>
+
+
 </head>
 <body>
 
-        <div class="sidebar" data-aos="fade-right">
-            <div class="profile" data-aos="zoom-in">
-                <img src="/media/logo.jpeg" alt="Foto Admin" />
-                <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-                <h4>Admin</h4>
-            </div>
-            <ul>
-                <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
-                <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
-                <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
-                <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
-                <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
-                <li><a href="{% url 'atur_lokasi_absen' %}">📍 Atur Lokasi</a></li>
-                <li><a href="{% url 'input_absensi_manual' %}">📝Presensi Manual Guru</a></li>
-                <li><a href="{% url 'list_kelas' %}">🏫 Buat Kelas</a></li>
-                <li><a href="{% url 'list_mapel' %}">📖 Buat Mata Pelajaran</a></li>
-            </ul>
-        </div>
+<!-- Burger Menu -->
+<div class="burger" onclick="toggleSidebar()">
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
 
+<!-- Sidebar -->
+<div class="sidebar" data-aos="fade-right">
+  <div class="profile" data-aos="zoom-in">
+        <a href="{% url 'dashboard_admin' %}">
+            <img src="/media/logo.jpeg" alt="Foto Admin" />
+        </a>
+    <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+    <h4>Admin</h4>
+  </div>
+  <ul>
+    <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
+    <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
+    <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
+    <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
+    <li><a href="{% url 'atur_lokasi_absen' %}">📍 Atur Lokasi</a></li>
+    <li><a href="{% url 'input_absensi_manual' %}">📝Presensi Manual Guru</a></li>
+    <li><a href="{% url 'logout' %}">🔚Logout</a></li>
+    
+
+   
+  </ul>
+</div>
+
+<!-- Content -->
 {% block content %}
 <h2 data-aos="fade-down">Atur Lokasi Absensi</h2>
 
 <form method="post" data-aos="zoom-in" data-aos-delay="200">
-    {% csrf_token %}
-    
-    {% for field in form %}
+  {% csrf_token %}
+  {% for field in form %}
     <div class="form-group row">
-        <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label">{{ field.label }}</label>
-        <div class="col-sm-8">
-            {{ field }}
-            {% if field.errors %}
-                <div class="text-danger small">{{ field.errors|striptags }}</div>
-            {% endif %}
-        </div>
+      <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label">{{ field.label }}</label>
+      <div class="col-sm-8">
+        {{ field }}
+        {% if field.errors %}
+          <div class="text-danger small">{{ field.errors|striptags }}</div>
+        {% endif %}
+      </div>
     </div>
-    {% endfor %}
-
-    <button type="submit" class="btn btn-primary w-100 mt-3">Simpan Lokasi</button>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary w-100 mt-3">Simpan Lokasi</button>
 </form>
 
 {% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}" data-aos="fade-up">{{ message }}</div>
-    {% endfor %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" data-aos="fade-up">{{ message }}</div>
+  {% endfor %}
 {% endif %}
 {% endblock %}
 
-<!-- AOS Script -->
+<!-- AOS & JS Script -->
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-    AOS.init();
+  AOS.init();
+
+  function toggleSidebar() {
+    const sidebar = document.querySelector(".sidebar");
+    const body = document.body;
+    sidebar.classList.toggle("active");
+    body.classList.toggle("sidebar-open");
+  }
+
+  // Menutup sidebar jika klik di luar area sidebar (mobile)
+  document.addEventListener("click", function (e) {
+    const sidebar = document.querySelector(".sidebar");
+    const burger = document.querySelector(".burger");
+
+    const isClickInsideSidebar = sidebar.contains(e.target);
+    const isClickOnBurger = burger.contains(e.target);
+
+    if (!isClickInsideSidebar && !isClickOnBurger && sidebar.classList.contains("active")) {
+      sidebar.classList.remove("active");
+      document.body.classList.remove("sidebar-open");
+    }
+  });
+
+  // Tutup sidebar saat resize dari mobile ke desktop
+  window.addEventListener("resize", function () {
+    const sidebar = document.querySelector(".sidebar");
+    if (window.innerWidth > 768) {
+      sidebar.classList.remove("active");
+      document.body.classList.remove("sidebar-open");
+    }
+  });
+
+
 </script>
 
 </body>

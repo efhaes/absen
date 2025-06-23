@@ -1,307 +1,447 @@
-/* ========== Sidebar (tidak diubah sesuai permintaan) ========== */
-.sidebar {
-    width: 250px;
-    height: 100vh;
-    position: fixed;
-    top: 0; left: 0;
-    background-color: #6a0dad;
-    color: white;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    transition: 0.3s;
-
-    overflow-y: auto;    /* Enable vertical scrolling */
-    overflow-x: hidden;  /* Hide horizontal scrollbar */
+/* ========== Global Reset ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f9fc;
+  color: #333;
+}
+
+/* ========== Sidebar ========== */
+.sidebar {
+  width: 250px;
+  background-color: #6a0dad;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh; /* Selalu penuh tinggi layar */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; 
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+  transition: left 0.3s ease-in-out;
+  z-index: 998;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.sidebar.active {
+  transform: translateX(0); /* SHOW */
+}
 
 .sidebar .profile {
-    text-align: center;
-    margin-bottom: 30px;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .sidebar .profile img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    transition: transform 0.3s ease-in-out;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
 }
 
 .sidebar .profile img:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .sidebar h3 {
-    margin: 10px 0 5px;
+  margin: 10px 0 5px;
 }
 
 .sidebar p {
-    margin: 0;
-    font-size: 14px;
-    color: #bdc3c7;
+  margin: 0;
+  font-size: 14px;
+  color: #bdc3c7;
 }
 
 .sidebar ul {
-    list-style: none;
-    padding: 0;
+  list-style: none;
+  padding: 0;
 }
 
 .sidebar ul li {
-    margin: 15px 0;
+  margin: 15px 0;
 }
 
 .sidebar ul li a {
-    color: white;
-    text-decoration: none;
-    display: block;
-    padding: 10px 15px;
-    border-radius: 12px;
-    transition: background-color 0.3s, transform 0.3s;
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 10px 15px;
+  border-radius: 12px;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
 .sidebar ul li a:hover {
-    background-color: #9b30ff;
-    transform: translateX(5px);
+  background-color: #9b30ff;
+  transform: translateX(5px);
 }
 
 /* ========== Content ========== */
-.content {
-    margin-left: 270px; /* lebarkan agar ada space dari sidebar */
-    padding: 30px 40px;
-    background-color: #f8f9fc;
-    min-height: 100vh;
-    box-sizing: border-box;
+.main-content {
+  margin-left: 300px;
+  padding: 30px 40px;
+  background-color: #f8f9fc;
+  min-height: 100vh;
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease-in-out;
+
 }
 
 /* ========== Filters ========== */
 .filters {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .filters input[type="text"],
 .filters select {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 14px;
-    flex: 1 1 200px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  flex: 1 1 200px;
 }
 
 /* ========== Table ========== */
+.table-wrapper {
+  overflow-x: auto;
+  padding: 30px 20px;
+}
+
 table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
+  font-size: 13px;
 }
 
 thead {
-    background-color: #6a0dad;
-    color: white;
+  background-color: #6a0dad;
+  color: white;
 }
 
 thead th {
-    padding: 15px;
-    text-align: left;
-    font-weight: 600;
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 tbody tr {
-    border-bottom: 1px solid #ddd;
-    transition: background-color 0.2s;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.2s;
 }
 
 tbody tr:hover {
-    background-color: #f1e7ff;
+  background-color: #f1e7ff;
 }
 
 tbody td {
-    padding: 12px 15px;
-    vertical-align: middle;
+  padding: 12px 15px;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 tbody td button {
-    background-color: #6a0dad;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 12px;
-    cursor: pointer;
-    margin-right: 5px;
-    font-size: 13px;
-    transition: background-color 0.3s;
+  background-color: #6a0dad;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-right: 5px;
+  font-size: 13px;
+  transition: background-color 0.3s;
 }
 
 tbody td button:hover {
-    background-color: #9b30ff;
+  background-color: #9b30ff;
 }
 
 /* ========== Modal ========== */
 .modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
 }
 
 .modal-content {
-    background-color: white;
-    border-radius: 15px;
-    padding: 30px 40px;
-    max-width: 400px;
-    width: 90%;
-    box-sizing: border-box;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  background-color: white;
+  border-radius: 15px;
+  padding: 30px 40px;
+  max-width: 400px;
+  width: 90%;
+  box-sizing: border-box;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
 .modal-content h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: #6a0dad;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #6a0dad;
 }
 
-.modal-content form input[type="text"],
-.modal-content form input[type="email"],
+.modal-content form input,
 .modal-content form select {
-    width: 100%;
-    padding: 10px 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    font-size: 15px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.modal-content form button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
 }
 
 .modal-content form button[type="submit"] {
-    background-color: #6a0dad;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-right: 10px;
-    transition: background-color 0.3s;
+  background-color: #6a0dad;
+  color: white;
+  margin-right: 10px;
 }
 
 .modal-content form button[type="submit"]:hover {
-    background-color: #9b30ff;
+  background-color: #9b30ff;
 }
 
 .modal-content form button[type="button"] {
-    background-color: #ccc;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  background-color: #ccc;
+  color: #333;
 }
 
 .modal-content form button[type="button"]:hover {
-    background-color: #aaa;
+  background-color: #aaa;
 }
 
-/* ========== Modal Delete Tambahan Style ========== */
+/* ========== Delete Modal ========== */
 #deleteModal .modal-content {
-    text-align: center;
-    background-color: white;
-    border-radius: 15px;
-    padding: 30px 40px;
-    max-width: 400px;
-    width: 90%;
-    box-sizing: border-box;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  text-align: center;
 }
 
 #deleteModal h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: #d32f2f;
+  margin-top: 0;
+  color: #d32f2f;
 }
 
 #deleteModal p {
-    color: #555;
-    font-size: 16px;
-    margin-bottom: 25px;
+  color: #555;
+  margin-bottom: 25px;
 }
 
 #deleteModal button {
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  margin: 0 5px;
 }
 
 #deleteModal #confirmDeleteBtn {
-    background-color: #f44336;
-    color: white;
+  background-color: #f44336;
+  color: white;
 }
 
 #deleteModal #confirmDeleteBtn:hover {
-    background-color: #d32f2f;
+  background-color: #d32f2f;
 }
 
 #deleteModal button:last-child {
-    background-color: #ccc;
-    color: #333;
+  background-color: #ccc;
+  color: #333;
 }
 
 #deleteModal button:last-child:hover {
-    background-color: #aaa;
+  background-color: #aaa;
 }
 
 /* ========== Alert ========== */
 .alert {
-    display: none;
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background-color: #6a0dad;
-    color: white;
-    padding: 15px 25px;
-    border-radius: 25px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    font-weight: 600;
-    z-index: 3000;
-    user-select: none;
+  display: none;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #6a0dad;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 25px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  font-weight: 600;
+  z-index: 3000;
 }
 
-/* ========== Responsive ========== */
+/* ========== Burger Menu ========== */
+.burger {
+  display: none;
+  cursor: pointer;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 999;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.burger span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: #4f4e4e;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* === Responsive untuk Mobile === */
 @media (max-width: 768px) {
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        border-radius: 0;
-        padding: 15px;
-        box-shadow: none;
-    }
+  .burger {
+    display: flex;
 
-    .content {
-        margin-left: 0;
-        padding: 20px;
-    }
+  }
+   h1 {
+    padding-left: 30px;
+  }
 
-    .filters {
-        flex-direction: column;
-    }
+ .sidebar {
+    width: 60vw; /* 👈 hanya 60% dari lebar layar */
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    overflow-y: auto; 
+    z-index: 150;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    padding: 20px;
+  }
 
-    tbody td button {
-        font-size: 12px;
-        padding: 5px 10px;
-    }
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+.filters {
+  flex-direction: column; /* Ini akan menumpuknya */
+  gap: 10px;
+}
+ .main-content {
+    margin-left: 0; /* Pastikan tidak ada margin kiri di mobile secara default */
+    padding: 20px; /* Kurangi padding untuk mobile */
+    width: 100%; /* Sangat penting: Pastikan lebar 100% */
+    /* Pastikan tidak ada transform yang aktif secara default di mobile saat sidebar non-aktif */
+    transform: translateX(0); /* Tambahkan ini untuk memastikan tidak ada geseran */
+  }
+.filters input[type="text"],
+.filters select {
+  flex: 1 1 100%; /* Ini seharusnya membuat mereka mengambil lebar penuh */
+  max-width: 100%; /* Ini juga bagus */
+}
+/* ========== Responsive Mobile - Umum ========== */
+
+  /* Sembunyikan thead (header tabel) di tampilan mobile */
+  thead {
+    display: none;
+  }
+
+  /* Buat setiap baris tabel (tr) menjadi blok seperti kartu */
+  tbody tr {
+    display: block;
+    margin-bottom: 15px; /* Jarak antar kartu */
+    border: 1px solid #ddd; /* Border untuk setiap kartu */
+    border-radius: 8px; /* Sudut membulat */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sedikit bayangan */
+    overflow: hidden; /* Pastikan konten di dalam kartu tidak keluar */
+  }
+
+  /* Atur setiap sel tabel (td) agar menjadi blok vertikal */
+  tbody td {
+    display: block;
+    text-align: right; /* Teks nilai rata kanan */
+    padding-left: 50%; /* Beri ruang untuk label di kiri */
+    position: relative; /* Diperlukan untuk penempatan pseudo-elemen */
+    border-bottom: 1px solid #eee; /* Garis pemisah antar data dalam satu kartu */
+    padding: 8px 10px; /* Padding untuk konten sel */
+  }
+
+  /* Hapus border bawah pada sel terakhir di setiap baris */
+  tbody td:last-child {
+    border-bottom: none;
+  }
+
+  /* Tambahkan label dari data-label sebagai pseudo-elemen */
+  tbody td::before {
+    content: attr(data-label); /* Mengambil teks dari atribut data-label */
+    position: absolute;
+    left: 10px; /* Posisi label dari kiri */
+    width: calc(50% - 20px); /* Lebar label (mengurangi padding) */
+    padding-right: 10px; /* Padding di sebelah kanan label */
+    white-space: nowrap; /* Jangan biarkan label pindah baris */
+    text-align: left; /* Teks label rata kiri */
+    font-weight: 600; /* Tebalkan label */
+    color: #555; /* Warna label */
+  }
+
+  /* Penyesuaian untuk tombol di dalam td */
+  tbody td button {
+    margin-top: 5px; /* Sedikit jarak dari label */
+    /* Pastikan tombol tidak terlalu besar */
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  /* Opsional: Sesuaikan tabel itu sendiri jika diperlukan */
+  table {
+    width: 100%; /* Pastikan tabel mengambil lebar penuh */
+    box-shadow: none; /* Hapus bayangan dari tabel utama */
+    border-radius: 0; /* Hapus border-radius dari tabel utama */
+    background-color: transparent; /* Hapus background dari tabel utama */
+  }
+
+}
+
+/* ========== Responsive Mobile - Layar Sangat Kecil (mis. < 480px) ========== */
+@media (max-width: 480px) {
+  tbody td {
+    padding-left: 45%; /* Sesuaikan ruang label untuk layar sangat kecil */
+    font-size: 13px; /* Perkecil ukuran font sel */
+  }
+
+  tbody td::before {
+    width: calc(45% - 15px); /* Sesuaikan lebar label */
+    font-size: 13px; /* Perkecil ukuran font label */
+  }
+
+  tbody td button {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
 }

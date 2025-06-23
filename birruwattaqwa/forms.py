@@ -1,8 +1,8 @@
 from django import forms
 from .models import Absensi
-from .models import JadwalGuru
+
 from .models import ProfilGuru
-from .models import LokasiAbsen,Kelas, MataPelajaran
+from .models import LokasiAbsen
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from django.contrib.auth.models import Group 
@@ -14,21 +14,6 @@ class AbsensiForm(forms.ModelForm):
         model = Absensi
         fields = [ 'keterangan', 'status']  # Sesuaikan dengan field yang dibutuhkan
         
-class JadwalGuruForm(forms.ModelForm):
-    guru = forms.ModelChoiceField(
-        queryset=User.objects.filter(groups__name='Guru'),
-        label="Guru"
-    )
-
-    class Meta:
-        model = JadwalGuru
-        fields = ['guru', 'hari', 'jam_mulai', 'jam_selesai', 'mata_pelajaran', 'kelas']
-        widgets = {
-            'jam_mulai': forms.TimeInput(attrs={'type': 'time'}),
-            'jam_selesai': forms.TimeInput(attrs={'type': 'time'}),
-        }
-        
-
 
 class AdminCreateUserForm(UserCreationForm):
     ROLE_CHOICES = (
@@ -67,17 +52,6 @@ class LokasiAbsenForm(forms.ModelForm):
         model = LokasiAbsen
         fields = ['nama_tempat', 'latitude', 'longitude', 'radius_meter']
         
-
-
-class KelasForm(forms.ModelForm):
-    class Meta:
-        model = Kelas
-        fields = ['nama']
-
-class MataPelajaranForm(forms.ModelForm):
-    class Meta:
-        model = MataPelajaran
-        fields = ['nama']
         
 class AbsensiManualForm(forms.ModelForm):
     class Meta:

@@ -3,8 +3,10 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Absensi Guru</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins&display=swap">
+
   <style>
     body {
       background: linear-gradient(to right, #4b0082, #8a2be2);
@@ -134,6 +136,49 @@
       background: #fecaca;
       color: #a00;
     }
+@media (max-width: 480px) {
+  body {
+    padding: 20px;
+    height: auto;
+    align-items: flex-start;
+  }
+
+  .login-box {
+    width: 70vw;               /* Hampir penuh lebar layar */
+    padding: 50px 25px;         /* Perbesar padding */
+    margin-top: 40vw; 
+    border-radius: 25px;
+  }
+
+  .avatar {
+    width: 70px;               /* Sedikit lebih kecil di layar kecil */
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  .input-group {
+    margin: 20px 0;
+  }
+
+  .input-group input {
+    padding: 14px;
+    font-size: 15px;
+  }
+
+  .login-btn {
+    width: 100%;
+    margin-left: 0;
+    font-size: 15px;
+    padding: 14px;
+  }
+
+  .messages p {
+    font-size: 13px;
+  }
+}
+
   </style>
 </head>
 <body>

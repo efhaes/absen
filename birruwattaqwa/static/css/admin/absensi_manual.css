@@ -1,0 +1,192 @@
+/* Global Styles */
+body {
+  background: #f2f6fc;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Sidebar dengan ujung melengkung */
+.sidebar {
+  width: 250px;
+  background-color: #6a0dad;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh; /* Selalu penuh tinggi layar */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; 
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+  transition: left 0.3s ease-in-out;
+  z-index: 998;
+}
+
+
+.sidebar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.sidebar .profile {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.sidebar .profile img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+.sidebar .profile img:hover {
+  transform: scale(1.05);
+}
+
+.sidebar h3, .sidebar h4 {
+  margin: 10px 0 5px;
+  color: #fff;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 15px 0;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 10px 15px;
+  border-radius: 12px;
+  transition: background-color 0.3s, transform 0.3s;
+  background-color: transparent;
+}
+
+.sidebar ul li a:hover {
+  background-color: #9b30ff;
+  transform: translateX(5px);
+}
+
+/* Burger Button */
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 999;
+}
+
+.burger div {
+  width: 25px;
+  height: 3px;
+  background-color: #fff;
+  border-radius: 3px;
+  transition: 0.3s ease;
+}
+
+/* Main Content */
+.main-content {
+  margin-left: 270px;
+  padding: 40px 20px;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.container {
+  max-width: 800px;
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #6a0dad;
+  text-align: center;
+}
+
+label {
+  color: #6a0dad;
+  font-weight: 500;
+}
+
+.form-select, .form-control {
+  border: 2px solid #6a0dad;
+  color: #6a0dad;
+}
+
+.form-select:focus, .form-control:focus {
+  border-color: #6a0dad;
+  box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.25);
+}
+
+.btn-primary {
+  background-color: #6a0dad;
+  border-color: #6a0dad;
+  width: 100%;
+  padding: 10px;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background-color: #5c0bbf;
+  border-color: #5c0bbf;
+}
+
+.alert-danger {
+  border-color: #6a0dad;
+  background-color: #f8e7ff;
+  color: #6a0dad;
+}
+
+.alert-danger ul li strong {
+  color: #6a0dad;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .burger {
+    display: flex;
+  }
+
+.sidebar {
+  left: -100%;
+  width: 650%;
+  max-width: 260px;
+  padding-top: 60px;
+  border-radius: 0 20px 20px 0; /* Tambahkan lengkungan di kanan atas & bawah */
+  transition: left 0.3s ease-in-out;
+  background-color: #6a0dad;
+  position: fixed;
+  height: 100vh;
+  z-index: 998;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+  }
+}

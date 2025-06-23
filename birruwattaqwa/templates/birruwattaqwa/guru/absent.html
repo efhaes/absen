@@ -6,11 +6,12 @@
     <title>Form Absensi</title>
     <link rel="icon" type="image/jpeg" href="/media/logo.jpeg">
     <link rel="stylesheet" href="{% static 'css/guru/izin_guru.css' %}">
-    <link rel="stylesheet" href="{% static 'css/guru/Dash_guru.css' %}">
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="dashboard">
+        <div class="burger" onclick="toggleSidebar()">☰</div> 
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="profile">
@@ -23,8 +24,8 @@
             <ul>
                 <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
                 <li><a href="{% url 'rekap_guru' %}">📄 Lihat Rekap</a></li>
-                <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
                 <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
+                <li><a href="{% url 'logout' %}">🔚Logout</a></li>
             </ul>
         </div>
         
@@ -170,6 +171,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 popup: 'animate__animated animate__fadeOutUp'
             }
         });
+    });
+});
+
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const burger = document.querySelector(".burger");
+    const sidebar = document.querySelector(".sidebar");
+
+    burger.addEventListener("click", () => {
+        sidebar.classList.toggle("active");
+    });
+
+    // Nutup otomatis saat scroll
+    window.addEventListener("scroll", () => {
+        if (window.innerWidth <= 768 && sidebar.classList.contains("active")) {
+            sidebar.classList.remove("active");
+        }
+    });
+
+    // Klik di luar sidebar juga nutup
+    document.addEventListener("click", function (event) {
+        if (
+            sidebar.classList.contains("active") &&
+            !sidebar.contains(event.target) &&
+            !burger.contains(event.target)
+        ) {
+            sidebar.classList.remove("active");
+        }
     });
 });
 

@@ -8,24 +8,18 @@ from django.contrib.auth.decorators import (login_required, permission_required,
 from django.contrib.auth.models import Group, User
 from django.db.models import Count
 from django.http import JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.utils.timezone import now
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
-from .forms import (AdminCreateUserForm,JadwalGuruForm,AbsensiForm,KelasForm,MataPelajaranForm,AbsensiManualForm,ProfilGuruForm)
-from .models import (JadwalGuru,Absensi,ProfilGuru)
+from .forms import (AdminCreateUserForm,AbsensiForm,AbsensiManualForm,ProfilGuruForm)
+from .models import (Absensi,ProfilGuru,LokasiAbsen)
 from django.http import HttpResponse
 import json
 from django.http import JsonResponse
 from django.utils.dateparse import parse_time
-from .models import LokasiAbsen,MataPelajaran,Kelas
-
-
-
-
-
 
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -373,7 +367,7 @@ def dashboard_admin(request):
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from datetime import timedelta
-from .models import Absensi, JadwalGuru  # Tambahkan model JadwalGuru jika ada
+
 
 @login_required
 def dashboard_guru(request):
@@ -393,16 +387,12 @@ def dashboard_guru(request):
     # Hari aktif total
     total_hari_aktif = absensi_user.count()
 
-    # Ambil jadwal minggu ini
-    jadwal_minggu_ini = JadwalGuru.objects.filter(guru=request.user)
-
     context = {
         'total_hadir_bulan_ini': total_hadir_bulan_ini,
         'total_izin_bulan_ini': total_izin_bulan_ini,
         'total_sakit_bulan_ini': total_sakit_bulan_ini,
         'total_alpha_bulan_ini': total_alpha_bulan_ini,
         'total_hari_aktif': total_hari_aktif,
-        'jadwal_minggu_ini': jadwal_minggu_ini,
     }
 
     return render(request, 'birruwattaqwa/guru/dashboard_guru.html', context)
@@ -445,61 +435,6 @@ def home(request):
     """Halaman Home: Bisa diakses semua orang"""
     
     return render(request, 'home.html')
-
-
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())  # Hanya Admin yang bisa akses
-def jadwal_admin(request):
-    """Admin bisa melihat & menambah jadwal guru dalam satu halaman"""
-    if request.method == "POST":
-        form = JadwalGuruForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('jadwal_admin')  # Refresh halaman agar daftar jadwal update
-    else:
-        form = JadwalGuruForm()
-
-    jadwal_list = JadwalGuru.objects.all()  # Ambil semua jadwal
-
-    return render(request, 'birruwattaqwa/admin/jadwal_admin.html', {'form': form, 'jadwal_list': jadwal_list})
-
-@csrf_exempt
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name='Admin').exists())
-def edit_jadwal(request, jadwal_id):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-
-            # Ambil objek jadwal berdasarkan ID
-            jadwal = JadwalGuru.objects.get(id=jadwal_id)
-
-            # Update data
-            guru_nama = data.get('guru')
-            guru_obj = User.objects.get(username=guru_nama)  # Pastikan guru kirim username
-
-            jadwal.guru = guru_obj
-            jadwal.hari = data.get('hari')
-            jadwal.jam_mulai = parse_time(data.get('jam_mulai'))  # parsing jam
-            jadwal.jam_selesai = parse_time(data.get('jam_selesai'))
-            jadwal.mata_pelajaran = data.get('mata_pelajaran')
-            jadwal.kelas = data.get('kelas')
-
-            jadwal.save()
-
-            return JsonResponse({'status': 'success'})
-        except Exception as e:
-            print(e)
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
-
-
-@login_required
-def jadwal_guru(request):
-    """Guru melihat jadwal yang sudah diposting oleh Admin."""
-    jadwal_guru = JadwalGuru.objects.filter(guru=request.user)  # Ambil jadwal untuk user login
-    return render(request, 'birruwattaqwa/guru/jadwal_guru.html', {'jadwal_guru': jadwal_guru})
-
 
 
 
@@ -817,55 +752,9 @@ def atur_lokasi(request):
         'form': form
     })
     
-@login_required
-def list_kelas(request):
-    kelas_list = Kelas.objects.all()
-    
-    if request.method == 'POST':
-        if 'edit_id' in request.POST:
-            kelas = get_object_or_404(Kelas, id=request.POST.get('edit_id'))
-            form = KelasForm(request.POST, instance=kelas)
-            if form.is_valid():
-                form.save()
-                return redirect('list_kelas')
-        elif 'delete_id' in request.POST:
-            kelas = get_object_or_404(Kelas, id=request.POST.get('delete_id'))
-            kelas.delete()
-            return redirect('list_kelas')
-        else:
-            form = KelasForm(request.POST)
-            if form.is_valid():
-                form.save()
-                return redirect('list_kelas')
-    else:
-        form = KelasForm()
 
-    return render(request, 'birruwattaqwa/admin/kelola_kelas.html', {'kelas_list': kelas_list, 'form': form})
 
-@login_required
-def list_mapel(request):
-    mapel_list = MataPelajaran.objects.all()
 
-    if request.method == 'POST':
-        if 'edit_id' in request.POST:
-            mapel = get_object_or_404(MataPelajaran, id=request.POST.get('edit_id'))
-            form = MataPelajaranForm(request.POST, instance=mapel)
-            if form.is_valid():
-                form.save()
-                return redirect('list_mapel')
-        elif 'delete_id' in request.POST:
-            mapel = get_object_or_404(MataPelajaran, id=request.POST.get('delete_id'))
-            mapel.delete()
-            return redirect('list_mapel')
-        else:
-            form = MataPelajaranForm(request.POST)
-            if form.is_valid():
-                form.save()
-                return redirect('list_mapel')
-    else:
-        form = MataPelajaranForm()
-
-    return render(request, 'birruwattaqwa/admin/kelola_matpel.html', {'mapel_list': mapel_list, 'form': form})
 
 from django.utils.timezone import now
 @login_required

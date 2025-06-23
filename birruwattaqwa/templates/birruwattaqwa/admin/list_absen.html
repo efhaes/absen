@@ -3,6 +3,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Rekap Absensi</title>
     <link rel="stylesheet" href="{% static 'css/admin/list_absen.css' %}">
     <link rel="stylesheet" href="{% static 'css/admin/D_sidebar.css' %}">
@@ -13,22 +15,30 @@
 <body>
 
 <div class="dashboard">
+     <div class="burger" onclick="toggleSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
     <div class="sidebar" data-aos="fade-right">
         <div class="profile" data-aos="zoom-in">
+        <a href="{% url 'dashboard_admin' %}">
             <img src="/media/logo.jpeg" alt="Foto Admin" />
+        </a>
             <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
             <h4>Admin</h4>
         </div>
         <ul>
             <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
             <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
-            <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
             <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
             <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
             <li><a href="{% url 'atur_lokasi_absen' %}">📍 Atur Lokasi</a></li>
             <li><a href="{% url 'input_absensi_manual' %}">📝 Presensi Manual Guru</a></li>
-            <li><a href="{% url 'list_kelas' %}">🏫 Buat Kelas</a></li>
-            <li><a href="{% url 'list_mapel' %}">📖 Buat Mata Pelajaran</a></li>
+            <li><a href="{% url 'logout' %}">🔚Logout</a></li>
+    
+
+
         </ul>
     </div>
 
@@ -138,7 +148,10 @@
             <label>Keterangan:</label>
             <input type="text" id="editKeterangan">
             <br><br>
+            <div>
             <button type="submit">Simpan</button>
+            <button type="submit">Batal</button>
+            </div>
         </form>
     </div>
 </div>
@@ -288,6 +301,26 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
+
+
+ function toggleSidebar() {
+            const sidebar = document.querySelector(".sidebar");
+            sidebar.classList.toggle("active");
+        }
+
+        // Optional: klik di luar sidebar untuk menutup
+        document.addEventListener("click", function (event) {
+            const sidebar = document.querySelector(".sidebar");
+            const burger = document.querySelector(".burger");
+
+            if (
+                sidebar.classList.contains("active") &&
+                !sidebar.contains(event.target) &&
+                !burger.contains(event.target)
+            ) {
+                sidebar.classList.remove("active");
+            }
+        });
 </script>
 
 </body>

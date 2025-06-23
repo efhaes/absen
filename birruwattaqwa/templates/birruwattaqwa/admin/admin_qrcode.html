@@ -12,36 +12,87 @@
 </head>
 
 <body>
+    <!-- Burger Menu (Mobile only) -->
+    <div class="burger" onclick="toggleSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Sidebar -->
     <div class="sidebar" data-aos="fade-right">
-            <div class="profile" data-aos="zoom-in">
-                <img src="/media/logo.jpeg" alt="Foto Admin" />
-                <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
-                <h4>Admin</h4>
-            </div>
-            <ul>
-                <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
-                <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
-                <li><a href="{% url 'jadwal_admin' %}">📆 Jadwal Guru</a></li>
-                <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
-                <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
-                <li><a href="{% url 'atur_lokasi_absen' %}">📍 Atur Lokasi</a></li>
-                <li><a href="{% url 'input_absensi_manual' %}">📝Presensi Manual Guru</a></li>
-                <li><a href="{% url 'list_kelas' %}">🏫 Buat Kelas</a></li>
-                <li><a href="{% url 'list_mapel' %}">📖 Buat Mata Pelajaran</a></li>
-            </ul>
+        <div class="profile" data-aos="zoom-in">
+        <a href="{% url 'dashboard_admin' %}">
+            <img src="/media/logo.jpeg" alt="Foto Admin" />
+        </a>
+            <h3>{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+            <h4>Admin</h4>
         </div>
-        <div class="main-content">
-            <div class="centered-content">
-                <h1 style="color:#6a0dad ;">📷 QR Code Absensi</h1>
-                <h4>Selamat Pagi!! 🌞<br>Silakan scan QR code di bawah ini untuk melakukan absensi.</h4>
-                <div class="qr-wrapper">
-                    <img src="{{ daily_qr.qrcode.url }}" alt="QR Code {{ daily_qr.tanggal }}">
-                </div>
-                <p class="tanggal" style="color: #9b30ff;">📅 {{ daily_qr.tanggal|date:"l, d M Y" }}</p>
+        <ul>
+            <li><a href="{% url 'generate_admin_qrcode' %}">📷 Buka QR Code</a></li>
+            <li><a href="{% url 'list_absen' %}">📋 Daftar Absensi</a></li>
+            <li><a href="{% url 'registrasi' %}">➕ Buat Akun</a></li>
+            <li><a href="{% url 'list_users' %}">👥 Lihat Akun</a></li>
+            <li><a href="{% url 'atur_lokasi_absen' %}">📍 Atur Lokasi</a></li>
+            <li><a href="{% url 'input_absensi_manual' %}">📝 Presensi Manual Guru</a></li>
+            <li><a href="{% url 'logout' %}">🔚Logout</a></li>
+    
+
+            
+        </ul>
+    </div>
+
+    <!-- Konten Utama -->
+    <div class="main-content">
+        <div class="centered-content">
+            <h1 style="color: #6a0dad;">📷 QR Code Absensi</h1>
+            <h4>
+                Selamat Pagi!! 🌞<br>
+                Silakan scan QR code di bawah ini untuk melakukan absensi.
+            </h4>
+            <div class="qr-wrapper">
+                <img src="{{ daily_qr.qrcode.url }}" alt="QR Code {{ daily_qr.tanggal }}">
             </div>
+            <p class="tanggal" style="color: #9b30ff;">📅 {{ daily_qr.tanggal|date:"l, d M Y" }}</p>
         </div>
     </div>
-    
+
+    <!-- JavaScript untuk toggle sidebar -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.querySelector(".sidebar");
+        const burger = document.querySelector(".burger");
+        const content = document.querySelector(".content");
+
+        // Toggle sidebar saat tombol burger diklik
+        burger.addEventListener("click", function (e) {
+            e.stopPropagation(); // cegah event click dari bubbling
+            sidebar.classList.toggle("active");
+            content.classList.toggle("push-content");
+        });
+
+        // Tutup sidebar jika klik di luar sidebar & burger
+        document.addEventListener("click", function (event) {
+            if (
+                sidebar.classList.contains("active") &&
+                !sidebar.contains(event.target) &&
+                !burger.contains(event.target)
+            ) {
+                sidebar.classList.remove("active");
+                content.classList.remove("push-content");
+            }
+        });
+
+        // Tutup sidebar jika pengguna scroll halaman
+        window.addEventListener("scroll", function () {
+            if (sidebar.classList.contains("active")) {
+                sidebar.classList.remove("active");
+                content.classList.remove("push-content");
+            }
+        });
+    });
+</script>
+
 </body>
 
 </html>

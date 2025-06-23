@@ -1,72 +1,73 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scan QR untuk Absen</title>
     <link rel="icon" type="image/jpeg" href="/media/logo.jpeg">
     <link rel="stylesheet" href="{% static 'css/guru/scan.css' %}">
-    <link rel="stylesheet" href="{% static 'css/guru/side_guru.css' %}">
+ 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
     <div class="dashboard">
+        <div class="burger" onclick="toggleSidebar()">☰</div> 
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="profile">
                 <a href="{% url 'dashboard_guru' %}">
                     <img src="/media/logo.jpeg" alt="Foto Guru">
                 </a>
-                <h3>{{ request.user }} </h3>
-                <h4><a href="#"></a>Guru</h4>
+                <h3>{{ request.user }}</h3>
+                <h4>Guru</h4>
             </div>
             <ul>
                 <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
                 <li><a href="{% url 'rekap_guru' %}">📄 Lihat Rekap</a></li>
-                <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
                 <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
+                <li><a href="{% url 'logout' %}">🔚Logout</a></li>
             </ul>
+        </div>
+
+        <!-- Konten -->
+         
+        
+        <div class="container mt-3">
+            {% if messages %}
+                <div class="alert-container">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            <strong>{{ message.tags|title }}!</strong> {{ message|escapejs }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <main style="color: #6a0dad;">
+                <h2>📷 Scan QR Code untuk Absen</h2>
+                <p class="style">Pastikan kamu berada di sekitar sekolah untuk bisa absen.</p>
+                <div class="scanner-wrapper">
+                    <div id="reader"></div>
+                    <div id="status" style="margin-top: 10px;"></div>
+                </div>
+            </main>
         </div>
     </div>
 
-    <div class="container mt-3">
-        {% if messages %}
-            <div class="alert-container">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}" role="alert">
-                        <strong>{{ message.tags|title }}!</strong> {{ message|escapejs }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        
-        <main class="container" style="color: #6a0dad;">
-            <h2 style="color: #6a0dad;">📷 Scan QR Code untuk Absen</h2>
-            <p class="style" style="color: #6a0dad;">Pastikan kamu berada di sekitar sekolah untuk bisa absen.</p>
-            <div class="scanner-wrapper">
-                <div id="reader"></div>
-                <div id="status"></div>
-            </div>
-{% if messages %}
-    <div class="flash-messages" style="display: none;">
-        {% for message in messages %}
-            <div class="flash"
-                data-tag="{{ message.tags }}"
-                data-message="{{ message }}">
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
-
-
-        </main>
-    </div>
-
-    <script src="https://unpkg.com/html5-qrcode"></script>
-
-
+    <!-- Flash message tersembunyi untuk SweetAlert -->
+    {% if messages %}
+        <div class="flash-messages" style="display: none;">
+            {% for message in messages %}
+                <div class="flash"
+                    data-tag="{{ message.tags }}"
+                    data-message="{{ message }}">
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <script>
         let scanned = false;
@@ -84,7 +85,7 @@
                         console.log("📍 Lokasi:", lat, lon);
                         console.log("✅ QR terbaca:", decodedText);
 
-                        document.getElementById('status').innerHTML = 
+                        document.getElementById('status').innerHTML =
                             `📍 Lokasi: ${lat}, ${lon}<br>🔗 Mengarahkan ke: ${decodedText}`;
 
                         const urlWithLocation = `${decodedText}?lat=${lat}&lon=${lon}`;
@@ -98,7 +99,7 @@
                             scanned = false;
                         });
                     }, function (error) {
-                        document.getElementById('status').innerText = "⚠️ Gagal ambil lokasi: " + error.message;
+                        document.getElementById('status').innerText = "⚠ Gagal ambil lokasi: " + error.message;
                         scanned = false;
                     });
                 } else {
@@ -108,42 +109,64 @@
             }
         }
 
-        const html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", { fps: 10, qrbox: 250 });
+        const html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+            fps: 10,
+            qrbox: 250
+        });
         html5QrcodeScanner.render(onScanSuccess);
     </script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const flashMessages = document.querySelectorAll('.flash-messages .flash');
-        flashMessages.forEach(function(flash) {
-            const tag = flash.dataset.tag.toLowerCase();     // contoh: 'success', 'error', 'info'
-            const message = flash.dataset.message;
 
-            let icon = 'info'; // default
-            if (tag.includes('success')) {
-                icon = 'success';
-            } else if (tag.includes('error') || tag.includes('danger')) {
-                icon = 'error';
-            } else if (tag.includes('warning')) {
-                icon = 'warning';
-            }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const flashMessages = document.querySelectorAll('.flash-messages .flash');
+            flashMessages.forEach(function (flash) {
+                const tag = flash.dataset.tag.toLowerCase();
+                const message = flash.dataset.message;
 
-            Swal.fire({
-                icon: icon,
-                title: tag.charAt(0).toUpperCase() + tag.slice(1),
-                text: message,
-                timer: 3000,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                showClass: {
-                    popup: 'animate__animated animate__fadeInDown'
-                },
-                hideClass: {
-                    popup: 'animate__animated animate__fadeOutUp'
+                let icon = 'info';
+                if (tag.includes('success')) {
+                    icon = 'success';
+                } else if (tag.includes('error') || tag.includes('danger')) {
+                    icon = 'error';
+                } else if (tag.includes('warning')) {
+                    icon = 'warning';
                 }
+
+                Swal.fire({
+                    icon: icon,
+                    title: tag.charAt(0).toUpperCase() + tag.slice(1),
+                    text: message,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
             });
         });
-    });
-</script>
+
+
+         function toggleSidebar() {
+    const sidebar = document.querySelector(".sidebar");
+    sidebar.classList.toggle("active");
+        }
+
+        // Optional: klik di luar sidebar untuk menutup
+        document.addEventListener("click", function (event) {
+            const sidebar = document.querySelector(".sidebar");
+            const burger = document.querySelector(".burger");
+            if (
+                sidebar.classList.contains("active") &&
+                !sidebar.contains(event.target) &&
+                !burger.contains(event.target)
+            ) {
+                sidebar.classList.remove("active");
+            }
+        });
+    </script>
 </body>
 </html>

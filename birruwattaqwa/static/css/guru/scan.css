@@ -1,10 +1,135 @@
-.container {
-     /* Lebih dari width sidebar (250px) + sedikit jarak */
-    padding: 40px 20px;
-    font-family: 'Poppins', sans-serif;
+
+/* ==================== RESET & BASE ==================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
-/* Judul halaman */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ==================== DASHBOARD LAYOUT ==================== */
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+/* ==================== SIDEBAR ==================== */
+.sidebar {
+    width: 250px;
+    background-color: #6a0dad;
+    color: white;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    border-radius: 0 20px 20px 0;
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+.sidebar .profile {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar .profile img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar .profile img:hover {
+    transform: scale(1.05);
+}
+
+.sidebar h3,
+.sidebar h4 {
+    margin: 10px 0;
+    color: white;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px 15px;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+    background-color: #9b30ff;
+    transform: translateX(5px);
+}
+
+/* ==================== BURGER MENU ==================== */
+.burger {
+    display: block;
+    font-size: 30px;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1100;
+    color: #6a0dad;
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* ==================== CONTAINER ==================== */
+.container {
+    margin-left: 250px;
+    flex-grow: 1;
+
+    padding: 40px 20px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.5s ease-in-out;
+    display: fixed;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
 .container h2 {
     font-size: 28px;
     margin-bottom: 20px;
@@ -13,9 +138,253 @@
     text-align: center;
 }
 
+.container p {
+    margin-top: 10px;
+    font-size: 16px;
+    text-align: center;
+    color: #555;
+}
+
+/* ==================== QR SCANNER ==================== */
 #reader {
     margin-top: 20px;
-    width: 400px; /* ukuran diperbesar */
+    width: 400px;
+    height: 400px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: white;
+}
+
+.scanner-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ==================== FORM ==================== */
+.container form {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+    background-color: #fafafa;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.container form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.container form input,
+.container form select,
+.container form textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.container form button[type="submit"] {
+    background-color: #6f2c4f;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.container form button[type="submit"]:hover {
+    background-color: #8e3d66;
+}
+
+/* ==================== LINK BACK ==================== */
+.container a {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #6f2c4f;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.container a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-radius: 0;
+    }
+    
+    .container {
+        padding: 20px;
+        max-width: 100%;
+    }
+
+    .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-section input,
+    .filter-section select {
+        width: 100%;
+    }
+
+    table th, table td {
+        font-size: 13px;
+        padding: 10px;
+    }
+}
+
+/* Additional Image Styles */
+img {
+    width: 100%;
+    max-width: 300px;
+    border: 10px solid #e1e1e1;
+    border-radius: 20px;
+    background: white;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+/* ==================== DASHBOARD LAYOUT ==================== */
+.dashboard {
+    display: flex;
+    transition: margin-left 0.3s ease;
+    min-height: 100vh;
+}
+
+.sidebar.active ~ .dashboard {
+    margin-left: 250px;
+}
+
+/* ==================== SIDEBAR ==================== */
+.sidebar {
+    width: 250px;
+    background-color: #6a0dad;
+    color: white;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    border-radius: 0 20px 20px 0;
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+.sidebar .profile {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar .profile img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar .profile img:hover {
+    transform: scale(1.05);
+}
+
+.sidebar h3,
+.sidebar h4 {
+    margin: 10px 0 5px;
+    color: white;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px 15px;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+    background-color: #9b30ff;
+    transform: translateX(5px);
+}
+
+/* ==================== BURGER MENU ==================== */
+.burger {
+    display: block;
+    font-size: 30px;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1100;
+    color: #6a0dad;
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    line-height: 1;
+}
+
+/* ==================== CONTAINER ==================== */
+.container {
+    flex-grow: 1;
+    padding: 40px 20px;
+    transition: padding-left 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Judul Halaman */
+.container h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #6f2c4f;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* ==================== QR SCANNER ==================== */
+#reader {
+    margin-top: 20px;
+    width: 400px;
     height: 400px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -35,8 +404,7 @@
     color: #555;
 }
 
-
-/* Form styling */
+/* ==================== FORM ==================== */
 .container form {
     max-width: 500px;
     margin: 0 auto;
@@ -46,7 +414,6 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Form input */
 .container form p {
     margin-bottom: 15px;
 }
@@ -68,7 +435,6 @@
     font-size: 14px;
 }
 
-/* Tombol submit */
 .container form button[type="submit"] {
     background-color: #6f2c4f;
     color: white;
@@ -98,7 +464,7 @@
     text-decoration: underline;
 }
 
-/* Responsif untuk mobile */
+/* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
     .container {
         margin-left: 0;
@@ -108,5 +474,48 @@
     .container form {
         width: 100%;
     }
+
+    #reader {
+        width: 100%;
+        height: auto;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active ~ .dashboard {
+        margin-left: 220px;
+    }
 }
-    
+
+@media (min-width: 769px) {
+    .sidebar {
+        transform: translateX(0);
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .burger {
+        display: none;
+    }
+
+    .container {
+        margin-left: 250px;
+        padding: 40px;
+        margin-bottom: 150px;
+        width: calc(100% - 250px);
+    }
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -7,10 +7,16 @@
     <title>Rekap Absensi Guru</title>
     <link rel="icon" type="image/jpeg" href="/media/logo.jpeg">
     <link rel="stylesheet" href="{% static 'css/guru/rekap_guru.css' %}">
-    <link rel="stylesheet" href="{% static 'css/guru/Dash_rekap.css' %}">
 </head>
 <body>
+    <div class="burger" onclick="toggleSidebar()">
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+
     <div class="dashboard">
+  
         <div class="sidebar">
             <div class="profile">
                 <a href="{% url 'dashboard_guru' %}">
@@ -21,8 +27,8 @@
             <ul>
                 <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
                 <li><a href="{% url 'rekap_guru' %}">📄 Lihat Rekap</a></li>
-                <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
                 <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
+                <li><a href="{% url 'logout' %}">🔚Logout</a></li>
             </ul>
         </div>
 
@@ -47,34 +53,36 @@
                         {% endfor %}
                     </select>
 
-                    <button type="submit" class="btn">🔍 Cari</button>
-                    <a href="?{% if selected_bulan %}bulan={{ selected_bulan }}&{% endif %}{% if selected_tahun %}tahun={{ selected_tahun }}&{% endif %}export=true" class="btn">⬇️ Export ke Excel</a>
+                    <button type="submit" class="btn search-btn">🔍 Cari</button>
+                    <a href="?{% if selected_bulan %}bulan={{ selected_bulan }}&{% endif %}{% if selected_tahun %}tahun={{ selected_tahun }}&{% endif %}export=true" class="btn export-btn">⬇️ Export ke Excel</a>
                 </form>
             </div>
 
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>Status</th>
-                            <th>Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for absen in absensi_list %}
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
                             <tr>
-                                <td>{{ absen.tanggal }}</td>
-                                <td>{{ absen.status }}</td>
-                                <td>{{ absen.keterangan|default:"-" }}</td>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Keterangan</th>
                             </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="3">Tidak ada data absensi.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for absen in absensi_list %}
+                                <tr>
+                                    <td>{{ absen.tanggal }}</td>
+                                    <td>{{ absen.status }}</td>
+                                    <td>{{ absen.keterangan|default:"-" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="3">Tidak ada data absensi.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
                 <div class="form-image">
                     <img src="/media/absen.jpeg" alt="Ilustrasi Absensi">
                 </div>
@@ -82,4 +90,35 @@
         </div>
     </div>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const burger = document.querySelector(".burger");
+        const sidebar = document.querySelector(".sidebar");
+
+        // Toggle sidebar saat burger diklik
+        burger.addEventListener("click", () => {
+            sidebar.classList.toggle("active");
+        });
+
+        // Tutup sidebar saat user scroll (di layar kecil)
+        window.addEventListener("scroll", () => {
+            if (window.innerWidth <= 768 && sidebar.classList.contains("active")) {
+                sidebar.classList.remove("active");
+            }
+        });
+
+        // Klik di luar sidebar juga menutup
+        document.addEventListener("click", function (event) {
+            if (
+                sidebar.classList.contains("active") &&
+                !sidebar.contains(event.target) &&
+                !burger.contains(event.target)
+            ) {
+                sidebar.classList.remove("active");
+            }
+        });
+    });
+</script>
+
+
 </html>

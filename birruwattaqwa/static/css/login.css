@@ -11,6 +11,8 @@ body {
 
 .login-container {
     text-align: center;
+    width: 100%;
+    padding: 0 15px;
 }
 
 .login-box {
@@ -20,6 +22,7 @@ body {
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     width: 350px;
+    max-width: 100%;
     color: white;
     transition: all 0.4s ease-in-out;
 }
@@ -95,4 +98,34 @@ h2 {
 .footer-text {
     font-size: 14px;
     margin-top: 15px;
+}
+
+/* ========================= */
+/* === Responsive Styles === */
+/* ========================= */
+
+@media (max-width: 480px) {
+    body {
+        padding: 20px;
+        align-items: flex-start;
+    }
+
+    .login-box {
+         width: 90vw;              /* Hampir penuh layar */
+        max-width: 400px;         /* Biar tetap ada batas atas */
+        padding: 50px 30px;  
+        margin-top: 60px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    .login-btn {
+        font-size: 14px;
+    }
+
+    .footer-text {
+        font-size: 12px;
+    }
 }

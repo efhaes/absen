@@ -33,39 +33,6 @@ class Absensi(models.Model):
     def __str__(self):
         return f"{self.guru.username} - {self.tanggal} - {self.status}"
     
-class MataPelajaran(models.Model):
-    nama = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.nama
-
-
-class Kelas(models.Model):
-    nama = models.CharField(max_length=20)
-
-    def __str__(self):
-        return self.nama
-
-
-class JadwalGuru(models.Model):
-    HARI_CHOICES = [
-        ('Senin', 'Senin'),
-        ('Selasa', 'Selasa'),
-        ('Rabu', 'Rabu'),
-        ('Kamis', 'Kamis'),
-        ('Jumat', 'Jumat'),
-        ('Sabtu', 'Sabtu'),
-    ]
-
-    guru = models.ForeignKey(User, on_delete=models.CASCADE)
-    hari = models.CharField(max_length=20, choices=HARI_CHOICES)
-    jam_mulai = models.TimeField()
-    jam_selesai = models.TimeField()
-    mata_pelajaran = models.ForeignKey(MataPelajaran, on_delete=models.CASCADE)
-    kelas = models.ForeignKey(Kelas, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.guru.username} - {self.hari} - {self.mata_pelajaran.nama} - {self.kelas.nama}"
     
 class ProfilGuru(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

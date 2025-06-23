@@ -6,10 +6,11 @@
     <title>Scan QR Guru</title>
     <link rel="icon" type="image/jpeg" href="/media/logo.jpeg">
     <link rel="stylesheet" href="{% static 'css/guru/scan.css' %}">
-    <link rel="stylesheet" href="{% static 'css/guru/side_guru.css' %}">
+
 </head>
 <body>
     <div class="dashboard">
+    <div class="burger" onclick="toggleSidebar()">☰</div>
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="profile">
@@ -22,8 +23,8 @@
             <ul>
                 <li><a href="{% url 'scan_qr_view' %}">📷 Scan QR</a></li>
                 <li><a href="{% url 'rekap_guru' %}">📄 Lihat Rekap</a></li>
-                <li><a href="{% url 'jadwal_guru' %}">📚 Lihat Jadwal</a></li>
                 <li><a href="{% url 'absent' %}">📝 Ajukan Izin</a></li>
+                <li><a href="{% url 'logout' %}">🔚Logout</a></li>
             </ul>
         </aside>
 
@@ -42,4 +43,25 @@
         </main>
     </div>
 </body>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.querySelector(".sidebar");
+        sidebar.classList.toggle("active");
+    }
+
+    // Tutup sidebar kalau klik di luar
+    document.addEventListener("click", function (event) {
+        const sidebar = document.querySelector(".sidebar");
+        const burger = document.querySelector(".burger");
+
+        if (
+            sidebar.classList.contains("active") &&
+            !sidebar.contains(event.target) &&
+            !burger.contains(event.target)
+        ) {
+            sidebar.classList.remove("active");
+        }
+    });
+</script>
+
 </html>
